@@ -95,9 +95,7 @@ const FormSignUp = () => {
         .required("Password is required."),
       name: Yup.string().required("Full name is required"),
       second_name: Yup.string().required("Second name is required"),
-      phone:
-        Yup.string()
-        .required("Phone is required"),
+      phone: Yup.string().required("Phone is required"),
       email: Yup.string()
         .matches(RULES.email, "Email invalid")
         .required("Email is required."),
@@ -214,7 +212,6 @@ const FormSignUp = () => {
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
           value={formik.values.phone}
-          error={formik.errors.phone}
         />
         <Input
           id="username"
