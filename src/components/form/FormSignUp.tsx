@@ -1,5 +1,6 @@
 import AccessService from "@/services/access";
 import { registerPending } from "@/store/authSlice";
+import { RULES } from "@/utils/rules";
 import { useFormik } from "formik";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
@@ -30,6 +31,7 @@ const FormSignUp = () => {
   const [valueGender, setValueGender] = useState<optionsGender>(options[0]);
   const [showCheckPwd, setShowCheckPwd] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isTerm, setIsTerm] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -88,11 +90,17 @@ const FormSignUp = () => {
     },
     validationSchema: Yup.object().shape({
       username: Yup.string().required("Username is required."),
-      password: Yup.string().required("Password is required."),
+      password: Yup.string()
+        .matches(RULES.password, "Password invalid")
+        .required("Password is required."),
       name: Yup.string().required("Full name is required"),
       second_name: Yup.string().required("Second name is required"),
-      phone: Yup.string().required("Phone is required"),
-      email: Yup.string().required("Email is required."),
+      phone:
+        Yup.string()
+        .required("Phone is required"),
+      email: Yup.string()
+        .matches(RULES.email, "Email invalid")
+        .required("Email is required."),
       confirm_password: Yup.string()
         .oneOf([Yup.ref("password")], "Passwords must match")
         .required("Confirm password is required"),
@@ -275,6 +283,7 @@ const FormSignUp = () => {
 
         <div className="col-span-2 flex items-start ">
           <Checkbox
+            onChange={() => setIsTerm(true)}
             className="[&>label>span]:font-medium [&>label]:items-start"
             label={
               <>
@@ -307,7 +316,7 @@ const FormSignUp = () => {
           </Button>
         ) : (
           <Button
-            disabled={formik.isSubmitting || !formik.isValid}
+            disabled={formik.isSubmitting || !formik.isValid || !isTerm}
             size="lg"
             type="submit"
             className="col-span-2 mt-2"

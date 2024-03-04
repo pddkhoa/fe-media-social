@@ -41,6 +41,32 @@ class AccessService {
       identity.post(`auth/verify?token=${otp}`)
     );
   }
+  static async forgotPassword(data: { email: string }) {
+    type body = {
+      success: string;
+      statusCode: number;
+      message: string;
+      result: string | null;
+    };
+    return await requestApiHelper<body>(
+      identity.post(`auth/forgot-password`, data)
+    );
+  }
+  static async resetPassword(data: {
+    email: string;
+    password: string;
+    confirmPassword: string;
+  }) {
+    type body = {
+      success: string;
+      statusCode: number;
+      message: string;
+      result: string | null;
+    };
+    return await requestApiHelper<body>(
+      identity.post(`auth/reset-password`, data)
+    );
+  }
 }
 
 export default AccessService;

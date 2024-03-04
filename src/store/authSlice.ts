@@ -5,6 +5,8 @@ const authSlice = createSlice({
   initialState: {
     isLoggin: false,
     isActive: false,
+    isForgotPassword: false,
+    email: "",
   },
   reducers: {
     loginSuccess: (state) => {
@@ -16,10 +18,25 @@ const authSlice = createSlice({
     registerSuccess: (state) => {
       state.isActive = false;
     },
+    forgotPasswordPending: (state, payload) => {
+      state.isForgotPassword = true;
+      state.isActive = true;
+      state.email = payload.payload;
+    },
+    forgotPasswordSuccess: (state) => {
+      state.isActive = false;
+      state.isForgotPassword = false;
+      state.email = "";
+    },
   },
 });
 
-export const { loginSuccess, registerPending, registerSuccess } =
-  authSlice.actions;
+export const {
+  loginSuccess,
+  registerPending,
+  registerSuccess,
+  forgotPasswordPending,
+  forgotPasswordSuccess,
+} = authSlice.actions;
 
 export default authSlice.reducer;

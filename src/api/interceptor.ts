@@ -1,6 +1,10 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
 
-const UNAUTHEN = ["/auth/register", "/active-account", "/forgot-password"];
+const UNAUTHEN = [
+  "/auth/register",
+  "auth/verify?token=${otp}",
+  "auth/forgot-password",
+];
 const identity = axios.create({
   baseURL: process.env.BASE_URL,
   headers: {

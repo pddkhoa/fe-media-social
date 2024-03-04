@@ -8,6 +8,9 @@ const ActiveOTP = lazy(() => import("@/pages/active-account/PageActiveOTP"));
 const ActiveEmail = lazy(
   () => import("@/pages/forgot-password/PageForgotPassword")
 );
+const ResetPassword = lazy(
+  () => import("@/pages/reset-password/PageResetPassword")
+);
 
 const PublicRoutes = () => {
   return (
@@ -18,6 +21,7 @@ const PublicRoutes = () => {
           <Route path="/sign-up" element={<SignUp />} />
           <Route path="/active-account" element={<ActiveOTP />} />
           <Route path="/forgot-password" element={<ActiveEmail />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
         </Route>
         <Route path="*" element={<Navigate to={"/sign-in"} replace={true} />} />
       </Routes>

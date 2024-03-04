@@ -9,6 +9,10 @@ import { PinCode, Button, Loader } from "rizzui";
 
 const FormOTP = () => {
   const isActive = useSelector((state: RootState) => state.auth.isActive);
+  const isForgotPassword = useSelector(
+    (state: RootState) => state.auth.isForgotPassword
+  );
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
@@ -26,9 +30,12 @@ const FormOTP = () => {
     setIsLoading(true);
     const { body } = await AccessService.activeAccount(otp);
     if (body?.success) {
-      dispatch(registerSuccess());
+      if (isForgotPassword) navigate("/reset-password");
+      else {
+        navigate("/login");
+        dispatch(registerSuccess());
+      }
       toast.success(body.message);
-      navigate("/login");
       setIsLoading(false);
     } else {
       toast.error(body?.message || "Error");
