@@ -205,6 +205,7 @@ const FormSignUp = () => {
         <NumberInput
           id="phone"
           name="phone"
+          formatType="pattern"
           format="### ### ####"
           mask="_"
           customInput={Input as any}
