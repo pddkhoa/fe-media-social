@@ -1,5 +1,6 @@
 import AccessService from "@/services/access";
-import { loginSuccess } from "@/store/authSlice";
+import { loginSuccess, registerPending } from "@/store/authSlice";
+import { UNVERIFIED } from "@/utils/contants";
 import { useFormik } from "formik";
 import { useState } from "react";
 import toast from "react-hot-toast";
@@ -29,12 +30,16 @@ const FormSignIn = () => {
       const { body } = await AccessService.login(values);
       try {
         if (body?.success) {
-          localStorage.setItem("accessToken", body?.token);
+          localStorage.setItem("accessToken", body?.result);
           navigate("/");
           setIsLoading(false);
           dispatch(loginSuccess());
           toast.success("Successfully toasted!");
         } else {
+          if (body?.result === UNVERIFIED) {
+            dispatch(registerPending());
+            navigate("/active-account");
+          }
           setIsLoading(false);
           toast.error(body?.message || "Error");
         }

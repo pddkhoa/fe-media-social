@@ -7,7 +7,7 @@ class AccessService {
       success: string;
       statusCode: number;
       message: string;
-      token: string;
+      result: string;
     };
     return await requestApiHelper<body>(identity.post("auth/login", data));
   }

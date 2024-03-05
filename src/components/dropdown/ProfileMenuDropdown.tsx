@@ -9,7 +9,7 @@ const menuItems = [
   },
   {
     name: "Account Settings",
-    href: "/profile/setting",
+    href: "/profile-setting",
   },
 ];
 

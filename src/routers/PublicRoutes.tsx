@@ -2,14 +2,16 @@ import BlankLayout from "@/layouts/BlankLayout";
 import { Suspense, lazy } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 
-const SignIn = lazy(() => import("@/pages/sign-in/PageSignIn"));
-const SignUp = lazy(() => import("@/pages/sign-up/PageSignUp"));
-const ActiveOTP = lazy(() => import("@/pages/active-account/PageActiveOTP"));
+const SignIn = lazy(() => import("@/pages/auth/sign-in/PageSignIn"));
+const SignUp = lazy(() => import("@/pages/auth/sign-up/PageSignUp"));
+const ActiveOTP = lazy(
+  () => import("@/pages/auth/active-account/PageActiveOTP")
+);
 const ActiveEmail = lazy(
-  () => import("@/pages/forgot-password/PageForgotPassword")
+  () => import("@/pages/auth/forgot-password/PageForgotPassword")
 );
 const ResetPassword = lazy(
-  () => import("@/pages/reset-password/PageResetPassword")
+  () => import("@/pages/auth/reset-password/PageResetPassword")
 );
 
 const PublicRoutes = () => {

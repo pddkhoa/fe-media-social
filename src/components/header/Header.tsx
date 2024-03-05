@@ -7,7 +7,7 @@ import ProfileMenu from "../dropdown/ProfileMenuDropdown";
 
 function HeaderMenuRight() {
   return (
-    <div className="ml-auto grid shrink-0 grid-cols-3 items-center gap-7 text-gray-700 ">
+    <div className="ml-auto grid shrink-0 grid-cols-3 items-center gap-7  text-gray-700 ">
       <MessagesDropdown>
         <ActionIcon
           aria-label="Messages"
@@ -47,7 +47,7 @@ const Header = () => {
   return (
     <header
       className={
-        "sticky top-0 z-50 flex items-center bg-gray-0/80 px-4 py-4 backdrop-blur-xl dark:bg-gray-50/50 md:px-5 lg:px-6 xl:pl-4 2xl:py-5 2xl:pl-6 3xl:px-8 3xl:pl-6 4xl:px-10 4xl:pl-9"
+        "sticky top-0 z-50 flex items-center bg-gray-0/80 px-4 py-4 backdrop-blur-xl dark:bg-white md:px-5 lg:px-6 xl:pl-4 2xl:py-5 2xl:pl-6 3xl:px-8 3xl:pl-6 4xl:px-10 4xl:pl-9"
       }
     >
       <div className="flex w-full max-w-2xl items-center">
