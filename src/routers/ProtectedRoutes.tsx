@@ -5,12 +5,8 @@ import { Routes, Route, Navigate } from "react-router-dom";
 const Home = lazy(() => import("@/pages/home/PageHome"));
 const Profile = lazy(() => import("@/pages/profile/PageProfileMain"));
 const ProfileSetting = lazy(() => import("@/pages/profile/PageProfileSetting"));
-const SettingDetail = lazy(
-  () => import("@/components/profile-setting/TabDetail")
-);
-const SettingPassword = lazy(
-  () => import("@/components/profile-setting/TabPassword")
-);
+const SettingDetail = lazy(() => import("@/pages/profile/PageTabDetail"));
+const SettingPassword = lazy(() => import("@/pages/profile/PageTabPassword"));
 
 const ProtectedRoutes = () => {
   return (

@@ -1,3 +1,4 @@
+import { UserToken } from "@/type/user";
 import { createSlice } from "@reduxjs/toolkit";
 
 const authSlice = createSlice({
@@ -7,10 +8,12 @@ const authSlice = createSlice({
     isActive: false,
     isForgotPassword: false,
     email: "",
+    userToken: {} as UserToken,
   },
   reducers: {
-    loginSuccess: (state) => {
+    loginSuccess: (state, payload) => {
       state.isLoggin = true;
+      state.userToken = payload.payload;
     },
     registerPending: (state) => {
       state.isActive = true;
@@ -28,6 +31,12 @@ const authSlice = createSlice({
       state.isForgotPassword = false;
       state.email = "";
     },
+    uploadAvatarSuccess: (state, payload) => {
+      state.userToken.user.avatar.url = payload.payload;
+    },
+    updateInfoSuccess: (state, payload) => {
+      state.userToken.user = payload.payload;
+    },
   },
 });
 
@@ -37,6 +46,8 @@ export const {
   registerSuccess,
   forgotPasswordPending,
   forgotPasswordSuccess,
+  uploadAvatarSuccess,
+  updateInfoSuccess,
 } = authSlice.actions;
 
 export default authSlice.reducer;

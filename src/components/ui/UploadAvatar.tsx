@@ -1,42 +1,56 @@
 import { cn } from "@/utils/class-name";
-import { FieldError } from "rizzui";
 import { UploadIcon } from "./Icon";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
+import { useModal } from "@/hooks/useModal";
+import UploadModal from "../modal/UploadModal";
 
-interface UploadZoneProps {
-  name: string;
-  getValues?: any;
-  setValue?: any;
-  className?: string;
-  error?: string;
-}
+export default function AvatarUpload() {
+  const { openModal } = useModal();
+  const avatar = useSelector((state: RootState) => state.auth.userToken);
 
-export default function AvatarUpload({
-  name,
-  error,
-  className,
-  getValues,
-  setValue,
-}: UploadZoneProps) {
   return (
-    <div className={cn("grid gap-5", className)}>
+    <div className={cn("flex items-center gap-8")}>
       <div
         className={cn(
-          "relative grid h-40 w-40 place-content-center rounded-full border"
+          "relative grid h-40 w-40 place-content-center rounded-full border group"
         )}
       >
-        <div
-          // {...getRootProps()}
-          className={cn(
-            "absolute inset-0 z-10 grid cursor-pointer place-content-center"
-          )}
-        >
-          {/* <input {...getInputProps()} /> */}
-          <UploadIcon className="mx-auto h-12 w-12" />
-
-          <span className="font-medium ">Drop or select file</span>
-        </div>
+        {avatar?.user?.avatar?.url ? (
+          <div className="flex">
+            <figure className="absolute inset-0 rounded-full overflow-hidden">
+              <img
+                src={avatar?.user?.avatar?.url}
+                alt="user avatar"
+                className="rounded-full object-cover w-full h-full"
+              />
+            </figure>
+            <div>
+              <button
+                onClick={() =>
+                  openModal({
+                    view: <UploadModal data={avatar?.user?.avatar?.url} />,
+                  })
+                }
+                className="absolute inset-0 w-full h-full group-hover:bg-black/30 rounded-full cursor-pointer"
+              >
+                <UploadIcon className="mx-auto h-12 w-12 opacity-80 text-white hidden group-hover:block" />
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div
+            onClick={() => {
+              openModal({ view: <UploadModal /> });
+            }}
+            className={cn(
+              "absolute inset-0 z-10 grid cursor-pointer place-content-center"
+            )}
+          >
+            <UploadIcon className="mx-auto h-12 w-12" />
+          </div>
+        )}
       </div>
-      {error && <FieldError error={error} />}
     </div>
   );
 }

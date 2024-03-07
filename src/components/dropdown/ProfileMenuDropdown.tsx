@@ -1,4 +1,6 @@
+import { RootState } from "@/store/store";
 import { cn } from "@/utils/class-name";
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { Avatar, Button, Popover, Title } from "rizzui";
 
@@ -14,18 +16,16 @@ const menuItems = [
 ];
 
 function DropdownMenu() {
+  const userData = useSelector((state: RootState) => state.auth.userToken.user);
   return (
     <div className="w-64 text-left rtl:text-right">
       <div className="flex items-center border-b border-gray-300 px-6 pb-5 pt-6">
-        <Avatar
-          src="https://isomorphic-furyroad.s3.amazonaws.com/public/avatars-blur/avatar-11.webp"
-          name="Albert Flores"
-        />
+        <Avatar src={userData?.avatar?.url} name={userData.name} />
         <div className="ms-3">
-          <Title as="h6" className="font-semibold">
-            Albert Flores
+          <Title as="h6" className="font-semibold w-full truncate">
+            {userData?.name}
           </Title>
-          <p className="text-gray-600">flores@doe.io</p>
+          <p className="text-gray-600 ">@{userData?.second_name}</p>
         </div>
       </div>
       <div className="grid px-3.5 py-3.5 font-medium text-gray-700">
@@ -59,6 +59,8 @@ export default function ProfileMenu({
   buttonClassName?: string;
   avatarClassName?: string;
 }) {
+  const userData = useSelector((state: RootState) => state.auth.userToken.user);
+
   return (
     <Popover placement="bottom-end">
       <Popover.Trigger>
@@ -69,13 +71,13 @@ export default function ProfileMenu({
           )}
         >
           <Avatar
-            src="https://isomorphic-furyroad.s3.amazonaws.com/public/avatars-blur/avatar-11.webp"
-            name="John Doe"
+            src={userData?.avatar?.url}
+            name={userData?.name}
             className={cn("!h-9 w-9 sm:!h-10 sm:w-10", avatarClassName)}
           />
         </button>
       </Popover.Trigger>
-      <Popover.Content className="z-50 p-0 dark:bg-gray-100 [&>svg]:dark:fill-gray-100">
+      <Popover.Content className="z-50 p-0 dark:bg-gray-50 [&>svg]:dark:fill-gray-50">
         <DropdownMenu />
       </Popover.Content>
     </Popover>

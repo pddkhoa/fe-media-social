@@ -13,7 +13,7 @@ function App() {
         <BrowserRouter>
           <AppRoutes />
           <GlobalModal />
-          <Toaster position="bottom-right" reverseOrder={false} />
+          <Toaster position="top-right" reverseOrder={false} />
         </BrowserRouter>
       </PersistGate>
     </Provider>

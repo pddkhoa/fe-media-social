@@ -8,6 +8,7 @@ import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { Input, Password, Switch, Button, Loader } from "rizzui";
 import * as Yup from "yup";
+import { jwtDecode } from "jwt-decode";
 
 const FormSignIn = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -33,8 +34,8 @@ const FormSignIn = () => {
           localStorage.setItem("accessToken", body?.result);
           navigate("/");
           setIsLoading(false);
-          dispatch(loginSuccess());
-          toast.success("Successfully toasted!");
+          dispatch(loginSuccess(jwtDecode(body?.result)));
+          toast.success(body.message);
         } else {
           if (body?.result === UNVERIFIED) {
             dispatch(registerPending());
