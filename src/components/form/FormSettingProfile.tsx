@@ -161,7 +161,7 @@ const FormSettingProfile = () => {
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
               value={formik.values.name}
-              error={formik.errors.name}
+              error={formik.errors.name as any}
               placeholder="Full Name"
               className="flex-grow"
             />
@@ -329,7 +329,7 @@ const FormSettingProfile = () => {
             variant="solid"
             className="w-fit flex gap-5"
           >
-            Upload <Loader />
+            Update <Loader />
           </Button>
         ) : (
           <Button
@@ -338,7 +338,7 @@ const FormSettingProfile = () => {
             variant="solid"
             className="w-fit"
           >
-            Upload
+            Update
           </Button>
         )}
       </div>

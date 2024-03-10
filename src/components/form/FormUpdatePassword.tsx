@@ -52,9 +52,10 @@ const FormUpdatePassword = () => {
       confirmPassword: "",
     },
     validationSchema: Yup.object().shape({
+      oldPassword: Yup.string().required("Current password is required."),
       password: Yup.string()
         .matches(RULES.password, "Password Invalid")
-        .required("Password is required."),
+        .required("New password is required."),
       confirmPassword: Yup.string()
         .oneOf([Yup.ref("password")], "Passwords must match")
         .required("Confirm password is required"),
@@ -97,6 +98,7 @@ const FormUpdatePassword = () => {
             value={formik.values.oldPassword}
             placeholder="Enter your old password"
             className="w-1/2"
+            error={formik.errors.oldPassword}
           />
         </HorizontalFormBlockWrapper>
 
@@ -169,7 +171,11 @@ const FormUpdatePassword = () => {
               Update Password <Loader />
             </Button>
           ) : (
-            <Button type="submit" variant="solid">
+            <Button
+              type="submit"
+              variant="solid"
+              disabled={formik.isSubmitting || !formik.isValid}
+            >
               Update Password
             </Button>
           )}

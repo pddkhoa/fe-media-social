@@ -1,13 +1,28 @@
-import { PiChatCircleDotsFill, PiBellSimpleRingingFill } from "react-icons/pi";
-import { ActionIcon, Badge } from "rizzui";
+import {
+  PiChatCircleDotsFill,
+  PiBellSimpleRingingFill,
+  PiPlusBold,
+} from "react-icons/pi";
+import { ActionIcon, Badge, Button } from "rizzui";
 import SearchWidget from "../search/SearchWidget";
 import MessagesDropdown from "../dropdown/MessagesDropdown";
 import NotificationDropdown from "../dropdown/NotificationDropdown";
 import ProfileMenu from "../dropdown/ProfileMenuDropdown";
+import { Link } from "react-router-dom";
 
 function HeaderMenuRight() {
   return (
-    <div className="ml-auto grid shrink-0 grid-cols-3 items-center gap-7  text-gray-700 ">
+    <div className="flex  ml-auto shrink-0  items-center gap-7  text-gray-700 ">
+      <Link to={"/create-post"}>
+        <Button
+          variant="outline"
+          className="relative col-span-1 shadow  md:h-9 flex gap-3"
+          size="sm"
+        >
+          New Post
+          <PiPlusBold />
+        </Button>
+      </Link>
       <MessagesDropdown>
         <ActionIcon
           aria-label="Messages"

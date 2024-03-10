@@ -7,6 +7,7 @@ const Profile = lazy(() => import("@/pages/profile/PageProfileMain"));
 const ProfileSetting = lazy(() => import("@/pages/profile/PageProfileSetting"));
 const SettingDetail = lazy(() => import("@/pages/profile/PageTabDetail"));
 const SettingPassword = lazy(() => import("@/pages/profile/PageTabPassword"));
+const CreatePost = lazy(() => import("@/pages/create-post/PageCreatePost"));
 
 const ProtectedRoutes = () => {
   return (
@@ -26,6 +27,14 @@ const ProtectedRoutes = () => {
             element={
               <Suspense fallback={<div>Loading ...</div>}>
                 <Profile />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/create-post"
+            element={
+              <Suspense fallback={<div>Loading ...</div>}>
+                <CreatePost />
               </Suspense>
             }
           />

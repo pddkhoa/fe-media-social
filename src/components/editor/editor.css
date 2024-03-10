@@ -1,0 +1,14 @@
+.ce-toolbar__content,
+.ce-block__content {
+  max-width: unset;
+  width: 90% !important;
+}
+.cdx-block {
+  margin-top: 5px;
+}
+
+.ce-toolbar__settings-btn,
+.ce-toolbar__plus {
+  width: 30px;
+  height: 30px;
+}

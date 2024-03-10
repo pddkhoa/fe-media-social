@@ -9,9 +9,10 @@ import { Button, Loader } from "rizzui";
 
 type UploadModalProps = {
   data?: string;
+  isPost?: boolean;
 };
 
-const UploadModal: React.FC<UploadModalProps> = ({ data }) => {
+const UploadModal: React.FC<UploadModalProps> = ({ data, isPost }) => {
   const { closeModal } = useModal();
   const [files, setFiles] = useState<FileList>();
   const dispatch = useDispatch();
@@ -44,7 +45,7 @@ const UploadModal: React.FC<UploadModalProps> = ({ data }) => {
   };
 
   return (
-    <main className="  w-full h-full">
+    <main className=" w-full h-full">
       <article
         aria-label="File Upload Modal"
         className="relative h-full w-full flex flex-col bg-white shadow-xl rounded-md"
@@ -61,7 +62,7 @@ const UploadModal: React.FC<UploadModalProps> = ({ data }) => {
           </div>
         ) : null}
         <section className="h-full overflow-auto p-8 w-full flex flex-col">
-          <header className="border-dashed border-2 border-gray-400 py-12 flex flex-col justify-center items-center">
+          <header className="border-dashed border-2 border-gray-400 py-12 rounded-lg flex flex-col justify-center items-center">
             <p className="mb-3 font-semibold text-gray-900 flex flex-wrap justify-center">
               <span>Drag and drop your</span>&nbsp;
               <span>files anywhere or</span>
@@ -90,7 +91,9 @@ const UploadModal: React.FC<UploadModalProps> = ({ data }) => {
           >
             {files || dataImage ? (
               <img
-                className="w-40 h-40 rounded-full object-cover"
+                className={`object-cover ${
+                  isPost ? `w-64 h-52 rounded-md` : `w-40 h-40 rounded-full`
+                } `}
                 src={files ? URL.createObjectURL(files[0]) : dataImage}
                 alt="no data"
               />
