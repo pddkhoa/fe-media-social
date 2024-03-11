@@ -1,6 +1,14 @@
+import { OutputData } from "@editorjs/editorjs";
+import { FC } from "react";
+import Output from "editorjs-blocks-react-renderer";
+
 import { Badge } from "rizzui";
 
-const OutputPost = () => {
+type OutputPostProps = {
+  content: OutputData | undefined;
+};
+
+const OutputPost: FC<OutputPostProps> = ({ content }) => {
   return (
     <div className="max-w-5xl mx-auto space-y-12">
       <article className="space-y-8">
@@ -22,7 +30,44 @@ const OutputPost = () => {
             </p>
           </div>
         </div>
-        <div className="p-2">Insert the actual text content here...</div>
+        <div className="p-2">
+          {content && (
+            <Output
+              data={content as any}
+              config={{
+                code: {
+                  className: "language-js py-4 text-white",
+                },
+                delimiter: {
+                  className: "border border-2 w-16 mx-auto",
+                },
+                embed: {
+                  className: "border-0",
+                },
+                header: {
+                  className:
+                    "text-2xl font-semibold  text-transparent text-white my-6",
+                },
+                image: {
+                  className:
+                    " flex flex-col h-[700px] w-[900px] justify-center items-center  mt-10 mx-auto  py-5 rounded-xl",
+                },
+                list: {
+                  className: "text-title-foreground",
+                },
+                paragraph: {
+                  className: "text-lg text-opacity-90 text-title para ",
+                  actionsClassNames: {
+                    alignment: "text-{alignment}",
+                  },
+                },
+                quote: {
+                  className: "py-3 px-5 italic",
+                },
+              }}
+            />
+          )}
+        </div>
       </article>
       <div>
         <div className="flex flex-wrap py-6 gap-2 border-t border-dashed dark:border-gray-400">

@@ -1,9 +1,19 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { FC, useCallback, useEffect, useRef, useState } from "react";
 import { EDITOR_JS_TOOLS } from "./Tool";
 import "./editor.css";
-import EditorJS from "@editorjs/editorjs";
+import EditorJS, { OutputData } from "@editorjs/editorjs";
 
-const EditorPost = () => {
+type EditorPostProps = {
+  setContent: React.Dispatch<React.SetStateAction<OutputData | undefined>>;
+  content: OutputData | undefined;
+  setCheckContent: React.Dispatch<React.SetStateAction<boolean>>;
+};
+
+const EditorPost: FC<EditorPostProps> = ({
+  setContent,
+  content,
+  setCheckContent,
+}) => {
   const ref = useRef<EditorJS>();
   let editor: EditorJS | undefined;
   const [isMounted, setIsMounted] = useState<boolean>(false);
@@ -17,14 +27,15 @@ const EditorPost = () => {
         holder: "editor",
         onReady: async () => {
           ref.current = editor;
-          const content = JSON.parse(localStorage.getItem("editorContent")!);
-          if (content.blocks.length !== 0) {
-            editor?.render(content);
-          }
+          if (content) editor?.render(content);
         },
         onChange: async () => {
-          const content = await editor?.saver.save();
-          localStorage.setItem("editorContent", JSON.stringify(content));
+          const contentBlock = await editor?.saver.save();
+          if (contentBlock) setContent(contentBlock);
+          setCheckContent(false);
+          if (contentBlock?.blocks.length !== 0) {
+            setCheckContent(true);
+          }
         },
         placeholder: "Type here to write your post...",
         inlineToolbar: true,
