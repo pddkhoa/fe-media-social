@@ -1,5 +1,5 @@
 import FormSettingProfile from "@/components/form/FormSettingProfile";
-import ProfileHeader from "@/components/profile/ProfileHeader";
+import ProfileHeader from "@/components/module/profile/ProfileHeader";
 
 const PageTabDetail = () => {
   return (

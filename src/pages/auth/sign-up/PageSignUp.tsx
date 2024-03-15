@@ -6,42 +6,44 @@ import { Title, Button } from "rizzui";
 
 const PageSignUp = () => {
   return (
-    <div className="flex min-h-screen w-full flex-col justify-between py-12">
-      <div className="flex w-full flex-col justify-center px-5">
-        <div
-          className={cn(
-            "mx-auto w-full max-w-md py-12 md:max-w-lg lg:max-w-xl 2xl:pb-8 2xl:pt-2"
-          )}
-        >
-          <div className="flex flex-col items-center">
-            <Title
-              as="h2"
-              className="mb-7 text-center text-[28px] font-bold leading-snug md:text-3xl md:!leading-normal lg:mb-10 lg:text-4xl"
-            >
-              Join us today! Get special benefits and stay up-to-date.
-            </Title>
-          </div>
+    <>
+      <div className="flex min-h-screen w-full flex-col justify-between py-12">
+        <div className="flex w-full flex-col justify-center px-5">
+          <div
+            className={cn(
+              "mx-auto w-full max-w-md py-12 md:max-w-lg lg:max-w-xl 2xl:pb-8 2xl:pt-2"
+            )}
+          >
+            <div className="flex flex-col items-center">
+              <Title
+                as="h2"
+                className="mb-7 text-center text-[28px] font-bold leading-snug md:text-3xl md:!leading-normal lg:mb-10 lg:text-4xl"
+              >
+                Join us today! Get special benefits and stay up-to-date.
+              </Title>
+            </div>
 
-          <div className="flex flex-col gap-4 pb-6 md:flex-row md:gap-6 xl:pb-7">
-            <Button variant="outline" className="h-11 w-full">
-              <FcGoogle className="me-2 h-4 w-4 shrink-0" />
-              <span className="truncate">Signin with Google</span>
-            </Button>
-            <Button variant="outline" className="h-11 w-full" color="primary">
-              <BsFacebook className="me-2 h-4 w-4 shrink-0 md:h-5 md:w-5" />
-              <span className="truncate">Signin with Facebook</span>
-            </Button>
-          </div>
-          <OrSeparation
-            title={`Or, Sign up with your email`}
-            isCenter
-            className="mb-5 2xl:mb-7 bg-white"
-          />
+            <div className="flex flex-col gap-4 pb-6 md:flex-row md:gap-6 xl:pb-7">
+              <Button variant="outline" className="h-11 w-full">
+                <FcGoogle className="me-2 h-4 w-4 shrink-0" />
+                <span className="truncate">Signin with Google</span>
+              </Button>
+              <Button variant="outline" className="h-11 w-full" color="primary">
+                <BsFacebook className="me-2 h-4 w-4 shrink-0 md:h-5 md:w-5" />
+                <span className="truncate">Signin with Facebook</span>
+              </Button>
+            </div>
+            <OrSeparation
+              title={`Or, Sign up with your email`}
+              isCenter
+              className="mb-5 2xl:mb-7 bg-white"
+            />
 
-          <FormSignUp />
+            <FormSignUp />
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

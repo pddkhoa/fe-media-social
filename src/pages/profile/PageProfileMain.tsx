@@ -1,12 +1,12 @@
-import ProfileDetails from "@/components/profile/ProfileDetail";
-import ProfileHeader from "@/components/profile/ProfileHeader";
+import ProfileDetails from "@/components/module/profile/ProfileDetail";
+import ProfileHeader from "@/components/module/profile/ProfileHeader";
 
 const PageProfileMain = () => {
   return (
-    <div className="">
+    <>
       <ProfileHeader />
       <ProfileDetails />
-    </div>
+    </>
   );
 };
 

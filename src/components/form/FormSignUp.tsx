@@ -86,7 +86,7 @@ const FormSignUp = () => {
       username: "",
       password: "",
       confirm_password: "",
-      roles: "user",
+      roles: "Client",
     },
     validationSchema: Yup.object().shape({
       username: Yup.string().required("Username is required."),

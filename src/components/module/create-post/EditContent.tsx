@@ -1,7 +1,8 @@
 import { FC, useEffect, useState } from "react";
 import { Input } from "rizzui";
-import EditorPost from "../editor/EditorPost";
+import EditorPost from "../../editor/EditorPost";
 import { OutputData } from "@editorjs/editorjs";
+import { FormDataType } from "@/pages/create-post/PageCreatePost";
 
 type EditContentProps = {
   setContent: React.Dispatch<React.SetStateAction<OutputData | undefined>>;
@@ -9,6 +10,10 @@ type EditContentProps = {
   formik: any;
   setCheckContent: React.Dispatch<React.SetStateAction<boolean>>;
   checkContent: boolean;
+  setFormDataCreate: React.Dispatch<
+    React.SetStateAction<FormDataType | undefined>
+  >;
+  formDataCreate: FormDataType | undefined;
 };
 
 const EditContent: FC<EditContentProps> = ({
@@ -17,9 +22,11 @@ const EditContent: FC<EditContentProps> = ({
   formik,
   setCheckContent,
   checkContent,
+  setFormDataCreate,
+  formDataCreate,
 }) => {
   const MAXLENGTH = 150;
-  const [state, setState] = useState("");
+  const [state, setState] = useState("" || formDataCreate?.title);
 
   useEffect(() => {
     formik.setFieldValue("title", state);
@@ -29,6 +36,10 @@ const EditContent: FC<EditContentProps> = ({
     const newValue = e.target.value;
     formik.handleChange(e);
     setState(newValue);
+    setFormDataCreate((prevFormData: any) => ({
+      ...prevFormData,
+      title: newValue,
+    }));
   };
 
   return (
@@ -42,7 +53,7 @@ const EditContent: FC<EditContentProps> = ({
         maxLength={MAXLENGTH}
         onChange={handleChangeTitle}
         onBlur={formik.handleBlur}
-        suffix={state.length + `/${MAXLENGTH}`}
+        suffix={state?.length + `/${MAXLENGTH}`}
         suffixClassName="opacity-70"
         error={formik.errors.title}
       />

@@ -1,36 +1,51 @@
-import { PiUsersFill } from "react-icons/pi";
-import { BookmarkIcon, FeedIcon, MessageIcon, TuneIcon } from "../ui/Icon";
+import {
+  ExploreIcon,
+  FeedIcon,
+  GroupIcon,
+  MessageIcon,
+  TuneIcon,
+  UserIcon,
+} from "../ui/Icon";
 
-// Note: do not add href in the label object, it is rendering as label
 export const menuItems = [
   {
     name: "News Feed",
     href: "/",
-    icon: <FeedIcon />,
+    icon: <ExploreIcon />,
   },
   {
     name: "Explore",
     href: "/explore",
-    icon: <TuneIcon />,
+    icon: <FeedIcon />,
   },
   {
     name: "User",
     href: "/user",
-    icon: <FeedIcon />,
+    icon: <UserIcon />,
   },
   {
     name: "Bookmark",
-    href: "/user",
-    icon: <BookmarkIcon />,
+    href: "/bookmark",
+    icon: <TuneIcon />,
   },
   {
     name: "Group",
-    href: "/user",
-    icon: <PiUsersFill />,
+    href: "/group",
+    icon: <GroupIcon />,
+    dropdownItems: [
+      {
+        name: "All Groups",
+        href: "/group",
+      },
+      {
+        name: "My Groups",
+        href: "/group/my",
+      },
+    ],
   },
   {
     name: "Message",
-    href: "/user",
+    href: "/message",
     icon: <MessageIcon />,
   },
 ];

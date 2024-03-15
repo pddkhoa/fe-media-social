@@ -3,8 +3,11 @@ import { useState, useEffect } from "react";
 import { PiXBold } from "react-icons/pi";
 import { Badge, Modal, Title, Button } from "rizzui";
 import { cn } from "@/utils/class-name";
-import FollowerModal from "../modal/FollowModal";
-import PostFeed from "../post/PostFeed";
+import FollowerModal from "../../modal/FollowModal";
+import PostFeed from "../../post/PostFeed";
+import { useLocation } from "react-router-dom";
+import ClientServices from "@/services/client";
+import { Post } from "@/type/post";
 
 const tabs = [
   { id: "posts", count: postData.length },
@@ -13,17 +16,36 @@ const tabs = [
 ];
 
 export default function ProfileDetails() {
-  const pathname = location.pathname;
+  const location = useLocation();
   const [open, setOpen] = useState(false);
   const [modalData, setModalData] = useState({
     title: "Followers",
     data: followersData,
   });
   const [active, setActive] = useState(tabs[0].id);
+  const [isLoading, setIsLoading] = useState(false);
+  const [postData, setPostData] = useState<Post[]>();
+
+  useEffect(() => {
+    const fetchPostData = async () => {
+      try {
+        setIsLoading(true);
+        const { body } = await ClientServices.getBlogUser();
+        if (body?.success) {
+          setPostData(body.result);
+          setIsLoading(false);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setIsLoading(false);
+      }
+    };
+    fetchPostData();
+  }, []);
 
   useEffect(() => {
     setOpen(() => false);
-  }, [pathname]);
+  }, [location.pathname]);
 
   function handleTabClick(id: string) {
     if (id === "followers") {
@@ -62,7 +84,7 @@ export default function ProfileDetails() {
             </button>
           ))}
         </div>
-        <PostFeed />
+        <PostFeed postData={postData} isLoadingPost={isLoading} />
       </div>
 
       <Modal

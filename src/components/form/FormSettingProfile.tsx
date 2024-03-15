@@ -250,6 +250,7 @@ const FormSettingProfile = () => {
             <Select
               options={optionsDistrict}
               value={valueDistrict}
+              disabled={!optionsDistrict}
               onChange={setValueDistrict}
             />
             <Input

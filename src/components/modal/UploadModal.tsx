@@ -1,4 +1,5 @@
 import { useModal } from "@/hooks/useModal";
+import { FormDataType } from "@/pages/create-post/PageCreatePost";
 import ClientServices from "@/services/client";
 import { uploadAvatarSuccess } from "@/store/authSlice";
 import { useState } from "react";
@@ -10,9 +11,17 @@ import { Button, Loader } from "rizzui";
 type UploadModalProps = {
   data?: string;
   isPost?: boolean;
+  setFormDataCreate?: React.Dispatch<
+    React.SetStateAction<FormDataType | undefined>
+  >;
+  setUrlImage?: React.Dispatch<React.SetStateAction<string>>;
 };
 
-const UploadModal: React.FC<UploadModalProps> = ({ data, isPost }) => {
+const UploadModal: React.FC<UploadModalProps> = ({
+  data,
+  isPost,
+  setFormDataCreate,
+}) => {
   const { closeModal } = useModal();
   const [files, setFiles] = useState<FileList>();
   const dispatch = useDispatch();
@@ -29,6 +38,26 @@ const UploadModal: React.FC<UploadModalProps> = ({ data, isPost }) => {
         toast.success(body.message);
         setIsUploading(false);
         dispatch(uploadAvatarSuccess(body.result.url));
+        closeModal();
+      } else {
+        toast.error(body?.message || "Error");
+        setIsUploading(false);
+      }
+    }
+  };
+
+  const handleUploadAvatarPost = async () => {
+    setIsUploading(true);
+    if (files && setFormDataCreate) {
+      const formData = new FormData();
+      formData.append("image", files[0]);
+      const { body } = await ClientServices.uploadAvatarPost(formData);
+      if (body?.success) {
+        toast.success(body.message);
+        setFormDataCreate((prevFormData: any) => ({
+          ...prevFormData,
+          avatar: body.result,
+        }));
         closeModal();
       } else {
         toast.error(body?.message || "Error");
@@ -121,7 +150,9 @@ const UploadModal: React.FC<UploadModalProps> = ({ data, isPost }) => {
             Cancel
           </Button>
           <Button
-            onClick={handleUploadAvatar}
+            onClick={
+              setFormDataCreate ? handleUploadAvatarPost : handleUploadAvatar
+            }
             size="sm"
             disabled={isUploading || !files}
           >

@@ -3,18 +3,20 @@ import { FC } from "react";
 import Output from "editorjs-blocks-react-renderer";
 
 import { Badge } from "rizzui";
+import { FormDataType } from "@/pages/create-post/PageCreatePost";
 
 type OutputPostProps = {
   content: OutputData | undefined;
+  formDataCreate: FormDataType | undefined;
 };
 
-const OutputPost: FC<OutputPostProps> = ({ content }) => {
+const OutputPost: FC<OutputPostProps> = ({ content, formDataCreate }) => {
   return (
     <div className="max-w-5xl mx-auto space-y-12">
       <article className="space-y-8">
         <div className="space-y-6">
-          <h1 className="text-4xl font-semibold md:tracki md:text-5xl">
-            Lorem ipsum dolor, sit amet consectetur adipisicing elit.
+          <h1 className="text-4xl font-semibold md:tracki md:text-4xl">
+            {formDataCreate?.title ? formDataCreate.title : "This is Title"}
           </h1>
           <div className="flex flex-col items-start justify-between w-full md:flex-row md:items-center ">
             <div className="flex items-center md:space-x-2">

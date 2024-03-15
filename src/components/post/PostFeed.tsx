@@ -1,16 +1,18 @@
-import { postData } from "@/data/ProfileData";
 import { useState, useEffect } from "react";
-import {
-  PiArrowsClockwiseFill,
-  // PiCaretLeftBold,
-  // PiCaretRightBold,
-} from "react-icons/pi";
+import { PiArrowsClockwiseFill } from "react-icons/pi";
 import { Button, Modal } from "rizzui";
 import PostsModal from "../modal/PostModal";
 import PostCard from "./PostCard";
 import { useLocation } from "react-router-dom";
+import { Post } from "@/type/post";
+import { SkeletonPost } from "../ui/SkeletonLoader";
 
-export default function PostFeed() {
+type PostFeedProps = {
+  postData: Post[] | undefined;
+  isLoadingPost: boolean;
+};
+
+export default function PostFeed({ postData, isLoadingPost }: PostFeedProps) {
   const location = useLocation();
   const [open, setOpen] = useState(false);
   const [postLimit, setPostLimit] = useState(3);
@@ -32,11 +34,11 @@ export default function PostFeed() {
   }
 
   let currentPost: any;
-  postData.forEach((item) => {
-    if (item.id === currentPostID) {
-      currentPost = item;
-    }
-  });
+  // postData.forEach((item) => {
+  //   if (item._id === currentPostID) {
+  //     currentPost = item;
+  //   }
+  // });
 
   return (
     <>
@@ -46,23 +48,30 @@ export default function PostFeed() {
             !isFeed ? "grid-cols-3 gap-5" : "grid-cols-1 gap-12"
           }`}
         >
-          {postData?.slice(0, postLimit).map((item: any) => (
-            <div key={item.id}>
-              <PostCard
-                type={item.type}
-                base64={item.base64}
-                thumbnail={item.thumbnail}
-                onClick={() => {
-                  setOpen(true);
-                  setCurrentPostID(item.id);
-                }}
-              />
-            </div>
-          ))}
+          {isLoadingPost ? (
+            <>
+              <SkeletonPost />
+              <SkeletonPost />
+              <SkeletonPost />
+            </>
+          ) : (
+            postData &&
+            postData?.slice(0, postLimit).map((item: any) => (
+              <div key={item.id}>
+                <PostCard
+                  type={item.type}
+                  onClick={() => {
+                    setOpen(true);
+                    setCurrentPostID(item.id);
+                  }}
+                />
+              </div>
+            ))
+          )}
         </div>
       </div>
 
-      {postData.length > postLimit ? (
+      {postData && postData.length > postLimit ? (
         <div className="mt-8 flex justify-center">
           <Button
             variant="text"

@@ -1,6 +1,6 @@
-import EditContent from "@/components/create-post/EditContent";
-import EditDetail from "@/components/create-post/EditDetail";
-import OutputPost from "@/components/create-post/OutputPost";
+import EditContent from "@/components/module/create-post/EditContent";
+import EditDetail from "@/components/module/create-post/EditDetail";
+import OutputPost from "@/components/module/create-post/OutputPost";
 import { OutputData } from "@editorjs/editorjs";
 import { useFormik } from "formik";
 import React, { useState } from "react";
@@ -12,8 +12,19 @@ import {
 import { Stepper, Button } from "rizzui";
 import * as Yup from "yup";
 import edjsHTML from "editorjs-html";
+import { Tag } from "@/type/tag";
+
+export type FormDataType = {
+  title: string;
+  content: string;
+  description: string;
+  avatar: string;
+  categoryIds: any;
+  tagIds: Tag[];
+};
 
 const PageCreatePost = () => {
+  const [formDataCreate, setFormDataCreate] = useState<FormDataType>();
   const [currentStep, setCurrentStep] = React.useState(0);
   const [content, setContent] = useState<OutputData>();
   const [checkContent, setCheckContent] = useState(false);
@@ -36,6 +47,8 @@ const PageCreatePost = () => {
     onSubmit: async (values) => {
       const form = {
         ...values,
+        categoryIds: formDataCreate?.categoryIds?.value,
+        tagIds: formDataCreate?.tagIds.map((item) => item._id),
         content: edjsParser.parse(content as any).join(""),
       };
       console.log(form);
@@ -52,12 +65,20 @@ const PageCreatePost = () => {
             formik={formik}
             setCheckContent={setCheckContent}
             checkContent={checkContent}
+            setFormDataCreate={setFormDataCreate}
+            formDataCreate={formDataCreate}
           />
         );
       case 1:
-        return <EditDetail />;
+        return (
+          <EditDetail
+            formik={formik}
+            setFormDataCreate={setFormDataCreate}
+            formDataCreate={formDataCreate}
+          />
+        );
       case 2:
-        return <OutputPost content={content} />;
+        return <OutputPost content={content} formDataCreate={formDataCreate} />;
 
       default:
         break;
@@ -70,26 +91,14 @@ const PageCreatePost = () => {
       className="relative container px-4 py-2"
     >
       <Stepper currentIndex={currentStep}>
-        <Stepper.Step
-          size="sm"
-          title="Step 1"
-          description="This is a description"
-        />
-        <Stepper.Step
-          size="sm"
-          title="Step 2"
-          description="This is a description"
-        />
-        <Stepper.Step
-          size="sm"
-          title="Step 3"
-          description="This is a description"
-        />
+        <Stepper.Step size="sm" title="Step 1" description="Writing Content" />
+        <Stepper.Step size="sm" title="Step 2" description="Detail" />
+        <Stepper.Step size="sm" title="Step 3" description="Summary" />
       </Stepper>
 
       <div className="my-12">{renderEdit(currentStep)}</div>
 
-      <div className="fixed z-50 bottom-6 left-[20%] lg:left-[45%] flex space-x-4">
+      <div className="fixed z-50 bottom-6 left-[20%] lg:left-[47%] flex space-x-4">
         <Button
           size="sm"
           className="flex gap-3"
@@ -106,9 +115,11 @@ const PageCreatePost = () => {
         >
           Save Draft <PiClipboardTextLight className="w-4 h-4" />
         </Button>
-        <Button size="sm" className="flex gap-2">
-          Create Post <PiClipboardTextLight className="w-4 h-4" />
-        </Button>
+        {currentStep === 2 && (
+          <Button size="sm" className="flex gap-2">
+            Create Post <PiClipboardTextLight className="w-4 h-4" />
+          </Button>
+        )}
         <Button
           size="sm"
           className="flex gap-3"

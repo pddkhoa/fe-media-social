@@ -1,0 +1,171 @@
+import { useModal } from "@/hooks/useModal";
+import { useRef, useState, useEffect, Fragment, FC } from "react";
+import { PiMagnifyingGlassBold, PiTagChevronLight } from "react-icons/pi";
+import {
+  Input,
+  Button,
+  Empty,
+  SearchNotFoundIcon,
+  Title,
+  Checkbox,
+} from "rizzui";
+import { Tag } from "@/type/tag";
+import { Link } from "react-router-dom";
+
+type ModalAddTagsProps = {
+  data?: Tag[];
+  onAddTag?: (tag: Tag) => void;
+};
+
+export const ModalAddTags: FC<ModalAddTagsProps> = ({ data, onAddTag }) => {
+  const inputRef = useRef(null);
+  const [searchText, setSearchText] = useState("");
+  const { closeModal } = useModal();
+  const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
+  const [checkedTags, setCheckedTags] = useState<Tag[]>([]);
+
+  let menuItemsFiltered = data;
+  if (searchText.length > 0) {
+    menuItemsFiltered = data?.filter((item: any) => {
+      const label = item.name;
+      return (
+        label.match(searchText.toLowerCase()) ||
+        (label.toLowerCase().match(searchText.toLowerCase()) && label)
+      );
+    });
+  }
+
+  useEffect(() => {
+    if (inputRef?.current) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
+      inputRef.current.focus();
+    }
+    return () => {
+      inputRef.current = null;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    // Kiểm tra mỗi tag trong data xem có nằm trong danh sách đã chọn không
+    const updatedCheckedTags = data?.filter((tag) =>
+      selectedTags.some((selectedTag) => selectedTag.name === tag.name)
+    );
+
+    if (updatedCheckedTags)
+      // Cập nhật trạng thái của checkbox
+      setCheckedTags(updatedCheckedTags);
+  }, [selectedTags, data]); // Thực hiện khi selectedTags hoặc data thay đổi
+
+  const handleCheckboxChange = (tag: Tag) => {
+    // Logic xác định trạng thái checkbox
+    const isChecked = checkedTags.some(
+      (checkedTag) => checkedTag.name === tag.name
+    );
+
+    if (isChecked) {
+      setSelectedTags((prevTags) =>
+        prevTags.filter((t) => t.name !== tag.name)
+      );
+    } else {
+      setSelectedTags((prevTags) => [...prevTags, tag]);
+    }
+  };
+
+  const handleAddButtonClick = () => {
+    selectedTags.forEach((tag) => {
+      if (onAddTag) onAddTag(tag);
+    });
+    closeModal(); // Đóng modal sau khi thêm tags
+  };
+
+  return (
+    <div className="p-2">
+      <div className="flex items-center gap-3 px-5 py-4">
+        <Input
+          variant="flat"
+          value={searchText}
+          ref={inputRef}
+          onChange={(e) => setSearchText(() => e.target.value)}
+          placeholder="Search here"
+          className="w-3/4"
+          prefix={
+            <PiMagnifyingGlassBold className="h-[18px] w-[18px] text-gray-600" />
+          }
+          suffix={
+            searchText && (
+              <Button
+                size="sm"
+                variant="text"
+                className="h-auto w-auto px-0"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setSearchText(() => "");
+                }}
+              >
+                Clear
+              </Button>
+            )
+          }
+        />
+        <Button variant="outline" size="sm" className="w-1/4 ms-2">
+          <Link to={"/tags"}>Add New Tags</Link>
+        </Button>
+      </div>
+      <div className="custom-scrollbar max-h-[60vh] overflow-y-auto border-t border-gray-300 px-2 py-4">
+        <>
+          {menuItemsFiltered?.length === 0 ? (
+            <Empty
+              className="scale-75"
+              image={<SearchNotFoundIcon />}
+              text="No Result Found"
+              textClassName="text-xl"
+            />
+          ) : (
+            <Title
+              as="h6"
+              className="mb-5 px-3 font-semibold dark:text-gray-700"
+            >
+              Quick Page Tags
+            </Title>
+          )}
+        </>
+
+        {menuItemsFiltered?.map((item, index) => {
+          const isChecked = checkedTags.some(
+            (checkedTag) => checkedTag.name === item.name
+          );
+
+          return (
+            <Fragment key={item.name + "-" + index}>
+              <div className="relative my-0.5 flex items-center rounded-lg px-3 py-2 text-sm hover:bg-gray-200 focus:outline-none focus-visible:bg-gray-100 dark:hover:bg-gray-200 dark:hover:backdrop-blur-lg">
+                <span className="inline-flex items-center justify-center rounded-md border border-gray-300 p-2 text-gray-500">
+                  <PiTagChevronLight className="h-5 w-5" />
+                </span>
+                <div className="flex items-center justify-between ms-3 w-full  gap-0.5">
+                  <span className="font-medium capitalize text-gray-900 dark:text-gray-700">
+                    {item.name}
+                  </span>
+                  <Checkbox
+                    className="m-2"
+                    checked={isChecked}
+                    onChange={() => handleCheckboxChange(item)}
+                  />
+                </div>
+              </div>
+            </Fragment>
+          );
+        })}
+      </div>
+      <div className="flex justify-end w-full gap-5 p-2">
+        <Button size="sm" onClick={closeModal} variant="flat">
+          Close
+        </Button>
+        <Button size="sm" variant="solid" onClick={handleAddButtonClick}>
+          Save
+        </Button>
+      </div>
+    </div>
+  );
+};

@@ -1,37 +1,55 @@
-import { PiImagesSquareBold, PiVideoCameraFill } from "react-icons/pi";
+import {
+  PiDotsThreeOutlineFill,
+  PiImagesSquareBold,
+  PiPencilDuotone,
+  PiTrash,
+  PiVideoCameraFill,
+} from "react-icons/pi";
+import { ActionIcon, Popover } from "rizzui";
 
 type POST_TYPE = "image" | "gallery" | "video";
 
 type PostCard = {
-  type: POST_TYPE;
-  thumbnail: string | string[];
-  base64?: string;
-  onClick: () => void;
+  type?: POST_TYPE;
+  onClick?: () => void;
 };
 
 export default function PostCard({
   type,
-  thumbnail,
-  base64,
+
   onClick,
 }: PostCard) {
   return (
-    <div className="flex flex-col max-w-lg p-6 space-y-6 overflow-hidden rounded-md shadow-md bg-gray-100">
-      <div className="flex space-x-4">
-        <img
-          alt=""
-          src="https://source.unsplash.com/100x100/?portrait"
-          className="object-cover w-12 h-12 rounded-full shadow bg-gray-500"
-        />
-        <div className="flex flex-col space-y-1">
-          <a
-            rel="noopener noreferrer"
-            href="#"
-            className="text-sm font-semibold"
-          >
-            Leroy Jenkins
-          </a>
-          <span className="text-xs text-gray-400">4 hours ago</span>
+    <div className="flex flex-col max-w-xl p-6 space-y-6 overflow-hidden rounded-md shadow-md bg-gray-100">
+      <div className="flex justify-between">
+        <div className="flex space-x-4">
+          <img
+            alt=""
+            src="https://source.unsplash.com/100x100/?portrait"
+            className="object-cover w-12 h-12 rounded-full shadow bg-gray-500"
+          />
+          <div className="flex flex-col space-y-1">
+            <a
+              rel="noopener noreferrer"
+              href="#"
+              className="text-sm font-semibold"
+            >
+              Leroy Jenkins
+            </a>
+            <span className="text-xs text-gray-400">4 hours ago</span>
+          </div>
+        </div>
+        <div>
+          <Popover placement="bottom-start">
+            <Popover.Trigger>
+              <ActionIcon variant="text">
+                <PiDotsThreeOutlineFill />
+              </ActionIcon>
+            </Popover.Trigger>
+            <Popover.Content className="z-50 p-0 dark:bg-gray-50 [&>svg]:dark:fill-gray-50">
+              <DropdownMenu />
+            </Popover.Content>
+          </Popover>
         </div>
       </div>
       <div
@@ -40,7 +58,7 @@ export default function PostCard({
       >
         <img
           alt={"Post"}
-          src={base64 ?? `/_next/image?url=${thumbnail}&w=10&q=1`}
+          src={"https://source.unsplash.com/random/480x360"}
           className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
         />
 
@@ -103,6 +121,19 @@ export default function PostCard({
             <span>283</span>
           </button>
         </div>
+      </div>
+    </div>
+  );
+}
+
+function DropdownMenu() {
+  return (
+    <div className="text-left rtl:text-right w-48  grid px-3.5 py-3.5 font-medium text-gray-700">
+      <div className="p-1 py-1.5 my-0.5 flex items-center rounded-md  hover:bg-gray-200 cursor-pointer">
+        <PiTrash className="mr-2 h-5 w-5" /> Delete
+      </div>
+      <div className="p-1 py-1.5 my-0.5 flex items-center rounded-md  hover:bg-gray-200 cursor-pointer">
+        <PiPencilDuotone className="mr-2 h-5 w-5" /> Edit
       </div>
     </div>
   );

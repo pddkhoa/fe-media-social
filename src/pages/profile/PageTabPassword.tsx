@@ -1,5 +1,5 @@
 import FormUpdatePassword from "@/components/form/FormUpdatePassword";
-import ProfileHeader from "@/components/profile/ProfileHeader";
+import ProfileHeader from "@/components/module/profile/ProfileHeader";
 
 const PageTabPassword = () => {
   return (
