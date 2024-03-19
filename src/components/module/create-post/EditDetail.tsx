@@ -3,7 +3,7 @@ import { FC, useEffect, useState } from "react";
 import { PiPlusBold, PiXBold } from "react-icons/pi";
 import { Badge, Button, Select, Textarea } from "rizzui";
 import UploadModal from "../../modal/UploadModal";
-import { FormDataType } from "@/pages/create-post/PageCreatePost";
+import { FormDataType } from "@/pages/client/create-post/PageCreatePost";
 import ClientServices from "@/services/client";
 import { Category } from "@/type/category";
 import { ModalAddTags } from "@/components/modal/AddTagsModal";

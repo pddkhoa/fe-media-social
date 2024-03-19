@@ -1,8 +1,10 @@
+import { PiChartDonutFill } from "react-icons/pi";
 import {
-  ExploreIcon,
+  ContactsIcon,
   FeedIcon,
   GroupIcon,
   MessageIcon,
+  TVIcon,
   TuneIcon,
   UserIcon,
 } from "../ui/Icon";
@@ -11,7 +13,7 @@ export const menuItems = [
   {
     name: "News Feed",
     href: "/",
-    icon: <ExploreIcon />,
+    icon: <TVIcon />,
   },
   {
     name: "Explore",
@@ -45,7 +47,20 @@ export const menuItems = [
   },
   {
     name: "Message",
-    href: "/message",
+    href: "/messenger",
     icon: <MessageIcon />,
+  },
+  {
+    name: "Contacts",
+    href: "/contacts",
+    icon: <ContactsIcon />,
+  },
+];
+
+export const menuItemsAdmin: any = [
+  {
+    name: "Analytics",
+    href: "/",
+    icon: <PiChartDonutFill />,
   },
 ];

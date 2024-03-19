@@ -3,7 +3,7 @@ import { FC } from "react";
 import Output from "editorjs-blocks-react-renderer";
 
 import { Badge } from "rizzui";
-import { FormDataType } from "@/pages/create-post/PageCreatePost";
+import { FormDataType } from "@/pages/client/create-post/PageCreatePost";
 
 type OutputPostProps = {
   content: OutputData | undefined;

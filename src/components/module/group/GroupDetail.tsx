@@ -1,171 +1,249 @@
 import {
-  PiCheckCircleFill,
-  PiDotsThreeOutlineVertical,
-  PiGlobeHemisphereEast,
-  PiPlus,
-  PiUserCirclePlus,
-  PiUserList,
+    PiArrowsClockwiseFill,
+    PiCheckCircleFill,
+    PiDotsThreeOutlineVertical,
+    PiPlus,
+    PiUserCirclePlus,
+    PiUserList,
 } from "react-icons/pi";
-import { ActionIcon, Badge, Button, Loader, Title } from "rizzui";
+import {
+    ActionIcon,
+    Badge,
+    Button,
+    Empty,
+    Loader,
+    Popover,
+    Title,
+} from "rizzui";
 import PostCard from "../../post/PostCard";
 import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { Category } from "@/type/category";
+import { useCallback, useEffect, useState } from "react";
+import { CategoryDetail } from "@/type/category";
 import ClientServices from "@/services/client";
+import { Post } from "@/type/post";
+import { getBadgeStatus } from "@/components/ui/BadgeStatus";
+import { useModal } from "@/hooks/useModal";
+import FollowerModal from "@/components/modal/FollowModal";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
+import DropdownOptionDetail from "./DropdownOptionDetail";
 
 const GroupDetail = () => {
-  const categoriesId = useParams();
-  const [dataCate, setDataCate] = useState<Category>();
-  const [isLoading, setIsLoading] = useState(false);
-
-  useEffect(() => {
-    const fetchCate = async () => {
-      try {
-        setIsLoading(true);
-        const { body } = await ClientServices.getCategoriesById(
-          categoriesId.id as string
-        );
-        if (body?.success) {
-          setDataCate(body?.result);
-          setIsLoading(false);
-        }
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        setIsLoading(false);
-      }
-    };
-    fetchCate();
-  }, []);
-
-  if (isLoading)
-    return (
-      <div className="flex justify-center mt-16">
-        <Loader size="lg" />
-      </div>
+    const categoriesId = useParams();
+    const isAdmin = useSelector(
+        (state: RootState) => state.auth.userToken.user._id
     );
 
-  return (
-    <div className="-mt-2">
-      {dataCate && (
-        <>
-          <div className="-mx-6 h-[200px] bg-gradient-to-r from-[#F8E1AF] to-[#F6CFCF] bg-opacity-30" />
-          <div className="mx-auto w-full max-w-full  p-2 sm:flex sm:justify-between border-b">
-            <div className="flex h-auto w-full gap-4 @5xl:gap-6">
-              <div className="pt-2.5 w-1/2">
-                <Title
-                  as="h1"
-                  className="text-lg font-bold capitalize leading-normal text-gray-900 @3xl:!text-xl 3xl:text-2xl"
-                >
-                  {dataCate?.name}
-                </Title>
-                <p className="text-xs text-gray-500 @3xl:text-sm 3xl:text-base mt-2">
-                  {dataCate.description}
-                </p>
-                <p className="text-xs text-gray-500 @3xl:text-sm 3xl:text-base mt-2">
-                  <div className="flex items-center justify-between gap-2">
-                    <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center overflow-hidden rounded-full bg-gray-100">
-                      <PiGlobeHemisphereEast className="h-6 w-6" />
-                    </div>
-                    {getBadgeStatus(dataCate.status)}
-                    <div className="flex-grow">
-                      <div className="flex gap-3">
-                        <PiCheckCircleFill className="icon hidden h-6 w-6 flex-shrink-0 text-gray-900" />
-                        <div className="flex gap-3 items-center">
-                          <span>Tags:</span>
+    const [dataCate, setDataCate] = useState<CategoryDetail>();
+    const [dataBlog, setDataBlog] = useState<Post[]>([]);
+    const { openModal } = useModal();
 
-                          {dataCate?.tags?.map((item) => (
-                            <Badge
-                              key={item._id}
-                              rounded="md"
-                              className="shadow"
-                              size="sm"
-                            >
-                              #{item.name}
-                            </Badge>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </p>
-              </div>
-              <div className="pt-2.5 w-1/2 flex justify-end">
-                <p className="text-xs text-gray-500 @3xl:text-sm 3xl:text-base mt-2">
-                  <div className="flex items-center justify-between gap-2">
-                    <div className="flex-grow">
-                      <div className="flex gap-3 justify-center items-center">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="flex gap-3"
-                        >
-                          Invite Members{" "}
-                          <PiUserCirclePlus className="h-5 w-5" />
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="flex gap-3"
-                        >
-                          List Members <PiUserList className="h-5 w-5" />
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="flex gap-3"
-                        >
-                          Create Post <PiPlus className="h-3 w-3" />
-                        </Button>
-                        <ActionIcon variant="flat" size="sm">
-                          <PiDotsThreeOutlineVertical />
-                        </ActionIcon>
-                      </div>
-                    </div>
-                  </div>
-                </p>
-              </div>
+    const [isLoading, setIsLoading] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [isActive, setIsActive] = useState(false);
+
+    const fetchCate = useCallback(async () => {
+        try {
+            setIsLoading(true);
+            const { body } = await ClientServices.getCategoriesById(
+                categoriesId.id as string
+            );
+            if (body?.success) {
+                setDataCate(body?.result);
+                setIsLoading(false);
+            }
+        } catch (error) {
+            console.error("Error fetching data:", error);
+            setIsLoading(false);
+        }
+    }, [setDataCate]);
+
+    const fetchBlog = useCallback(
+        async (page: number) => {
+            try {
+                setIsLoading(true);
+                const { body } = await ClientServices.getBlogByCategories(
+                    categoriesId.id as string,
+                    page
+                );
+                if (body?.success) {
+                    setIsLoading(false);
+                    setDataBlog((prevData) =>
+                        page === 1
+                            ? [...body.result]
+                            : [...prevData, ...body.result]
+                    );
+                }
+            } catch (error) {
+                console.error("Error fetching data:", error);
+                setIsLoading(false);
+            }
+        },
+        [setDataBlog]
+    );
+
+    useEffect(() => {
+        fetchCate();
+        fetchBlog(currentPage);
+    }, [fetchCate, fetchBlog, isActive]);
+
+    const handleLoadMore = () => {
+        setCurrentPage((prevPage) => prevPage + 1);
+    };
+
+    if (isLoading)
+        return (
+            <div className="flex justify-center mt-16">
+                <Loader size="lg" />
             </div>
-          </div>
-        </>
-      )}
+        );
 
-      <div className="px-2 mt-10  w-full  @2xl:mt-7 @6xl:mt-0">
-        <div className="grid grid-cols-3 gap-5">
-          <PostCard />
-          <PostCard />
-          <PostCard />
-          <PostCard />
-          <PostCard />
+    return (
+        <div className="-mt-2">
+            {dataCate && (
+                <>
+                    <div className="-mx-6 h-[200px] bg-gradient-to-r from-[#F8E1AF] to-[#F6CFCF] bg-opacity-30" />
+                    <div className="mx-auto w-full max-w-full  p-2 sm:flex sm:justify-between border-b">
+                        <div className="flex h-auto w-full gap-4 @5xl:gap-6">
+                            <div className=" pt-2.5 w-1/2">
+                                <div className="flex">
+                                    <div>
+                                        <Title
+                                            as="h1"
+                                            className="text-lg flex justify-center gap-2 font-bold capitalize leading-normal text-gray-900 @3xl:!text-xl 3xl:text-2xl"
+                                        >
+                                            {dataCate?.name}
+                                            {getBadgeStatus(dataCate?.status)}
+                                        </Title>
+                                        <p className="text-xs text-gray-500 @3xl:text-sm 3xl:text-base mt-2">
+                                            {dataCate.description}
+                                        </p>
+                                    </div>
+                                </div>
+                                <p className="text-xs text-gray-500 @3xl:text-sm 3xl:text-base mt-2">
+                                    <div className="flex items-center justify-between gap-2">
+                                        <div className="flex-grow">
+                                            <div className="flex gap-3">
+                                                <PiCheckCircleFill className="icon hidden h-6 w-6 flex-shrink-0 text-gray-900" />
+                                                <div className="flex flex-wrap gap-3 items-center">
+                                                    <span>Tags:</span>
+
+                                                    {dataCate?.tags?.map(
+                                                        (item) => (
+                                                            <Badge
+                                                                key={item._id}
+                                                                rounded="md"
+                                                                className="shadow"
+                                                                size="sm"
+                                                            >
+                                                                #{item.name}
+                                                            </Badge>
+                                                        )
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </p>
+                            </div>
+                            <div className="pt-2.5 w-1/2 flex justify-end">
+                                <p className="text-xs text-gray-500 @3xl:text-sm 3xl:text-base mt-2">
+                                    <div className="flex items-center justify-between gap-2">
+                                        <div className="flex-grow">
+                                            <div className="flex gap-3 justify-center items-center">
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    className="flex gap-3"
+                                                >
+                                                    Invite Members{" "}
+                                                    <PiUserCirclePlus className="h-5 w-5" />
+                                                </Button>
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    className="flex gap-3"
+                                                    onClick={() => {
+                                                        openModal({
+                                                            view: (
+                                                                <FollowerModal
+                                                                    data={
+                                                                        dataCate?.users
+                                                                    }
+                                                                />
+                                                            ),
+                                                        });
+                                                    }}
+                                                >
+                                                    List Members{" "}
+                                                    <PiUserList className="h-5 w-5" />
+                                                </Button>
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    className="flex gap-3"
+                                                >
+                                                    Create Post{" "}
+                                                    <PiPlus className="h-3 w-3" />
+                                                </Button>
+                                                {isAdmin ===
+                                                dataCate?.isAdmin._id ? (
+                                                    <Popover placement="bottom-end">
+                                                        <Popover.Trigger>
+                                                            <ActionIcon
+                                                                variant="flat"
+                                                                size="sm"
+                                                            >
+                                                                <PiDotsThreeOutlineVertical />
+                                                            </ActionIcon>
+                                                        </Popover.Trigger>
+                                                        <Popover.Content className="z-50 p-0 dark:bg-gray-50 [&>svg]:dark:fill-gray-50">
+                                                            <DropdownOptionDetail
+                                                                data={dataCate}
+                                                                setIsActive={
+                                                                    setIsActive
+                                                                }
+                                                            />
+                                                        </Popover.Content>
+                                                    </Popover>
+                                                ) : null}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="px-2 mt-10  w-full  @2xl:mt-7 @6xl:mt-0">
+                        <div className="grid grid-cols-3 gap-5">
+                            {dataBlog && dataBlog.length > 0 ? (
+                                dataBlog.map((item) => (
+                                    <PostCard key={item._id} />
+                                ))
+                            ) : (
+                                <div className="col-span-3">
+                                    <Empty />
+                                </div>
+                            )}
+                        </div>
+                        {dataBlog.length >= 6 && (
+                            <div className="mt-8 flex justify-center">
+                                <Button
+                                    variant="text"
+                                    size="lg"
+                                    className="flex items-center"
+                                    onClick={() => handleLoadMore()}
+                                >
+                                    <PiArrowsClockwiseFill className="text-xl" />
+                                    <span className="ms-2">Load More</span>
+                                </Button>
+                            </div>
+                        )}
+                    </div>
+                </>
+            )}
         </div>
-      </div>
-    </div>
-  );
+    );
 };
 
 export default GroupDetail;
-
-const getBadgeStatus = (status: string) => {
-  switch (status) {
-    case "Publish":
-      return (
-        <Badge rounded="md" className="shadow" variant="outline" size="sm">
-          {status}
-        </Badge>
-      );
-    case "Private":
-      return (
-        <Badge
-          rounded="md"
-          className="shadow"
-          color="danger"
-          variant="outline"
-          size="sm"
-        >
-          {status}
-        </Badge>
-      );
-
-    default:
-      break;
-  }
-};

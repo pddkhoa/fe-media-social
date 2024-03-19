@@ -2,7 +2,7 @@ import { FC, useEffect, useState } from "react";
 import { Input } from "rizzui";
 import EditorPost from "../../editor/EditorPost";
 import { OutputData } from "@editorjs/editorjs";
-import { FormDataType } from "@/pages/create-post/PageCreatePost";
+import { FormDataType } from "@/pages/client/create-post/PageCreatePost";
 
 type EditContentProps = {
   setContent: React.Dispatch<React.SetStateAction<OutputData | undefined>>;

@@ -1,115 +1,194 @@
+import FollowerModal from "@/components/modal/FollowModal";
+import { getBadgeStatus } from "@/components/ui/BadgeStatus";
 import { NoImageIcon } from "@/components/ui/Icon";
+import { useModal } from "@/hooks/useModal";
+import ClientServices from "@/services/client";
+import { RootState } from "@/store/store";
 import { Category } from "@/type/category";
-import { FC } from "react";
-import { PiHandTap } from "react-icons/pi";
-import { Link } from "react-router-dom";
-import { Badge, Button } from "rizzui";
+import { User } from "@/type/user";
+import { STATUS_USER_GROUP } from "@/utils/contants";
+import { FC, useState } from "react";
+import toast from "react-hot-toast";
+import { PiDotsThreeOutline, PiHandTap, PiSignIn } from "react-icons/pi";
+import { useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import { Button } from "rizzui";
 
 type GroupCardProps = {
-  data: Category;
+    data: Category;
 };
 
 const GroupCard: FC<GroupCardProps> = ({ data }) => {
-  const getBadgeStatus = (status: string) => {
-    switch (status) {
-      case "Publish":
-        return (
-          <Badge rounded="md" className="shadow" variant="outline" size="sm">
-            {status}
-          </Badge>
-        );
-      case "Private":
-        return (
-          <Badge
-            rounded="md"
-            color="danger"
-            className="shadow"
-            variant="outline"
-            size="sm"
-          >
-            {status}
-          </Badge>
-        );
-      default:
-        break;
-    }
-  };
+    const { openModal } = useModal();
+    const [loadingJoin, setLoadingJoin] = useState(false);
+    const [statusUser, setStatusUser] = useState(data?.statusUser);
+    const isAdmin = useSelector(
+        (state: RootState) => state.auth.userToken.user._id
+    );
+    const navigate = useNavigate();
 
-  return (
-    <div className="max-w-lg p-2 rounded-md shadow-md bg-gray-100">
-      <div className="space-y-2">
-        <div className="flex justify-between w-full p-1 mb-2">
-          <div className="">{getBadgeStatus(data?.status)}</div>
-          <Button variant="outline" className="p-1">
-            <ListMemberCard />
-          </Button>
-        </div>
-        <Link to={`/group/detail/${data?._id}`} className="group">
-          <div className="relative space-y-2">
-            {data?.avatar.url ? (
-              <img
-                src={data.avatar.url}
-                alt=""
-                className="block object-cover w-full rounded-md h-60 cursor-pointer group-hover:bg-gray-900/15"
-              />
-            ) : (
-              <>
-                <div className=" h-60 bg-gradient-to-r rounded-md from-[#F8E1AF] to-[#F6CFCF] ">
-                  <NoImageIcon className="h-44 mx-auto opacity-60" />
+    const handleJoinCate = async (id: string) => {
+        try {
+            setLoadingJoin(true);
+            const { body } = await ClientServices.joinCategories(id);
+            if (body?.success) {
+                toast.success(body.message);
+                setLoadingJoin(false);
+                if (data?.status === "Private")
+                    setStatusUser(STATUS_USER_GROUP.PENDING);
+                else setStatusUser(STATUS_USER_GROUP.JOINED);
+            } else {
+                toast.error(body?.message || "Error");
+                setLoadingJoin(false);
+            }
+        } catch (error) {
+            console.log(error);
+            setLoadingJoin(false);
+        }
+    };
+
+    const handleLeaveCate = async (id: string) => {
+        try {
+            setLoadingJoin(true);
+            const { body } = await ClientServices.leaveCategories(id);
+            if (body?.success) {
+                toast.success(body.message);
+                setLoadingJoin(false);
+                setStatusUser(STATUS_USER_GROUP.UNJOIN);
+            } else {
+                toast.error(body?.message || "Error");
+                setLoadingJoin(false);
+            }
+        } catch (error) {
+            console.log(error);
+            setLoadingJoin(false);
+        }
+    };
+
+    return (
+        <div className="max-w-lg p-2 rounded-md shadow-md bg-gray-100">
+            <div className="space-y-2">
+                <div className="flex justify-between w-full p-1 mb-2">
+                    <div className="">{getBadgeStatus(data?.status)}</div>
+                    <Button
+                        onClick={() => {
+                            openModal({
+                                view: <FollowerModal data={data?.users} />,
+                            });
+                        }}
+                        variant="outline"
+                        className="p-1"
+                    >
+                        <ListMemberCard user={data?.users} />
+                    </Button>
                 </div>
-              </>
-            )}
-          </div>
-          <div className="space-y-2 p-1 my-2">
-            <div className="block">
-              <h3 className="text-lg font-medium group-hover:text-gray-600">
-                {data?.name}
-              </h3>
+                <Link to={`/group/detail/${data?._id}`} className="group">
+                    <div className="relative space-y-2">
+                        {data?.avatar?.url ? (
+                            <img
+                                src={data.avatar.url}
+                                alt=""
+                                className="block object-cover w-full rounded-md h-60 cursor-pointer group-hover:bg-gray-900/15"
+                            />
+                        ) : (
+                            <>
+                                <div className=" h-60 bg-gradient-to-r rounded-md from-[#F8E1AF] to-[#F6CFCF] ">
+                                    <NoImageIcon className="h-44 mx-auto opacity-60" />
+                                </div>
+                            </>
+                        )}
+                    </div>
+                    <div className="space-y-2 p-1 my-2">
+                        <div className="block">
+                            <h3 className="text-lg font-medium group-hover:text-gray-600">
+                                {data?.name}
+                            </h3>
+                        </div>
+                    </div>
+                </Link>
+                <div className="flex justify-center mx-5 my-2">
+                    {statusUser === STATUS_USER_GROUP.UNJOIN && (
+                        <Button
+                            size="sm"
+                            className="w-full flex gap-3"
+                            variant="outline"
+                            isLoading={loadingJoin}
+                            onClick={() => handleJoinCate(data?._id)}
+                        >
+                            Join Group <PiHandTap className="h-4 w-4" />
+                        </Button>
+                    )}
+                    {statusUser === STATUS_USER_GROUP.JOINED &&
+                        (isAdmin !== data?.isAdmin ? (
+                            <Button
+                                size="sm"
+                                className="w-full flex gap-3"
+                                variant="outline"
+                                color="danger"
+                                isLoading={loadingJoin}
+                                onClick={() => handleLeaveCate(data?._id)}
+                            >
+                                Leave Group <PiSignIn className="h-4 w-4" />
+                            </Button>
+                        ) : (
+                            <Button
+                                size="sm"
+                                className="w-full flex gap-3"
+                                variant="outline"
+                                isLoading={loadingJoin}
+                                onClick={() =>
+                                    navigate(`/group/detail/${data?._id}`)
+                                }
+                            >
+                                View Detail <PiSignIn className="h-4 w-4" />
+                            </Button>
+                        ))}
+                    {statusUser === STATUS_USER_GROUP.PENDING && (
+                        <Button
+                            size="sm"
+                            className="w-full flex gap-3"
+                            variant="flat"
+                            color="danger"
+                        >
+                            Resquesting{" "}
+                            <PiDotsThreeOutline className="h-4 w-4" />
+                        </Button>
+                    )}
+                </div>
             </div>
-          </div>
-          <div className="flex justify-center mx-5 my-2">
-            <Button size="sm" className="w-full flex gap-3" variant="outline">
-              Join Group <PiHandTap className="h-4 w-4" />
-            </Button>
-          </div>
-        </Link>
-      </div>
-    </div>
-  );
+        </div>
+    );
 };
 
 export default GroupCard;
 
 import { Avatar } from "rizzui";
 
-export function ListMemberCard() {
-  return (
-    <>
-      <Avatar
-        customSize="25"
-        name="John Doe"
-        size="sm"
-        src="https://randomuser.me/api/portraits/women/40.jpg"
-        className="relative inline-flex  object-cover"
-      />
-      <Avatar
-        customSize="25"
-        name="John Doe"
-        size="sm"
-        src="https://randomuser.me/api/portraits/women/40.jpg"
-        className="relative inline-flex  object-cover"
-      />
-      <Avatar
-        customSize="25"
-        name="John Doe"
-        size="sm"
-        src="https://randomuser.me/api/portraits/women/40.jpg"
-        className="relative inline-flex  object-cover"
-      />
+type ListMemberCardProps = {
+    user: User[];
+};
 
-      <div className="bordered relative ml-2 inline-flex h-[42px]  -translate-x-[5px] items-center justify-center rounded-full object-cover text-sm font-medium text-gray-900">
-        +5
-      </div>
-    </>
-  );
-}
+export const ListMemberCard: FC<ListMemberCardProps> = ({ user }) => {
+    const firstThreeUsers = user?.slice(0, 3);
+
+    return (
+        <>
+            {firstThreeUsers && user.length > 0
+                ? firstThreeUsers.map((item) => (
+                      <Avatar
+                          key={item._id}
+                          customSize="25"
+                          name={item.name}
+                          size="sm"
+                          src={item.avatar.url}
+                          className="relative inline-flex  object-cover"
+                      />
+                  ))
+                : null}
+
+            <div className=" relative ml-2 inline-flex h-[42px]  -translate-x-[5px] items-center justify-center rounded-full object-cover text-sm font-medium text-gray-900">
+                {user?.length - 3 > 0 ? "+" + (user?.length - 3) : null}
+            </div>
+        </>
+    );
+};
