@@ -7,3 +7,9 @@ export const STATUS_USER_GROUP = {
     UNJOIN: "UnJoin",
     PENDING: "Pending",
 };
+
+export const TYPE_UPLOAD = {
+    CATEGORIES: "categories",
+    POST: "post",
+    PROFILE: "profile",
+};

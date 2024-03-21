@@ -1,67 +1,79 @@
 import { useModal } from "@/hooks/useModal";
 import { ModalDeleteGroup } from "./ModalDeleteGroup";
 import { CategoryDetail } from "@/type/category";
-import { FC, useCallback, useEffect, useState } from "react";
+import { FC } from "react";
 import UploadModal from "@/components/modal/UploadModal";
 import { ModalAddTags } from "@/components/modal/AddTagsModal";
-import { Tag } from "@/type/tag";
-import ClientServices from "@/services/client";
+import ModalRemoveTag from "./ModalRemoveTag";
+import { TYPE_UPLOAD } from "@/utils/contants";
+import ModalEditCategory from "./ModalEditCategory";
+import { User } from "@/type/user";
+import { Badge } from "rizzui";
+import ModalUserRequest from "./ModalUserRequest";
 
 type DropdownOptionDetailProps = {
     data: CategoryDetail;
     setIsActive: React.Dispatch<React.SetStateAction<boolean>>;
+    handleUploadAvatarCategories: (files: FileList) => Promise<void>;
+    dataUserReq: User[];
 };
 
 const DropdownOptionDetail: FC<DropdownOptionDetailProps> = ({
     data,
     setIsActive,
+    handleUploadAvatarCategories,
+    dataUserReq,
 }) => {
     const { openModal } = useModal();
-    const [dataTag, setDataTag] = useState<Tag[]>([]);
-    const [isLoading, setIsLoading] = useState(false);
-
-    const fetchDataTag = useCallback(async () => {
-        try {
-            setIsLoading(true);
-            const { body } = await ClientServices.getAllTags();
-            if (body?.success) {
-                setDataTag(body?.result);
-                setIsLoading(false);
-            } else {
-                setIsLoading(false);
-            }
-        } catch (error) {
-            console.error("Error fetching data:", error);
-            setIsLoading(false);
-        }
-    }, [setDataTag]);
-
-    useEffect(() => {
-        fetchDataTag();
-    }, [fetchDataTag]);
 
     return (
-        <div className="w-52 text-left rtl:text-right">
+        <div className="w-64 text-left rtl:text-right text-sm">
             <div className="grid px-2 py-2 font-medium text-gray-700">
                 <div
                     onClick={() => {
-                        dataTag &&
-                            openModal({
-                                view: (
-                                    <ModalAddTags
-                                        data={dataTag}
-                                        isCate={data._id}
-                                        setIsActive={setIsActive}
-                                        isLoading={isLoading}
-                                    />
-                                ),
-                            });
+                        openModal({
+                            view: (
+                                <ModalRemoveTag
+                                    data={data?.tags}
+                                    isCate={data?._id}
+                                    setIsActive={setIsActive}
+                                />
+                            ),
+                        });
                     }}
                     className="group my-0.5 flex items-center rounded-md px-2.5 py-2 hover:bg-slate-200 cursor-pointer"
                 >
-                    Edit Tag
+                    Remove Tag
                 </div>
-                <div className="group my-0.5 flex items-center rounded-md px-2.5 py-2 hover:bg-slate-200 cursor-pointer">
+                <div
+                    onClick={() => {
+                        openModal({
+                            view: (
+                                <ModalAddTags
+                                    isCate={data?._id}
+                                    setIsActive={setIsActive}
+                                />
+                            ),
+                        });
+                    }}
+                    className="group my-0.5 flex items-center rounded-md px-2.5 py-2 hover:bg-slate-200 cursor-pointer"
+                >
+                    Add Tag
+                </div>
+                <div
+                    onClick={() => {
+                        openModal({
+                            view: (
+                                <ModalEditCategory
+                                    data={data}
+                                    setActive={setIsActive}
+                                />
+                            ),
+                            customSize: "1000px",
+                        });
+                    }}
+                    className="group my-0.5 flex items-center rounded-md px-2.5 py-2 hover:bg-slate-200 cursor-pointer"
+                >
                     Edit Information
                 </div>
                 <div
@@ -70,7 +82,10 @@ const DropdownOptionDetail: FC<DropdownOptionDetailProps> = ({
                             view: (
                                 <UploadModal
                                     data={data?.avatar?.url}
-                                    isCate={data?._id}
+                                    type={TYPE_UPLOAD.CATEGORIES}
+                                    handleUploadImage={
+                                        handleUploadAvatarCategories
+                                    }
                                 />
                             ),
                         });
@@ -78,6 +93,30 @@ const DropdownOptionDetail: FC<DropdownOptionDetailProps> = ({
                     className="group my-0.5 flex items-center rounded-md px-2.5 py-2 hover:bg-slate-200 cursor-pointer"
                 >
                     Change Avatar
+                </div>
+                <div
+                    onClick={() => {
+                        dataUserReq &&
+                            openModal({
+                                view: (
+                                    <ModalUserRequest
+                                        data={dataUserReq}
+                                        setIsActive={setIsActive}
+                                        idCategory={data?._id}
+                                    />
+                                ),
+                            });
+                    }}
+                    className="group my-0.5 flex items-center justify-between rounded-md px-2.5 py-2 hover:bg-slate-200 cursor-pointer"
+                >
+                    <span>List User Request</span>
+                    {dataUserReq && dataUserReq.length > 0 && (
+                        <span>
+                            <Badge size="sm" rounded="pill">
+                                {dataUserReq.length}
+                            </Badge>
+                        </span>
+                    )}
                 </div>
                 <div
                     onClick={() => {

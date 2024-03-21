@@ -11,7 +11,6 @@ type GroupListProps = {
     listCate: Category[];
     loader?: boolean;
     handleLoadMore: () => void;
-    limit: boolean;
 };
 
 const GroupList: FC<GroupListProps> = ({
@@ -19,7 +18,6 @@ const GroupList: FC<GroupListProps> = ({
     listCate,
     loader,
     handleLoadMore,
-    limit,
 }) => {
     return (
         <div className="mx-auto mt-10  w-full max-w-[1294px] @2xl:mt-7 @6xl:mt-0">
@@ -47,19 +45,18 @@ const GroupList: FC<GroupListProps> = ({
                             />
                         )}
                     </div>
-                    {!limit && (
-                        <div className="mt-8 flex justify-center">
-                            <Button
-                                variant="text"
-                                size="lg"
-                                className="flex items-center"
-                                onClick={() => handleLoadMore()}
-                            >
-                                <PiArrowsClockwiseFill className="text-xl" />
-                                <span className="ms-2">Load More</span>
-                            </Button>
-                        </div>
-                    )}
+
+                    <div className="mt-8 flex justify-center">
+                        <Button
+                            variant="text"
+                            size="lg"
+                            className="flex items-center"
+                            onClick={() => handleLoadMore()}
+                        >
+                            <PiArrowsClockwiseFill className="text-xl" />
+                            <span className="ms-2">Load More</span>
+                        </Button>
+                    </div>
                 </>
             ) : (
                 <>
@@ -85,21 +82,20 @@ const GroupList: FC<GroupListProps> = ({
                             </div>
                         )}
                     </div>
-                    {!limit && (
-                        <div className="mt-8 flex justify-center">
-                            <Button
-                                variant="text"
-                                size="lg"
-                                className="flex items-center"
-                                onClick={() => {
-                                    handleLoadMore();
-                                }}
-                            >
-                                <PiArrowsClockwiseFill className="text-xl" />
-                                <span className="ms-2">Load More</span>
-                            </Button>
-                        </div>
-                    )}
+
+                    <div className="mt-8 flex justify-center">
+                        <Button
+                            variant="text"
+                            size="lg"
+                            className="flex items-center"
+                            onClick={() => {
+                                handleLoadMore();
+                            }}
+                        >
+                            <PiArrowsClockwiseFill className="text-xl" />
+                            <span className="ms-2">Load More</span>
+                        </Button>
+                    </div>
                 </>
             )}
         </div>

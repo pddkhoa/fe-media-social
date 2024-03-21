@@ -1,93 +1,10 @@
 import identity from "@/api/interceptor";
 import { Category, CategoryDetail } from "@/type/category";
 import { Post } from "@/type/post";
-import { Tag } from "@/type/tag";
+import { User } from "@/type/user";
 import { requestApiHelper } from "@/utils/apiRequest";
 
-class ClientServices {
-    static async uploadAvatar(form: FormData) {
-        type body = {
-            success: string;
-            statusCode: number;
-            message: string;
-            result: {
-                publicId: string;
-                url: string;
-            };
-        };
-        return await requestApiHelper<body>(
-            identity.put("user/changeAvatar", form, {
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                },
-            })
-        );
-    }
-    static async updateInfo(data: {
-        username: string;
-        name: string;
-        phone: string;
-        second_name: string;
-        gender: string;
-        email: string;
-        Descriptions: string;
-        address: string;
-    }) {
-        type body = {
-            success: string;
-            statusCode: number;
-            message: string;
-            result: {
-                publicId: string;
-                url: string;
-            };
-        };
-        return await requestApiHelper<body>(
-            identity.patch("/user/changeInfo", data)
-        );
-    }
-    static async resetPassword(data: {
-        oldPassword: string;
-        password: string;
-        confirmPassword: string;
-    }) {
-        type body = {
-            success: string;
-            statusCode: number;
-            message: string;
-            result: {
-                publicId: string;
-                url: string;
-            };
-        };
-        return await requestApiHelper<body>(
-            identity.patch("/user/resetPassword", data)
-        );
-    }
-    static async getBlogUser() {
-        type body = {
-            success: string;
-            statusCode: number;
-            message: string;
-            result: Post[];
-        };
-        return await requestApiHelper<body>(identity.get("blog/allBlog"));
-    }
-    static async uploadAvatarPost(form: FormData) {
-        type body = {
-            success: string;
-            statusCode: number;
-            message: string;
-            result: string;
-        };
-        return await requestApiHelper<body>(
-            identity.post("blog/uploadImage", form, {
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                },
-            })
-        );
-    }
+class CategoriesServices {
     static async getCategoriesByUser(index: number) {
         type body = {
             success: string;
@@ -99,24 +16,7 @@ class ClientServices {
             identity.get(`category/userCategories/${index}`)
         );
     }
-    static async getAllTags() {
-        type body = {
-            success: string;
-            statusCode: number;
-            message: string;
-            result: Tag[];
-        };
-        return await requestApiHelper<body>(identity.get("tag/allTag"));
-    }
-    static async addTags(data: { name: string }) {
-        type body = {
-            success: string;
-            statusCode: number;
-            message: string;
-            result: Tag;
-        };
-        return await requestApiHelper<body>(identity.post("tag/addTag", data));
-    }
+
     static async addCategories(data: {
         name: string;
         description: string;
@@ -132,6 +32,22 @@ class ClientServices {
         };
         return await requestApiHelper<body>(
             identity.post("category/addCategory", data)
+        );
+    }
+    static async editCategories(data: {
+        name: string;
+        description: string;
+        status: string;
+        categoryId: string;
+    }) {
+        type body = {
+            success: string;
+            statusCode: number;
+            message: string;
+            result: CategoryDetail;
+        };
+        return await requestApiHelper<body>(
+            identity.patch("category/edit", data)
         );
     }
     static async getAllCategories(index: number) {
@@ -168,16 +84,6 @@ class ClientServices {
                 `blog/getAllByCategory?index=${index}&categoryId=${categoryId}`
             )
         );
-    }
-
-    static async deleteTags(tagId: string) {
-        type body = {
-            success: string;
-            statusCode: number;
-            message: string;
-            result: string;
-        };
-        return await requestApiHelper<body>(identity.delete(`tag/${tagId}`));
     }
 
     static async joinCategories(categoryId: string) {
@@ -228,31 +134,32 @@ class ClientServices {
             })
         );
     }
-    static async addTagToCate(data: { categoryId: string; tagIds: string[] }) {
+    static async getUserRequestCate(categoryId: string) {
         type body = {
             success: string;
             statusCode: number;
             message: string;
-            result: string;
+            result: User[];
         };
         return await requestApiHelper<body>(
-            identity.put(`category/addTagToCategory`, data)
+            identity.get(`category/userRequest/${categoryId}`)
         );
     }
-    static async removeTagFromCate(data: {
+    static async evaluteRequestCate(data: {
         categoryId: string;
-        tagIds: string[];
+        user_id: string;
+        status: number;
     }) {
         type body = {
             success: string;
             statusCode: number;
             message: string;
-            result: string;
+            result: string | null;
         };
         return await requestApiHelper<body>(
-            identity.put(`category/removeTag`, data)
+            identity.post(`category/evaluateRequest`, data)
         );
     }
 }
 
-export default ClientServices;
+export default CategoriesServices;

@@ -6,7 +6,7 @@ import { Tag } from "@/type/tag";
 import { useCallback, useEffect, useState } from "react";
 import { PiSelectionPlusFill } from "react-icons/pi";
 import { Button, Empty, Loader } from "rizzui";
-import ModalAddNewTags from "./ModalAddNewTags";
+import ModalAddNewTags from "../../../components/module/tags/ModalAddNewTags";
 
 const pageHeader = {
     title: "Tags",

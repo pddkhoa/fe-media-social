@@ -24,28 +24,33 @@ import { Post } from "@/type/post";
 import { getBadgeStatus } from "@/components/ui/BadgeStatus";
 import { useModal } from "@/hooks/useModal";
 import FollowerModal from "@/components/modal/FollowModal";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import DropdownOptionDetail from "./DropdownOptionDetail";
+import toast from "react-hot-toast";
+import { pendingUpload, uploadSuccess } from "@/store/imageSlice";
+import CategoriesServices from "@/services/categories";
+import { User } from "@/type/user";
 
 const GroupDetail = () => {
     const categoriesId = useParams();
     const isAdmin = useSelector(
         (state: RootState) => state.auth.userToken.user._id
     );
-
     const [dataCate, setDataCate] = useState<CategoryDetail>();
-    const [dataBlog, setDataBlog] = useState<Post[]>([]);
-    const { openModal } = useModal();
+    const [dataUserReq, setDataUserReq] = useState<User[]>([]);
 
+    const [dataBlog, setDataBlog] = useState<Post[]>([]);
+    const { openModal, closeModal } = useModal();
     const [isLoading, setIsLoading] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const [isActive, setIsActive] = useState(false);
+    const dispacth = useDispatch();
 
     const fetchCate = useCallback(async () => {
         try {
             setIsLoading(true);
-            const { body } = await ClientServices.getCategoriesById(
+            const { body } = await CategoriesServices.getCategoriesById(
                 categoriesId.id as string
             );
             if (body?.success) {
@@ -62,7 +67,7 @@ const GroupDetail = () => {
         async (page: number) => {
             try {
                 setIsLoading(true);
-                const { body } = await ClientServices.getBlogByCategories(
+                const { body } = await CategoriesServices.getBlogByCategories(
                     categoriesId.id as string,
                     page
                 );
@@ -81,14 +86,53 @@ const GroupDetail = () => {
         },
         [setDataBlog]
     );
+    const fetchUserRequest = useCallback(async () => {
+        try {
+            setIsLoading(true);
+            const { body } = await CategoriesServices.getUserRequestCate(
+                categoriesId.id as string
+            );
+            if (body?.success) {
+                setIsLoading(false);
+                setDataUserReq(body?.result);
+            }
+        } catch (error) {
+            console.error("Error fetching data:", error);
+            setIsLoading(false);
+        }
+    }, [setDataUserReq]);
 
     useEffect(() => {
+        setIsActive(false);
         fetchCate();
         fetchBlog(currentPage);
-    }, [fetchCate, fetchBlog, isActive]);
+        fetchUserRequest();
+    }, [fetchCate, fetchBlog, isActive, fetchUserRequest]);
 
     const handleLoadMore = () => {
         setCurrentPage((prevPage) => prevPage + 1);
+    };
+
+    const handleUploadAvatarCategories = async (files: FileList) => {
+        if (files && dataCate) {
+            dispacth(pendingUpload());
+            const formData = new FormData();
+            formData.append("image", files[0]);
+            const { body } = await ClientServices.uploadAvatarCate(
+                formData,
+                dataCate._id
+            );
+            if (body?.success) {
+                dispacth(uploadSuccess());
+
+                toast.success(body.message);
+                setIsActive(true);
+                closeModal();
+            } else {
+                toast.error(body?.message || "Error");
+                dispacth(uploadSuccess());
+            }
+        }
     };
 
     if (isLoading)
@@ -106,7 +150,17 @@ const GroupDetail = () => {
                     <div className="mx-auto w-full max-w-full  p-2 sm:flex sm:justify-between border-b">
                         <div className="flex h-auto w-full gap-4 @5xl:gap-6">
                             <div className=" pt-2.5 w-1/2">
-                                <div className="flex">
+                                <div className="flex gap-3 items-center">
+                                    <div className="h-24 w-24 p-1">
+                                        {dataCate?.avatar.url ? (
+                                            <img
+                                                src={dataCate?.avatar?.url}
+                                                className="object-cover h-full w-full"
+                                            />
+                                        ) : (
+                                            <div className="bg-gradient-to-r h-full w-full rounded-lg from-[#F8E1AF] to-[#F6CFCF] bg-opacity-30" />
+                                        )}
+                                    </div>
                                     <div>
                                         <Title
                                             as="h1"
@@ -200,8 +254,14 @@ const GroupDetail = () => {
                                                         <Popover.Content className="z-50 p-0 dark:bg-gray-50 [&>svg]:dark:fill-gray-50">
                                                             <DropdownOptionDetail
                                                                 data={dataCate}
+                                                                handleUploadAvatarCategories={
+                                                                    handleUploadAvatarCategories
+                                                                }
                                                                 setIsActive={
                                                                     setIsActive
+                                                                }
+                                                                dataUserReq={
+                                                                    dataUserReq
                                                                 }
                                                             />
                                                         </Popover.Content>

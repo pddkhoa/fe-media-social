@@ -1,5 +1,5 @@
 import { useModal } from "@/hooks/useModal";
-import { useRef, useState, useEffect, Fragment, FC } from "react";
+import { useRef, useState, useEffect, Fragment, FC, useCallback } from "react";
 import { PiMagnifyingGlassBold, PiTagChevronLight } from "react-icons/pi";
 import {
     Input,
@@ -20,7 +20,6 @@ type ModalAddTagsProps = {
     onAddTag?: (tag: Tag) => void;
     isCate?: string;
     setIsActive?: React.Dispatch<React.SetStateAction<boolean>>;
-    isLoading?: boolean;
 };
 
 export const ModalAddTags: FC<ModalAddTagsProps> = ({
@@ -28,17 +27,40 @@ export const ModalAddTags: FC<ModalAddTagsProps> = ({
     onAddTag,
     isCate,
     setIsActive,
-    isLoading,
 }) => {
     const inputRef = useRef(null);
     const [searchText, setSearchText] = useState("");
     const { closeModal } = useModal();
     const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
     const [checkedTags, setCheckedTags] = useState<Tag[]>([]);
+    const [isAdd, setIsAdd] = useState(false);
 
-    let menuItemsFiltered = data;
+    const [dataTag, setDataTag] = useState<Tag[]>([]);
+    const [isLoading, setIsLoading] = useState(false);
+
+    const fetchDataTag = useCallback(async () => {
+        try {
+            setIsLoading(true);
+            const { body } = await ClientServices.getAllTags();
+            if (body?.success) {
+                setDataTag(body?.result);
+                setIsLoading(false);
+            } else {
+                setIsLoading(false);
+            }
+        } catch (error) {
+            console.error("Error fetching data:", error);
+            setIsLoading(false);
+        }
+    }, [setDataTag]);
+
+    useEffect(() => {
+        fetchDataTag();
+    }, [fetchDataTag]);
+
+    let menuItemsFiltered = dataTag ? dataTag : data;
     if (searchText.length > 0) {
-        menuItemsFiltered = data?.filter((item: any) => {
+        menuItemsFiltered = menuItemsFiltered?.filter((item: any) => {
             const label = item.name;
             return (
                 label.match(searchText.toLowerCase()) ||
@@ -60,15 +82,14 @@ export const ModalAddTags: FC<ModalAddTagsProps> = ({
     }, []);
 
     useEffect(() => {
+        const dataNew = dataTag ? dataTag : data;
         // Kiểm tra mỗi tag trong data xem có nằm trong danh sách đã chọn không
-        const updatedCheckedTags = data?.filter((tag) =>
+        const updatedCheckedTags = dataNew?.filter((tag) =>
             selectedTags.some((selectedTag) => selectedTag.name === tag.name)
         );
 
-        if (updatedCheckedTags)
-            // Cập nhật trạng thái của checkbox
-            setCheckedTags(updatedCheckedTags);
-    }, [selectedTags, data]); // Thực hiện khi selectedTags hoặc data thay đổi
+        if (updatedCheckedTags) setCheckedTags(updatedCheckedTags);
+    }, [selectedTags, data, dataTag]);
 
     const handleCheckboxChange = (tag: Tag) => {
         // Logic xác định trạng thái checkbox
@@ -89,27 +110,32 @@ export const ModalAddTags: FC<ModalAddTagsProps> = ({
         selectedTags.forEach((tag) => {
             if (onAddTag) onAddTag(tag);
         });
-        closeModal(); // Đóng modal sau khi thêm tags
+        closeModal();
     };
 
     const arrayIdTag = selectedTags && selectedTags?.map((item) => item._id);
 
     const handleAddTagsToCate = async () => {
         try {
-            if (isCate && setIsActive) {
+            setIsAdd(true);
+            if (isCate && setIsActive && arrayIdTag) {
                 const { body } = await ClientServices.addTagToCate({
                     categoryId: isCate,
                     tagIds: arrayIdTag,
                 });
                 if (body?.success) {
+                    setIsAdd(false);
+
                     toast.success(body?.message);
                     setIsActive(true);
                     closeModal();
                 } else {
+                    setIsAdd(false);
                     toast.error(body?.message || "Error");
                 }
             }
         } catch (error) {
+            setIsAdd(false);
             console.log(error);
         }
     };
@@ -148,53 +174,55 @@ export const ModalAddTags: FC<ModalAddTagsProps> = ({
                 </Button>
             </div>
             <div className="custom-scrollbar max-h-[60vh] overflow-y-auto border-t border-gray-300 px-2 py-4">
-                <>
-                    {menuItemsFiltered?.length === 0 ? (
-                        <Empty
-                            className="scale-75"
-                            image={<SearchNotFoundIcon />}
-                            text="No Result Found"
-                            textClassName="text-xl"
-                        />
-                    ) : (
-                        <Title
-                            as="h6"
-                            className="mb-5 px-3 font-semibold dark:text-gray-700"
-                        >
-                            Quick Page Tags
-                        </Title>
-                    )}
-                </>
                 {isLoading ? (
-                    <Loader />
+                    <div className="flex justify-center items-center">
+                        <Loader />
+                    </div>
                 ) : (
-                    menuItemsFiltered?.map((item, index) => {
-                        const isChecked = checkedTags.some(
-                            (checkedTag) => checkedTag.name === item.name
-                        );
+                    <>
+                        {menuItemsFiltered?.length === 0 ? (
+                            <Empty
+                                className="scale-75"
+                                image={<SearchNotFoundIcon />}
+                                text="No Result Found"
+                                textClassName="text-xl"
+                            />
+                        ) : (
+                            <Title
+                                as="h6"
+                                className="mb-5 px-3 font-semibold dark:text-gray-700"
+                            >
+                                Quick Page Tags
+                            </Title>
+                        )}
+                        {menuItemsFiltered?.map((item, index) => {
+                            const isChecked = checkedTags.some(
+                                (checkedTag) => checkedTag.name === item.name
+                            );
 
-                        return (
-                            <Fragment key={item.name + "-" + index}>
-                                <div className="relative my-0.5 flex items-center rounded-lg px-3 py-2 text-sm hover:bg-gray-200 focus:outline-none focus-visible:bg-gray-100 dark:hover:bg-gray-200 dark:hover:backdrop-blur-lg">
-                                    <span className="inline-flex items-center justify-center rounded-md border border-gray-300 p-2 text-gray-500">
-                                        <PiTagChevronLight className="h-5 w-5" />
-                                    </span>
-                                    <div className="flex items-center justify-between ms-3 w-full  gap-0.5">
-                                        <span className="font-medium capitalize text-gray-900 dark:text-gray-700">
-                                            {item.name}
+                            return (
+                                <Fragment key={item.name + "-" + index}>
+                                    <div className="relative my-0.5 flex items-center rounded-lg px-3 py-2 text-sm hover:bg-gray-200 focus:outline-none focus-visible:bg-gray-100 dark:hover:bg-gray-200 dark:hover:backdrop-blur-lg">
+                                        <span className="inline-flex items-center justify-center rounded-md border border-gray-300 p-2 text-gray-500">
+                                            <PiTagChevronLight className="h-5 w-5" />
                                         </span>
-                                        <Checkbox
-                                            className="m-2"
-                                            checked={isChecked}
-                                            onChange={() =>
-                                                handleCheckboxChange(item)
-                                            }
-                                        />
+                                        <div className="flex items-center justify-between ms-3 w-full  gap-0.5">
+                                            <span className="font-medium capitalize text-gray-900 dark:text-gray-700">
+                                                {item.name}
+                                            </span>
+                                            <Checkbox
+                                                className="m-2"
+                                                checked={isChecked}
+                                                onChange={() =>
+                                                    handleCheckboxChange(item)
+                                                }
+                                            />
+                                        </div>
                                     </div>
-                                </div>
-                            </Fragment>
-                        );
-                    })
+                                </Fragment>
+                            );
+                        })}
+                    </>
                 )}
             </div>
             <div className="flex justify-end w-full gap-5 p-2">
@@ -207,6 +235,8 @@ export const ModalAddTags: FC<ModalAddTagsProps> = ({
                     onClick={() => {
                         isCate ? handleAddTagsToCate() : handleAddButtonClick();
                     }}
+                    isLoading={isAdd}
+                    disabled={isAdd}
                 >
                     Save
                 </Button>

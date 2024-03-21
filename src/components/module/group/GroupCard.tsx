@@ -1,3 +1,4 @@
+/* eslint-disable no-dupe-else-if */
 import FollowerModal from "@/components/modal/FollowModal";
 import { getBadgeStatus } from "@/components/ui/BadgeStatus";
 import { NoImageIcon } from "@/components/ui/Icon";
@@ -32,11 +33,19 @@ const GroupCard: FC<GroupCardProps> = ({ data }) => {
             setLoadingJoin(true);
             const { body } = await ClientServices.joinCategories(id);
             if (body?.success) {
-                toast.success(body.message);
+                toast.success(body?.message);
                 setLoadingJoin(false);
-                if (data?.status === "Private")
+                if (
+                    data?.status === "Private" &&
+                    data?.statusUser === STATUS_USER_GROUP.PENDING
+                )
+                    setStatusUser(STATUS_USER_GROUP.UNJOIN);
+                else if (
+                    data?.status === "Private" &&
+                    data?.statusUser === STATUS_USER_GROUP.UNJOIN
+                ) {
                     setStatusUser(STATUS_USER_GROUP.PENDING);
-                else setStatusUser(STATUS_USER_GROUP.JOINED);
+                } else setStatusUser(STATUS_USER_GROUP.JOINED);
             } else {
                 toast.error(body?.message || "Error");
                 setLoadingJoin(false);
@@ -149,6 +158,10 @@ const GroupCard: FC<GroupCardProps> = ({ data }) => {
                             className="w-full flex gap-3"
                             variant="flat"
                             color="danger"
+                            isLoading={loadingJoin}
+                            onClick={() => {
+                                handleJoinCate(data?._id);
+                            }}
                         >
                             Resquesting{" "}
                             <PiDotsThreeOutline className="h-4 w-4" />

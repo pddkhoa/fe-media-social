@@ -1,11 +1,9 @@
 import { useModal } from "@/hooks/useModal";
 import { FormDataType } from "@/pages/client/create-post/PageCreatePost";
-import ClientServices from "@/services/client";
-import { uploadAvatarSuccess } from "@/store/authSlice";
+import { RootState } from "@/store/store";
 import { useState } from "react";
-import toast from "react-hot-toast";
 import { PiXBold } from "react-icons/pi";
-import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { Button, Loader } from "rizzui";
 
 type UploadModalProps = {
@@ -15,82 +13,29 @@ type UploadModalProps = {
         React.SetStateAction<FormDataType | undefined>
     >;
     setUrlImage?: React.Dispatch<React.SetStateAction<string>>;
-    isCate?: string;
+    type: string;
+    handleUploadImage: (files: FileList) => Promise<void>;
 };
 
 const UploadModal: React.FC<UploadModalProps> = ({
     data,
     isPost,
-    isCate,
-    setFormDataCreate,
+    handleUploadImage,
 }) => {
     const { closeModal } = useModal();
     const [files, setFiles] = useState<FileList>();
-    const dispatch = useDispatch();
     const [dataImage, setDataImage] = useState(data);
-    const [isUploading, setIsUploading] = useState(false);
-
-    const handleUploadAvatar = async () => {
-        setIsUploading(true);
-        if (files) {
-            const formData = new FormData();
-            formData.append("image", files[0]);
-            const { body } = await ClientServices.uploadAvatar(formData);
-            if (body?.success) {
-                toast.success(body.message);
-                setIsUploading(false);
-                dispatch(uploadAvatarSuccess(body.result.url));
-                closeModal();
-            } else {
-                toast.error(body?.message || "Error");
-                setIsUploading(false);
-            }
-        }
-    };
-
-    const handleUploadAvatarCategories = async () => {
-        setIsUploading(true);
-        if (files && isCate) {
-            const formData = new FormData();
-            formData.append("image", files[0]);
-            const { body } = await ClientServices.uploadAvatarCate(
-                formData,
-                isCate
-            );
-            if (body?.success) {
-                toast.success(body.message);
-                setIsUploading(false);
-                closeModal();
-            } else {
-                toast.error(body?.message || "Error");
-                setIsUploading(false);
-            }
-        }
-    };
-    const handleUploadAvatarPost = async () => {
-        setIsUploading(true);
-        if (files && setFormDataCreate) {
-            const formData = new FormData();
-            formData.append("image", files[0]);
-            const { body } = await ClientServices.uploadAvatarPost(formData);
-            if (body?.success) {
-                toast.success(body.message);
-                setFormDataCreate((prevFormData: any) => ({
-                    ...prevFormData,
-                    avatar: body.result,
-                }));
-                closeModal();
-            } else {
-                toast.error(body?.message || "Error");
-                setIsUploading(false);
-            }
-        }
-    };
-
+    const isUpload = useSelector((state: RootState) => state.image.isUpload);
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.files) {
             setFiles(event.target.files);
             setDataImage("");
+        }
+    };
+
+    const handleUpload = () => {
+        if (files && handleUploadImage) {
+            handleUploadImage(files);
         }
     };
 
@@ -106,7 +51,7 @@ const UploadModal: React.FC<UploadModalProps> = ({
                 >
                     <PiXBold />
                 </div>
-                {isUploading ? (
+                {isUpload ? (
                     <div className="absolute  inset-0 w-full h-full bg-black/15">
                         <Loader className="h-6 w-6 absolute top-1/2 left-[15rem] " />
                     </div>
@@ -172,18 +117,16 @@ const UploadModal: React.FC<UploadModalProps> = ({
                         onClick={closeModal}
                         size="sm"
                         variant="outline"
-                        disabled={isUploading}
+                        disabled={isUpload}
                     >
                         Cancel
                     </Button>
+
                     <Button
-                        onClick={
-                            setFormDataCreate
-                                ? handleUploadAvatarPost
-                                : handleUploadAvatar
-                        }
+                        onClick={() => handleUpload()}
                         size="sm"
-                        disabled={isUploading || !files}
+                        isLoading={isUpload}
+                        disabled={isUpload || !files}
                     >
                         Upload now
                     </Button>

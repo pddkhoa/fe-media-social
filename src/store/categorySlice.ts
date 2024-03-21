@@ -2,20 +2,21 @@ import { Category } from "@/type/category";
 import { createSlice } from "@reduxjs/toolkit";
 
 const categorySlice = createSlice({
-  name: "auth",
-  initialState: {
-    categories: [] as Category[],
-  },
-  reducers: {
-    getAllCateogies: (state, payload) => {
-      state.categories = payload.payload;
+    name: "category",
+    initialState: {
+        categories: [] as Category[],
+        myCategories: [] as Category[],
     },
-    getCateogiesByUser: (state, payload) => {
-      state.categories = payload.payload;
+    reducers: {
+        getAllCategories: (state, payload) => {
+            state.categories = payload.payload;
+        },
+        getCategoriesByUser: (state, payload) => {
+            state.myCategories = payload.payload;
+        },
     },
-  },
 });
 
-export const { getAllCateogies, getCateogiesByUser } = categorySlice.actions;
+export const { getAllCategories, getCategoriesByUser } = categorySlice.actions;
 
 export default categorySlice.reducer;

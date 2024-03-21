@@ -4,6 +4,8 @@ import GroupHeader from "@/components/module/group/GroupHeader";
 import { useCallback, useEffect, useState } from "react";
 import ClientServices from "@/services/client";
 import { Category } from "@/type/category";
+import { useDispatch } from "react-redux";
+import { getAllCategories } from "@/store/categorySlice";
 
 const pageHeader = {
     title: "Groups",
@@ -22,9 +24,9 @@ const pageHeader = {
 const PageGroup = () => {
     const [layout, setLayout] = useState<string>("grid");
     const [isLoading, setIsLoading] = useState(false);
-    const [limit, setLimit] = useState(false);
     const [dataGroup, setDataGroup] = useState<Category[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
+    const dispatch = useDispatch();
 
     const fetchData = useCallback(
         async (page: number) => {
@@ -32,16 +34,12 @@ const PageGroup = () => {
                 setIsLoading(true);
                 const { body } = await ClientServices.getAllCategories(page);
                 if (body?.success) {
-                    if (body?.result === null) {
-                        setLimit(true);
-                    } else {
-                        setIsLoading(false);
-                        setDataGroup((prevData) =>
-                            page === 1
-                                ? [...body.result]
-                                : [...prevData, ...body.result]
-                        );
-                    }
+                    setIsLoading(false);
+                    setDataGroup((prevData) =>
+                        page === 1
+                            ? [...body.result]
+                            : [...prevData, ...body.result]
+                    );
                 }
             } catch (error) {
                 console.error("Error fetching data:", error);
@@ -53,6 +51,7 @@ const PageGroup = () => {
 
     useEffect(() => {
         fetchData(currentPage);
+        dispatch(getAllCategories(dataGroup));
     }, [fetchData, currentPage]);
 
     const handleLoadMore = () => {
@@ -75,7 +74,6 @@ const PageGroup = () => {
                 listCate={dataGroup}
                 loader={isLoading}
                 handleLoadMore={handleLoadMore}
-                limit={limit}
             />
         </div>
     );
