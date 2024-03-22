@@ -2,10 +2,10 @@ import PageHeader from "@/components/breadcrumb/PageHeader";
 import GroupDetails from "@/components/module/group/GroupList";
 import GroupHeader from "@/components/module/group/GroupHeader";
 import { useCallback, useEffect, useState } from "react";
-import ClientServices from "@/services/client";
-import { Category } from "@/type/category";
-import { useDispatch } from "react-redux";
-import { getAllCategories } from "@/store/categorySlice";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllCategories, getLoadmoreCategories } from "@/store/categorySlice";
+import CategoriesServices from "@/services/categories";
+import { RootState } from "@/store/store";
 
 const pageHeader = {
     title: "Groups",
@@ -24,34 +24,41 @@ const pageHeader = {
 const PageGroup = () => {
     const [layout, setLayout] = useState<string>("grid");
     const [isLoading, setIsLoading] = useState(false);
-    const [dataGroup, setDataGroup] = useState<Category[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
+    const [totalPage, setTotalPage] = useState<number>();
     const dispatch = useDispatch();
+    const listCate = useSelector(
+        (state: RootState) => state.category.categories
+    );
 
     const fetchData = useCallback(
         async (page: number) => {
             try {
                 setIsLoading(true);
-                const { body } = await ClientServices.getAllCategories(page);
+                const { body } = await CategoriesServices.getAllCategories(
+                    page
+                );
                 if (body?.success) {
+                    if (page === 1) {
+                        dispatch(getAllCategories(body?.result?.categories));
+                    } else {
+                        dispatch(
+                            getLoadmoreCategories(body?.result?.categories)
+                        );
+                    }
                     setIsLoading(false);
-                    setDataGroup((prevData) =>
-                        page === 1
-                            ? [...body.result]
-                            : [...prevData, ...body.result]
-                    );
+                    setTotalPage(body?.result?.size);
                 }
             } catch (error) {
                 console.error("Error fetching data:", error);
                 setIsLoading(false);
             }
         },
-        [setDataGroup]
+        [dispatch]
     );
 
     useEffect(() => {
         fetchData(currentPage);
-        dispatch(getAllCategories(dataGroup));
     }, [fetchData, currentPage]);
 
     const handleLoadMore = () => {
@@ -71,7 +78,9 @@ const PageGroup = () => {
             />
             <GroupDetails
                 layout={layout}
-                listCate={dataGroup}
+                listCate={listCate}
+                totalPage={totalPage}
+                currentPage={currentPage}
                 loader={isLoading}
                 handleLoadMore={handleLoadMore}
             />

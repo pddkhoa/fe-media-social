@@ -10,7 +10,7 @@ class CategoriesServices {
             success: string;
             statusCode: number;
             message: string;
-            result: Category[];
+            result: { categories: Category[]; size: number };
         };
         return await requestApiHelper<body>(
             identity.get(`category/userCategories/${index}`)
@@ -55,7 +55,7 @@ class CategoriesServices {
             success: string;
             statusCode: number;
             message: string;
-            result: Category[];
+            result: { categories: Category[]; size: number };
         };
         return await requestApiHelper<body>(
             identity.get(`category/allCategories/${index}`)

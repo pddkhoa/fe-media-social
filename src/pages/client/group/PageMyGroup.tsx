@@ -1,10 +1,15 @@
 import PageHeader from "@/components/breadcrumb/PageHeader";
 import GroupHeader from "@/components/module/group/GroupHeader";
 import GroupList from "@/components/module/group/GroupList";
-import ClientServices from "@/services/client";
-import { Category } from "@/type/category";
+import CategoriesServices from "@/services/categories";
+import {
+    getCategoriesByUser,
+    getLoadmoreCategoriesByUser,
+} from "@/store/categorySlice";
+import { RootState } from "@/store/store";
 import { useCallback, useEffect, useState } from "react";
 import { PiFireFill } from "react-icons/pi";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { Button } from "rizzui";
 
@@ -24,38 +29,47 @@ const pageHeader = {
 const PageMyGroup = () => {
     const [layout, setLayout] = useState<string>("grid");
     const [isLoading, setIsLoading] = useState(false);
-    const [limit, setLimit] = useState(false);
-    const [dataGroup, setDataGroup] = useState<Category[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
+    const [totalPage, setTotalPage] = useState<number>();
+    const [isActive, setIsActive] = useState(false);
+
+    const dispatch = useDispatch();
+    const listCate = useSelector(
+        (state: RootState) => state.category.myCategories
+    );
 
     const fetchData = useCallback(
         async (page: number) => {
             try {
                 setIsLoading(true);
-                const { body } = await ClientServices.getCategoriesByUser(page);
+                const { body } = await CategoriesServices.getCategoriesByUser(
+                    page
+                );
                 if (body?.success) {
-                    if (body?.result === null) {
-                        setLimit(true);
+                    setIsLoading(false);
+                    if (page === 1) {
+                        dispatch(getCategoriesByUser(body?.result?.categories));
                     } else {
-                        setIsLoading(false);
-                        setDataGroup((prevData) =>
-                            page === 1
-                                ? [...body.result]
-                                : [...prevData, ...body.result]
+                        dispatch(
+                            getLoadmoreCategoriesByUser(
+                                body?.result?.categories
+                            )
                         );
                     }
+                    setTotalPage(body?.result?.size);
                 }
             } catch (error) {
                 console.error("Error fetching data:", error);
                 setIsLoading(false);
             }
         },
-        [setDataGroup]
+        [dispatch]
     );
 
     useEffect(() => {
+        setIsActive(false);
         fetchData(currentPage);
-    }, [fetchData, currentPage]);
+    }, [fetchData, currentPage, isActive]);
 
     const handleLoadMore = () => {
         setCurrentPage((prevPage) => prevPage + 1);
@@ -80,10 +94,12 @@ const PageMyGroup = () => {
             />
             <GroupList
                 layout={layout}
-                listCate={dataGroup}
+                listCate={listCate}
                 loader={isLoading}
+                totalPage={totalPage}
+                currentPage={currentPage}
                 handleLoadMore={handleLoadMore}
-                limit={limit}
+                setIsActive={setIsActive}
             />
         </>
     );

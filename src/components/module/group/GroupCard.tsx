@@ -3,7 +3,13 @@ import FollowerModal from "@/components/modal/FollowModal";
 import { getBadgeStatus } from "@/components/ui/BadgeStatus";
 import { NoImageIcon } from "@/components/ui/Icon";
 import { useModal } from "@/hooks/useModal";
-import ClientServices from "@/services/client";
+import CategoriesServices from "@/services/categories";
+import {
+    cancelPendingCategories,
+    joinCategories,
+    leaveCategories,
+    pendingCategories,
+} from "@/store/categorySlice";
 import { RootState } from "@/store/store";
 import { Category } from "@/type/category";
 import { User } from "@/type/user";
@@ -11,41 +17,34 @@ import { STATUS_USER_GROUP } from "@/utils/contants";
 import { FC, useState } from "react";
 import toast from "react-hot-toast";
 import { PiDotsThreeOutline, PiHandTap, PiSignIn } from "react-icons/pi";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "rizzui";
 
 type GroupCardProps = {
     data: Category;
+    setIsActive?: React.Dispatch<React.SetStateAction<boolean>> | undefined;
 };
 
-const GroupCard: FC<GroupCardProps> = ({ data }) => {
+const GroupCard: FC<GroupCardProps> = ({ data, setIsActive }) => {
     const { openModal } = useModal();
     const [loadingJoin, setLoadingJoin] = useState(false);
-    const [statusUser, setStatusUser] = useState(data?.statusUser);
     const isAdmin = useSelector(
         (state: RootState) => state.auth.userToken.user._id
     );
     const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     const handleJoinCate = async (id: string) => {
         try {
             setLoadingJoin(true);
-            const { body } = await ClientServices.joinCategories(id);
+            const { body } = await CategoriesServices.joinCategories(id);
             if (body?.success) {
                 toast.success(body?.message);
+                if (data.status === "Private") {
+                    dispatch(pendingCategories(id));
+                } else dispatch(joinCategories(id));
                 setLoadingJoin(false);
-                if (
-                    data?.status === "Private" &&
-                    data?.statusUser === STATUS_USER_GROUP.PENDING
-                )
-                    setStatusUser(STATUS_USER_GROUP.UNJOIN);
-                else if (
-                    data?.status === "Private" &&
-                    data?.statusUser === STATUS_USER_GROUP.UNJOIN
-                ) {
-                    setStatusUser(STATUS_USER_GROUP.PENDING);
-                } else setStatusUser(STATUS_USER_GROUP.JOINED);
             } else {
                 toast.error(body?.message || "Error");
                 setLoadingJoin(false);
@@ -59,11 +58,14 @@ const GroupCard: FC<GroupCardProps> = ({ data }) => {
     const handleLeaveCate = async (id: string) => {
         try {
             setLoadingJoin(true);
-            const { body } = await ClientServices.leaveCategories(id);
+            const { body } = await CategoriesServices.leaveCategories(id);
             if (body?.success) {
                 toast.success(body.message);
+                if (data.status === "Private") {
+                    dispatch(cancelPendingCategories(id));
+                } else dispatch(leaveCategories(id));
                 setLoadingJoin(false);
-                setStatusUser(STATUS_USER_GROUP.UNJOIN);
+                if (setIsActive) setIsActive(true);
             } else {
                 toast.error(body?.message || "Error");
                 setLoadingJoin(false);
@@ -116,7 +118,7 @@ const GroupCard: FC<GroupCardProps> = ({ data }) => {
                     </div>
                 </Link>
                 <div className="flex justify-center mx-5 my-2">
-                    {statusUser === STATUS_USER_GROUP.UNJOIN && (
+                    {data?.statusUser === STATUS_USER_GROUP.UNJOIN && (
                         <Button
                             size="sm"
                             className="w-full flex gap-3"
@@ -127,7 +129,7 @@ const GroupCard: FC<GroupCardProps> = ({ data }) => {
                             Join Group <PiHandTap className="h-4 w-4" />
                         </Button>
                     )}
-                    {statusUser === STATUS_USER_GROUP.JOINED &&
+                    {data?.statusUser === STATUS_USER_GROUP.JOINED &&
                         (isAdmin !== data?.isAdmin ? (
                             <Button
                                 size="sm"
@@ -152,7 +154,7 @@ const GroupCard: FC<GroupCardProps> = ({ data }) => {
                                 View Detail <PiSignIn className="h-4 w-4" />
                             </Button>
                         ))}
-                    {statusUser === STATUS_USER_GROUP.PENDING && (
+                    {data?.statusUser === STATUS_USER_GROUP.PENDING && (
                         <Button
                             size="sm"
                             className="w-full flex gap-3"
