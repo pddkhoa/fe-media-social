@@ -1,7 +1,6 @@
 /* eslint-disable no-dupe-else-if */
 import FollowerModal from "@/components/modal/FollowModal";
 import { getBadgeStatus } from "@/components/ui/BadgeStatus";
-import { NoImageIcon } from "@/components/ui/Icon";
 import { useModal } from "@/hooks/useModal";
 import CategoriesServices from "@/services/categories";
 import {
@@ -61,7 +60,7 @@ const GroupCard: FC<GroupCardProps> = ({ data, setIsActive }) => {
             const { body } = await CategoriesServices.leaveCategories(id);
             if (body?.success) {
                 toast.success(body.message);
-                if (data.status === "Private") {
+                if (data?.status === "Private") {
                     dispatch(cancelPendingCategories(id));
                 } else dispatch(leaveCategories(id));
                 setLoadingJoin(false);
@@ -103,9 +102,7 @@ const GroupCard: FC<GroupCardProps> = ({ data, setIsActive }) => {
                             />
                         ) : (
                             <>
-                                <div className=" h-60 bg-gradient-to-r rounded-md from-[#F8E1AF] to-[#F6CFCF] ">
-                                    <NoImageIcon className="h-44 mx-auto opacity-60" />
-                                </div>
+                                <div className=" h-60 bg-gradient-to-r rounded-md from-[#F8E1AF] to-[#F6CFCF] "></div>
                             </>
                         )}
                     </div>
@@ -162,7 +159,7 @@ const GroupCard: FC<GroupCardProps> = ({ data, setIsActive }) => {
                             color="danger"
                             isLoading={loadingJoin}
                             onClick={() => {
-                                handleJoinCate(data?._id);
+                                handleLeaveCate(data?._id);
                             }}
                         >
                             Resquesting{" "}

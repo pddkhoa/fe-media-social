@@ -1,5 +1,4 @@
 import { useModal } from "@/hooks/useModal";
-import { FormDataType } from "@/pages/client/create-post/PageCreatePost";
 import { RootState } from "@/store/store";
 import { useState } from "react";
 import { PiXBold } from "react-icons/pi";
@@ -9,9 +8,7 @@ import { Button, Loader } from "rizzui";
 type UploadModalProps = {
     data?: string;
     isPost?: boolean;
-    setFormDataCreate?: React.Dispatch<
-        React.SetStateAction<FormDataType | undefined>
-    >;
+
     setUrlImage?: React.Dispatch<React.SetStateAction<string>>;
     type: string;
     handleUploadImage: (files: FileList) => Promise<void>;

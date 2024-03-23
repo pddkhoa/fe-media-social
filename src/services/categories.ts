@@ -77,7 +77,7 @@ class CategoriesServices {
             success: string;
             statusCode: number;
             message: string;
-            result: Post[];
+            result: { posts: Post[]; size: number };
         };
         return await requestApiHelper<body>(
             identity.get(

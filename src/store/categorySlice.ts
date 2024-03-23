@@ -1,4 +1,5 @@
 import { Category } from "@/type/category";
+import { Post } from "@/type/post";
 import { STATUS_USER_GROUP } from "@/utils/contants";
 import { createSlice } from "@reduxjs/toolkit";
 
@@ -7,6 +8,7 @@ const categorySlice = createSlice({
     initialState: {
         categories: [] as Category[],
         myCategories: [] as Category[],
+        blogOfCategories: [] as Post[],
     },
     reducers: {
         getAllCategories: (state, action) => {
@@ -57,6 +59,12 @@ const categorySlice = createSlice({
                 cate.statusUser = STATUS_USER_GROUP.UNJOIN;
             }
         },
+        getAllBlogCategories: (state, action) => {
+            state.blogOfCategories = action.payload;
+        },
+        getLoadmoreBlogCategories: (state, action) => {
+            state.blogOfCategories.push(...action.payload);
+        },
     },
 });
 
@@ -69,6 +77,8 @@ export const {
     cancelPendingCategories,
     getLoadmoreCategories,
     getLoadmoreCategoriesByUser,
+    getAllBlogCategories,
+    getLoadmoreBlogCategories,
 } = categorySlice.actions;
 
 export default categorySlice.reducer;

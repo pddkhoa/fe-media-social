@@ -55,10 +55,14 @@ export const ModalAddTags: FC<ModalAddTagsProps> = ({
     }, [setDataTag]);
 
     useEffect(() => {
-        fetchDataTag();
-    }, [fetchDataTag]);
+        if (!data) fetchDataTag();
+    }, [fetchDataTag, data]);
 
-    let menuItemsFiltered = dataTag ? dataTag : data;
+    let menuItemsFiltered =
+        dataTag !== null && dataTag !== undefined && dataTag.length > 0
+            ? dataTag
+            : data;
+
     if (searchText.length > 0) {
         menuItemsFiltered = menuItemsFiltered?.filter((item: any) => {
             const label = item.name;
@@ -82,7 +86,10 @@ export const ModalAddTags: FC<ModalAddTagsProps> = ({
     }, []);
 
     useEffect(() => {
-        const dataNew = dataTag ? dataTag : data;
+        const dataNew =
+            dataTag !== null && dataTag !== undefined && dataTag.length > 0
+                ? dataTag
+                : data;
         // Kiểm tra mỗi tag trong data xem có nằm trong danh sách đã chọn không
         const updatedCheckedTags = dataNew?.filter((tag) =>
             selectedTags.some((selectedTag) => selectedTag.name === tag.name)

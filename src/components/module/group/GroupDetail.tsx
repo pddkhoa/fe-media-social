@@ -16,11 +16,10 @@ import {
     Title,
 } from "rizzui";
 import PostCard from "../../post/PostCard";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useCallback, useEffect, useState } from "react";
 import { CategoryDetail } from "@/type/category";
 import ClientServices from "@/services/client";
-import { Post } from "@/type/post";
 import { getBadgeStatus } from "@/components/ui/BadgeStatus";
 import { useModal } from "@/hooks/useModal";
 import FollowerModal from "@/components/modal/FollowModal";
@@ -31,6 +30,10 @@ import toast from "react-hot-toast";
 import { pendingUpload, uploadSuccess } from "@/store/imageSlice";
 import CategoriesServices from "@/services/categories";
 import { User } from "@/type/user";
+import {
+    getAllBlogCategories,
+    getLoadmoreBlogCategories,
+} from "@/store/categorySlice";
 
 const GroupDetail = () => {
     const categoriesId = useParams();
@@ -39,13 +42,17 @@ const GroupDetail = () => {
     );
     const [dataCate, setDataCate] = useState<CategoryDetail>();
     const [dataUserReq, setDataUserReq] = useState<User[]>([]);
-
-    const [dataBlog, setDataBlog] = useState<Post[]>([]);
     const { openModal, closeModal } = useModal();
     const [isLoading, setIsLoading] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const [isActive, setIsActive] = useState(false);
-    const dispacth = useDispatch();
+    const [totalPage, setTotalPage] = useState<number>(0);
+    const listBlog = useSelector(
+        (state: RootState) => state.category.blogOfCategories
+    );
+
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     const fetchCate = useCallback(async () => {
         try {
@@ -73,18 +80,21 @@ const GroupDetail = () => {
                 );
                 if (body?.success) {
                     setIsLoading(false);
-                    setDataBlog((prevData) =>
-                        page === 1
-                            ? [...body.result]
-                            : [...prevData, ...body.result]
-                    );
+                    if (page === 1) {
+                        dispatch(getAllBlogCategories(body?.result?.posts));
+                    } else {
+                        dispatch(
+                            getLoadmoreBlogCategories(body?.result?.posts)
+                        );
+                    }
+                    setTotalPage(body?.result?.size);
                 }
             } catch (error) {
                 console.error("Error fetching data:", error);
                 setIsLoading(false);
             }
         },
-        [setDataBlog]
+        [dispatch]
     );
     const fetchUserRequest = useCallback(async () => {
         try {
@@ -115,7 +125,7 @@ const GroupDetail = () => {
 
     const handleUploadAvatarCategories = async (files: FileList) => {
         if (files && dataCate) {
-            dispacth(pendingUpload());
+            dispatch(pendingUpload());
             const formData = new FormData();
             formData.append("image", files[0]);
             const { body } = await ClientServices.uploadAvatarCate(
@@ -123,14 +133,14 @@ const GroupDetail = () => {
                 dataCate._id
             );
             if (body?.success) {
-                dispacth(uploadSuccess());
+                dispatch(uploadSuccess());
 
                 toast.success(body.message);
                 setIsActive(true);
                 closeModal();
             } else {
                 toast.error(body?.message || "Error");
-                dispacth(uploadSuccess());
+                dispatch(uploadSuccess());
             }
         }
     };
@@ -236,6 +246,16 @@ const GroupDetail = () => {
                                                     variant="outline"
                                                     size="sm"
                                                     className="flex gap-3"
+                                                    onClick={() => {
+                                                        navigate(
+                                                            "/create-post",
+                                                            {
+                                                                state: {
+                                                                    key: dataCate,
+                                                                },
+                                                            }
+                                                        );
+                                                    }}
                                                 >
                                                     Create Post{" "}
                                                     <PiPlus className="h-3 w-3" />
@@ -276,9 +296,9 @@ const GroupDetail = () => {
                     </div>
                     <div className="px-2 mt-10  w-full  @2xl:mt-7 @6xl:mt-0">
                         <div className="grid grid-cols-3 gap-5">
-                            {dataBlog && dataBlog.length > 0 ? (
-                                dataBlog.map((item) => (
-                                    <PostCard key={item._id} />
+                            {listBlog && listBlog.length > 0 ? (
+                                listBlog.map((item) => (
+                                    <PostCard key={item._id} data={item} />
                                 ))
                             ) : (
                                 <div className="col-span-3">
@@ -286,7 +306,7 @@ const GroupDetail = () => {
                                 </div>
                             )}
                         </div>
-                        {dataBlog.length >= 6 && (
+                        {currentPage < totalPage && (
                             <div className="mt-8 flex justify-center">
                                 <Button
                                     variant="text"
