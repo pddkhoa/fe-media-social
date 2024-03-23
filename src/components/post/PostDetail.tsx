@@ -1,35 +1,33 @@
-import { OutputData } from "@editorjs/editorjs";
-import { FC } from "react";
-import Output from "editorjs-blocks-react-renderer";
-import "./Output.css";
-import { Avatar, Badge } from "rizzui";
-import { FormDataType } from "@/pages/client/post/PageCreatePost";
-import { useSelector } from "react-redux";
-import { RootState } from "@/store/store";
 import { formatDate } from "@/utils/format-date";
+import { Avatar, Badge } from "rizzui";
+import Output from "editorjs-blocks-react-renderer";
+import { Post } from "@/type/post";
+import { FC } from "react";
+import convertHTMLToEditorJS from "../editor/Convert";
+import "./PostDetail.css";
 
-type OutputPostProps = {
-    content: OutputData | undefined;
-    formDataCreate: FormDataType | undefined;
+type PostDetailProps = {
+    data: Post;
 };
 
-const OutputPost: FC<OutputPostProps> = ({ content, formDataCreate }) => {
-    const auth = useSelector((state: RootState) => state.auth.userToken.user);
-    const date = new Date();
+const PostDetail: FC<PostDetailProps> = ({ data }) => {
+    console.log(data);
     return (
-        <div className="max-w-5xl mx-auto space-y-12">
+        <div className="max-w-5xl py-8 mx-auto space-y-12">
             <article className="space-y-8">
                 <div className="space-y-6">
                     <h1 className="text-4xl font-semibold md:tracki md:text-4xl">
-                        {formDataCreate?.title
-                            ? formDataCreate.title
-                            : "This is Title"}
+                        {data?.title}
                     </h1>
                     <div className="flex flex-col items-start justify-between w-full md:flex-row md:items-center ">
                         <div className="flex items-center md:space-x-2">
-                            <Avatar src={auth?.avatar?.url} name={auth?.name} />
+                            <Avatar
+                                src={data?.user?.avatar?.url}
+                                name={data?.user?.name}
+                            />
                             <p className="text-sm">
-                                {auth?.name} - {formatDate(date)}
+                                {data?.user?.name} -{" "}
+                                {formatDate(data?.createdAt as any)}
                             </p>
                         </div>
                         <p className="flex-shrink-0 mt-3 text-sm md:mt-0">
@@ -38,9 +36,9 @@ const OutputPost: FC<OutputPostProps> = ({ content, formDataCreate }) => {
                     </div>
                 </div>
                 <div className="p-2">
-                    {content && (
+                    {data?.content && (
                         <Output
-                            data={content as any}
+                            data={convertHTMLToEditorJS(data?.content)}
                             config={{
                                 code: {
                                     className: "language-js py-4 text-white",
@@ -79,9 +77,8 @@ const OutputPost: FC<OutputPostProps> = ({ content, formDataCreate }) => {
             </article>
             <div>
                 <div className="flex flex-wrap py-6 gap-2 border-t border-dashed dark:border-gray-400">
-                    {formDataCreate?.tagIds &&
-                    formDataCreate.tagIds.length > 0 ? (
-                        formDataCreate.tagIds.map((item) => (
+                    {data?.tags && data?.tags?.length > 0 ? (
+                        data?.tags?.map((item) => (
                             <Badge
                                 key={item._id}
                                 rounded="md"
@@ -98,12 +95,14 @@ const OutputPost: FC<OutputPostProps> = ({ content, formDataCreate }) => {
             <div className="pt-8 border-t border-dashed dark:border-gray-400">
                 <div className="flex flex-col space-y-4 md:space-y-0 md:space-x-6 md:flex-row">
                     <img
-                        src={auth?.avatar?.url}
+                        src={data?.user?.avatar?.url}
                         alt=""
                         className="self-center flex-shrink-0 w-24 h-24 border rounded-full md:justify-self-start dark:bg-gray-500 dark:border-gray-700"
                     />
                     <div className="flex flex-col pt-2">
-                        <h4 className="text-md font-semibold">{auth?.name}</h4>
+                        <h4 className="text-md font-semibold">
+                            {data?.user?.name}
+                        </h4>
                         <p className="dark:text-gray-600">
                             Sed non nibh iaculis, posuere diam vitae,
                             consectetur neque. Integer velit ligula, semper sed
@@ -117,4 +116,4 @@ const OutputPost: FC<OutputPostProps> = ({ content, formDataCreate }) => {
     );
 };
 
-export default OutputPost;
+export default PostDetail;

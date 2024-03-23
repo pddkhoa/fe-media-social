@@ -41,6 +41,12 @@ const authSlice = createSlice({
             state.isLoggin = false;
             state.userToken = {} as UserToken;
         },
+        countBlog: (state) => {
+            state.userToken.user.totalBlog = state.userToken.user.totalBlog + 1;
+        },
+        subBlog: (state) => {
+            state.userToken.user.totalBlog = state.userToken.user.totalBlog - 1;
+        },
     },
 });
 
@@ -51,7 +57,8 @@ export const {
     forgotPasswordPending,
     forgotPasswordSuccess,
     uploadAvatarSuccess,
-    updateInfoSuccess,
+    countBlog,
+    subBlog,
 } = authSlice.actions;
 
 export default authSlice.reducer;

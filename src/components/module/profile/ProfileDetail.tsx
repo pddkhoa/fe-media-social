@@ -1,18 +1,12 @@
-import { followersData, followingData, postData } from "@/data/ProfileData";
+import { followersData, followingData } from "@/data/ProfileData";
 import { useState, useEffect } from "react";
 import { PiXBold } from "react-icons/pi";
-import { Badge, Modal, Title, Button } from "rizzui";
+import { Badge, Modal, Title, Button, Empty, Loader } from "rizzui";
 import { cn } from "@/utils/class-name";
-import PostFeed from "../../post/PostFeed";
 import { useLocation } from "react-router-dom";
-import ClientServices from "@/services/client";
 import { Post } from "@/type/post";
-
-const tabs = [
-    { id: "posts", count: postData.length },
-    { id: "followers", count: followersData.length },
-    { id: "following", count: followingData.length },
-];
+import BlogServices from "@/services/blog";
+import PostCard from "@/components/post/PostCard";
 
 export default function ProfileDetails() {
     const location = useLocation();
@@ -21,15 +15,25 @@ export default function ProfileDetails() {
         title: "Followers",
         data: followersData,
     });
-    const [active, setActive] = useState(tabs[0].id);
+
     const [isLoading, setIsLoading] = useState(false);
     const [postData, setPostData] = useState<Post[]>();
+    const [isDelete, setIsDelete] = useState(false);
+
+    const tabs = [
+        { id: "posts", count: postData?.length },
+        { id: "followers", count: followersData.length },
+        { id: "following", count: followingData.length },
+    ];
+    const [active, setActive] = useState(tabs[0].id);
 
     useEffect(() => {
+        setIsDelete(false);
+
         const fetchPostData = async () => {
             try {
                 setIsLoading(true);
-                const { body } = await ClientServices.getBlogUser();
+                const { body } = await BlogServices.getAllBlogByUser();
                 if (body?.success) {
                     setPostData(body.result);
                     setIsLoading(false);
@@ -40,7 +44,7 @@ export default function ProfileDetails() {
             }
         };
         fetchPostData();
-    }, []);
+    }, [isDelete]);
 
     useEffect(() => {
         setOpen(() => false);
@@ -83,7 +87,25 @@ export default function ProfileDetails() {
                         </button>
                     ))}
                 </div>
-                <PostFeed postData={postData} isLoadingPost={isLoading} />
+                <div className="grid grid-cols-3 gap-5 p-4">
+                    {isLoading ? (
+                        <div className="col-span-3 mx-auto mt-5">
+                            <Loader />
+                        </div>
+                    ) : postData && postData.length > 0 ? (
+                        postData.map((item) => (
+                            <PostCard
+                                key={item._id}
+                                data={item}
+                                setIsDelete={setIsDelete}
+                            />
+                        ))
+                    ) : (
+                        <div className="col-span-3">
+                            <Empty />
+                        </div>
+                    )}
+                </div>
             </div>
 
             <Modal

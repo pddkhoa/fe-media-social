@@ -1,5 +1,5 @@
 import identity from "@/api/interceptor";
-import { CategoryPost } from "@/type/post";
+import { CategoryPost, Post } from "@/type/post";
 import { requestApiHelper } from "@/utils/apiRequest";
 
 class BlogServices {
@@ -81,6 +81,24 @@ class BlogServices {
         return await requestApiHelper<body>(
             identity.post("blog/createDraft", data)
         );
+    }
+    static async getAllBlogByUser() {
+        type body = {
+            success: string;
+            statusCode: number;
+            message: string;
+            result: Post[];
+        };
+        return await requestApiHelper<body>(identity.get("blog/allBlog"));
+    }
+    static async deletePost(idPost: string) {
+        type body = {
+            success: string;
+            statusCode: number;
+            message: string;
+            result: any;
+        };
+        return await requestApiHelper<body>(identity.delete(`blog/${idPost}`));
     }
 }
 

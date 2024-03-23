@@ -16,7 +16,6 @@ export default function PostFeed({ postData, isLoadingPost }: PostFeedProps) {
     const [open, setOpen] = useState(false);
     const [postLimit, setPostLimit] = useState(3);
     const [loading, setLoading] = useState(false);
-    // const [currentPostID, setCurrentPostID] = useState(100);
 
     const isFeed = location.pathname === "/feed";
 
@@ -33,11 +32,6 @@ export default function PostFeed({ postData, isLoadingPost }: PostFeedProps) {
     }
 
     let currentPost: any;
-    // postData.forEach((item) => {
-    //   if (item._id === currentPostID) {
-    //     currentPost = item;
-    //   }
-    // });
 
     return (
         <>

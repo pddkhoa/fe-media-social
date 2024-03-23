@@ -16,6 +16,8 @@ import { Tag } from "@/type/tag";
 import BlogServices from "@/services/blog";
 import toast from "react-hot-toast";
 import { useLocation } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { countBlog } from "@/store/authSlice";
 
 export type FormDataType = {
     title: string;
@@ -33,6 +35,7 @@ const PageCreatePost = () => {
     const [checkContent, setCheckContent] = useState(false);
     const [saveDraft, setSaveDraft] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const dispatch = useDispatch();
     const edjsParser = edjsHTML();
 
     const location = useLocation();
@@ -80,6 +83,7 @@ const PageCreatePost = () => {
                     if (body?.success) {
                         toast.success(body.message);
                         setIsLoading(false);
+                        dispatch(countBlog());
                     } else {
                         toast.error(body?.message || "Error");
                         setIsLoading(false);
