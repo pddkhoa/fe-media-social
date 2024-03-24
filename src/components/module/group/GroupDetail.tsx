@@ -37,7 +37,7 @@ import {
 
 const GroupDetail = () => {
     const categoriesId = useParams();
-    const isAdmin = useSelector(
+    const checkUser = useSelector(
         (state: RootState) => state.auth.userToken.user._id
     );
     const [dataCate, setDataCate] = useState<CategoryDetail>();
@@ -50,7 +50,8 @@ const GroupDetail = () => {
     const listBlog = useSelector(
         (state: RootState) => state.category.blogOfCategories
     );
-
+    const [isDelete, setIsDelete] = useState(false);
+    const [userOfGroup, setUserOfGroup] = useState(false);
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
@@ -94,7 +95,7 @@ const GroupDetail = () => {
                 setIsLoading(false);
             }
         },
-        [dispatch]
+        [dispatch, isDelete]
     );
     const fetchUserRequest = useCallback(async () => {
         try {
@@ -118,6 +119,17 @@ const GroupDetail = () => {
         fetchBlog(currentPage);
         fetchUserRequest();
     }, [fetchCate, fetchBlog, isActive, fetchUserRequest]);
+
+    useEffect(() => {
+        if (
+            dataCate &&
+            dataCate?.users?.some((user) => user._id === checkUser)
+        ) {
+            setUserOfGroup(true);
+        } else {
+            setUserOfGroup(false);
+        }
+    }, [checkUser, categoriesId, dataCate]);
 
     const handleLoadMore = () => {
         setCurrentPage((prevPage) => prevPage + 1);
@@ -219,14 +231,6 @@ const GroupDetail = () => {
                                                     variant="outline"
                                                     size="sm"
                                                     className="flex gap-3"
-                                                >
-                                                    Invite Members{" "}
-                                                    <PiUserCirclePlus className="h-5 w-5" />
-                                                </Button>
-                                                <Button
-                                                    variant="outline"
-                                                    size="sm"
-                                                    className="flex gap-3"
                                                     onClick={() => {
                                                         openModal({
                                                             view: (
@@ -242,25 +246,39 @@ const GroupDetail = () => {
                                                     List Members{" "}
                                                     <PiUserList className="h-5 w-5" />
                                                 </Button>
-                                                <Button
-                                                    variant="outline"
-                                                    size="sm"
-                                                    className="flex gap-3"
-                                                    onClick={() => {
-                                                        navigate(
-                                                            "/create-post",
-                                                            {
-                                                                state: {
-                                                                    key: dataCate,
-                                                                },
-                                                            }
-                                                        );
-                                                    }}
-                                                >
-                                                    Create Post{" "}
-                                                    <PiPlus className="h-3 w-3" />
-                                                </Button>
-                                                {isAdmin ===
+
+                                                {userOfGroup ? (
+                                                    <>
+                                                        <Button
+                                                            variant="outline"
+                                                            size="sm"
+                                                            className="flex gap-3"
+                                                        >
+                                                            Invite Members{" "}
+                                                            <PiUserCirclePlus className="h-5 w-5" />
+                                                        </Button>
+                                                        <Button
+                                                            variant="outline"
+                                                            size="sm"
+                                                            className="flex gap-3"
+                                                            onClick={() => {
+                                                                navigate(
+                                                                    "/create-post",
+                                                                    {
+                                                                        state: {
+                                                                            key: dataCate,
+                                                                        },
+                                                                    }
+                                                                );
+                                                            }}
+                                                        >
+                                                            Create Post{" "}
+                                                            <PiPlus className="h-3 w-3" />
+                                                        </Button>
+                                                    </>
+                                                ) : null}
+
+                                                {checkUser ===
                                                 dataCate?.isAdmin._id ? (
                                                     <Popover placement="bottom-end">
                                                         <Popover.Trigger>
@@ -298,7 +316,12 @@ const GroupDetail = () => {
                         <div className="grid grid-cols-3 gap-5">
                             {listBlog && listBlog.length > 0 ? (
                                 listBlog.map((item) => (
-                                    <PostCard key={item._id} data={item} />
+                                    <PostCard
+                                        key={item._id}
+                                        data={item}
+                                        access={userOfGroup}
+                                        setIsDelete={setIsDelete}
+                                    />
                                 ))
                             ) : (
                                 <div className="col-span-3">

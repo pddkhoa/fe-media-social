@@ -59,6 +59,7 @@ export const {
     uploadAvatarSuccess,
     countBlog,
     subBlog,
+    updateInfoSuccess,
 } = authSlice.actions;
 
 export default authSlice.reducer;

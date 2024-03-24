@@ -21,6 +21,8 @@ const TagMain = lazy(() => import("@/pages/client/tags/PageTags"));
 const Message = lazy(() => import("@/pages/client/message/PageMessage"));
 const Contacts = lazy(() => import("@/pages/client/contacts/PageContacts"));
 const DetailPost = lazy(() => import("@/pages/client/post/PageDetailPost"));
+const PageBookmark = lazy(() => import("@/pages/client/bookmark/PageBookmark"));
+const PageDraft = lazy(() => import("@/pages/client/draft/PageDraft"));
 
 const ClientRoutes = () => {
     return (
@@ -112,6 +114,23 @@ const ClientRoutes = () => {
                         element={
                             <Suspense fallback={<div>Loading ...</div>}>
                                 <Contacts />
+                            </Suspense>
+                        }
+                    />
+
+                    <Route
+                        path="/bookmark"
+                        element={
+                            <Suspense fallback={<div>Loading ...</div>}>
+                                <PageBookmark />
+                            </Suspense>
+                        }
+                    />
+                    <Route
+                        path="/draft"
+                        element={
+                            <Suspense fallback={<div>Loading ...</div>}>
+                                <PageDraft />
                             </Suspense>
                         }
                     />

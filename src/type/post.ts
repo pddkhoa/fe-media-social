@@ -1,4 +1,3 @@
-import { Tag } from "./tag";
 import { Avatar, User } from "./user";
 
 export type Post = {
@@ -14,10 +13,34 @@ export type Post = {
     isSave: boolean;
     isLiked: boolean;
     user: User;
-    category: null | string;
-    tags: Tag[];
-    listUserLikes: string[];
-    savedBy: string[];
+    category: {
+        avatar: Avatar;
+        _id: string;
+        name: string;
+        description: string;
+        status: string;
+        isAdmin: string;
+        users: string[];
+        banner: string;
+        tags: string[];
+        sumUser: number;
+        createdAt: string;
+        updatedAt: string;
+        invitationCode: string;
+        __v: number;
+    };
+    tags: {
+        _id: string;
+        name: string;
+        sumBlog: number;
+        user: User;
+        createdAt: string;
+        updatedAt: string;
+        __v: number;
+    }[];
+    listUserLikes: any[]; // Kiểu này cần xác định chính xác nếu bạn có thông tin về người dùng
+    savedBy: any[]; // Kiểu này cần xác định chính xác nếu bạn có thông tin về người dùng
+    comments: any[]; // Kiểu này cần xác định chính xác nếu bạn có thông tin về bình luận
     createdAt: string;
     updatedAt: string;
     __v: number;
@@ -35,6 +58,6 @@ export type CategoryPost = {
     updatedAt: Date;
     invitationCode: string;
     __v: number;
-    statusUser: "Join" | "Leave"; // Assuming statusUser can be either Join or Leave
+    statusUser: "Join" | "UnJoin" | "Pending"; // Assuming statusUser can be either Join or Leave
     avatar: Avatar;
 };

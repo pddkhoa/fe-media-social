@@ -17,8 +17,8 @@ const pageHeader = {
     title: "Groups",
     breadcrumb: [
         {
-            href: "/",
-            name: "Home",
+            href: "/group",
+            name: "Groups",
         },
         {
             href: "/group/my",

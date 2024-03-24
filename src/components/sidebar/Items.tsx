@@ -1,66 +1,102 @@
-import { PiChartDonutFill } from "react-icons/pi";
 import {
-  ContactsIcon,
-  FeedIcon,
-  GroupIcon,
-  MessageIcon,
-  TVIcon,
-  TuneIcon,
-  UserIcon,
-} from "../ui/Icon";
-
-export const menuItems = [
-  {
-    name: "News Feed",
-    href: "/",
-    icon: <TVIcon />,
-  },
-  {
-    name: "Explore",
-    href: "/explore",
-    icon: <FeedIcon />,
-  },
-  {
-    name: "User",
-    href: "/user",
-    icon: <UserIcon />,
-  },
-  {
-    name: "Bookmark",
-    href: "/bookmark",
-    icon: <TuneIcon />,
-  },
-  {
-    name: "Group",
-    href: "/group",
-    icon: <GroupIcon />,
-    dropdownItems: [
-      {
-        name: "All Groups",
-        href: "/group",
-      },
-      {
-        name: "My Groups",
-        href: "/group/my",
-      },
-    ],
-  },
-  {
-    name: "Message",
-    href: "/messenger",
-    icon: <MessageIcon />,
-  },
-  {
-    name: "Contacts",
-    href: "/contacts",
-    icon: <ContactsIcon />,
-  },
-];
+    PiAsteriskSimpleFill,
+    PiBellRingingBold,
+    PiBookBookmark,
+    PiBookmarkSimpleLight,
+    PiBracketsAngleFill,
+    PiChartDonutFill,
+    PiChatCenteredFill,
+    PiGlobeHemisphereWestFill,
+    PiMessengerLogo,
+    PiNewspaper,
+} from "react-icons/pi";
 
 export const menuItemsAdmin: any = [
-  {
-    name: "Analytics",
-    href: "/",
-    icon: <PiChartDonutFill />,
-  },
+    {
+        name: "Analytics",
+        href: "/",
+        icon: <PiChartDonutFill />,
+    },
+];
+
+export const menuItems = [
+    // label start
+    {
+        name: "Overview",
+    },
+    // label end
+    {
+        name: "My Feed",
+        href: "/",
+        icon: <PiNewspaper />,
+    },
+    {
+        name: "Connection",
+        href: "/connection",
+        icon: <PiGlobeHemisphereWestFill />,
+    },
+    {
+        name: "Messenger",
+        href: "/messenger",
+        icon: <PiMessengerLogo />,
+    },
+
+    // label start
+    {
+        name: "Discover",
+    },
+    // label end
+    {
+        name: "Lastest",
+        href: "/lastest",
+        icon: <PiBellRingingBold />,
+    },
+    {
+        name: "Popular",
+        href: "/popular",
+        icon: <PiChatCenteredFill />,
+    },
+    {
+        name: "Best Discussion",
+        href: "/discussion",
+        icon: <PiBracketsAngleFill />,
+    },
+
+    // label start
+    {
+        name: "Groups",
+    },
+    // label end
+
+    {
+        name: "Groups",
+        href: "#",
+        icon: <PiAsteriskSimpleFill />,
+        dropdownItems: [
+            {
+                name: "All Group",
+                href: "/group",
+            },
+            {
+                name: "My Group",
+                href: "/group/my",
+            },
+        ],
+    },
+
+    // label start
+    {
+        name: "Manage",
+    },
+    // label end
+    {
+        name: "Bookmarks",
+        href: "/bookmark",
+        icon: <PiBookmarkSimpleLight />,
+    },
+    {
+        name: "My Drafts",
+        href: "/draft",
+        icon: <PiBookBookmark />,
+    },
 ];

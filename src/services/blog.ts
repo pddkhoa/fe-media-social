@@ -100,6 +100,28 @@ class BlogServices {
         };
         return await requestApiHelper<body>(identity.delete(`blog/${idPost}`));
     }
+    static async getAllBlogDraft() {
+        type body = {
+            success: string;
+            statusCode: number;
+            message: string;
+            result: Post[];
+        };
+        return await requestApiHelper<body>(
+            identity.get("blog/listBlogDraftByUser")
+        );
+    }
+    static async getAllBlogBookmark() {
+        type body = {
+            success: string;
+            statusCode: number;
+            message: string;
+            result: Post[];
+        };
+        return await requestApiHelper<body>(
+            identity.get("/blog/listBlogSaveByUser")
+        );
+    }
 }
 
 export default BlogServices;

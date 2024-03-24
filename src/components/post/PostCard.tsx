@@ -7,6 +7,7 @@ import DropdownAuthor from "./DropdownAuthor";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import DropdownOther from "./DropdownOther";
+import ModalPrivate from "../modal/ModalPrivate";
 
 type POST_TYPE = "image" | "gallery" | "video";
 
@@ -14,10 +15,11 @@ type PostCard = {
     type?: POST_TYPE;
     onClick?: () => void;
     data: Post;
-    setIsDelete?: React.Dispatch<React.SetStateAction<boolean>>;
+    setIsDelete: React.Dispatch<React.SetStateAction<boolean>>;
+    access?: boolean;
 };
 
-export default function PostCard({ data, setIsDelete }: PostCard) {
+export default function PostCard({ data, setIsDelete, access }: PostCard) {
     const [open, setOpen] = useState(false);
     const isAuthor = useSelector(
         (state: RootState) => state.auth.userToken.user._id
@@ -54,7 +56,7 @@ export default function PostCard({ data, setIsDelete }: PostCard) {
                                 </ActionIcon>
                             </Popover.Trigger>
                             <Popover.Content className="z-50 p-0 dark:bg-gray-50 [&>svg]:dark:fill-gray-50">
-                                {isAuthor === data?.user?._id && setIsDelete ? (
+                                {isAuthor === data?.user?._id ? (
                                     <DropdownAuthor
                                         data={data}
                                         setIsDelete={setIsDelete}
@@ -150,11 +152,17 @@ export default function PostCard({ data, setIsDelete }: PostCard) {
                 onClose={() => setOpen(false)}
                 className="[&>div]:p-0 lg:[&>div]:p-4"
                 overlayClassName="dark:bg-opacity-40 dark:backdrop-blur-lg"
-                containerClassName="dark:bg-gray-100 max-w-[460px] max-w-[1200px] h-[600px] lg:max-w-4xl xl:max-w-6xl 2xl:max-w-[1200px] relative"
+                containerClassName="dark:bg-gray-100 max-w-6xl max-h-[600px] w-fit h-full relative"
             >
-                {data && (
-                    <PostsModal data={data} onClose={() => setOpen(false)} />
-                )}
+                {data &&
+                    (access ? (
+                        <PostsModal
+                            data={data}
+                            onClose={() => setOpen(false)}
+                        />
+                    ) : (
+                        <ModalPrivate onClose={() => setOpen(false)} />
+                    ))}
             </Modal>
         </>
     );

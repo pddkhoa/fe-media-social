@@ -17,8 +17,9 @@ type PostsModalProps = {
 };
 
 export default function PostsModal({ data, onClose }: PostsModalProps) {
+    console.log(data);
     return (
-        <div className="round grid grow grid-cols-1 gap-0 h-full overflow-hidden rounded-none bg-white dark:bg-gray-100/90 dark:backdrop-blur-xl lg:grid-cols-12 lg:rounded-xl">
+        <div className="round grid grow grid-cols-1 gap-0 h-[600px] overflow-hidden rounded-none bg-white dark:bg-gray-100/90 dark:backdrop-blur-xl lg:grid-cols-12 lg:rounded-xl">
             <div className="relative h-full lg:col-span-7">
                 <Button
                     rounded="pill"
@@ -38,11 +39,11 @@ export default function PostsModal({ data, onClose }: PostsModalProps) {
 
             <div className="flex w-full flex-col gap-10 p-5 lg:col-span-5 xl:p-6 2xl:p-8">
                 <ModalCardText data={data} />
-                {/* <div className="lg:h-[280px] overflow-auto">
-                    {data.commentData.map((item: any) => (
+                <div className="lg:h-[100px] overflow-auto">
+                    {data?.comments?.map((item: any) => (
                         <ModalCardComment key={item.user} commentData={item} />
                     ))}
-                </div> */}
+                </div>
                 <ModalCommentBox />
             </div>
         </div>

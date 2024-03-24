@@ -11,10 +11,6 @@ const pageHeader = {
     title: "Groups",
     breadcrumb: [
         {
-            href: "/",
-            name: "Home",
-        },
-        {
             href: "/group",
             name: "Groups",
         },
@@ -30,6 +26,7 @@ const PageGroup = () => {
     const listCate = useSelector(
         (state: RootState) => state.category.categories
     );
+    const [searchText, setSearchText] = useState("");
 
     const fetchData = useCallback(
         async (page: number) => {
@@ -75,6 +72,8 @@ const PageGroup = () => {
                 title="All Groups"
                 layout={layout}
                 setLayout={setLayout}
+                setSearchText={setSearchText}
+                searchText={searchText}
             />
             <GroupDetails
                 layout={layout}
@@ -83,6 +82,7 @@ const PageGroup = () => {
                 currentPage={currentPage}
                 loader={isLoading}
                 handleLoadMore={handleLoadMore}
+                searchText={searchText}
             />
         </div>
     );
