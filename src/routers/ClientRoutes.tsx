@@ -12,6 +12,8 @@ const SettingPassword = lazy(
     () => import("@/pages/client/profile/PageTabPassword")
 );
 const CreatePost = lazy(() => import("@/pages/client/post/PageCreatePost"));
+const EditPost = lazy(() => import("@/pages/client/post/PageEditPost"));
+
 const NewsFeed = lazy(() => import("@/pages/client/newsfeed/PageNewsFeed"));
 const GroupMain = lazy(() => import("@/pages/client/group/PageGroup"));
 const CreateGroup = lazy(() => import("@/pages/client/group/PageCreateGroup"));
@@ -58,6 +60,15 @@ const ClientRoutes = () => {
                         element={
                             <Suspense fallback={<div>Loading ...</div>}>
                                 <CreatePost />
+                            </Suspense>
+                        }
+                    />
+
+                    <Route
+                        path="/edit-post"
+                        element={
+                            <Suspense fallback={<div>Loading ...</div>}>
+                                <EditPost />
                             </Suspense>
                         }
                     />

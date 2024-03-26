@@ -12,7 +12,6 @@ import { CategoryPost } from "@/type/post";
 import { pendingUpload, uploadSuccess } from "@/store/imageSlice";
 import { useDispatch } from "react-redux";
 import { TYPE_UPLOAD } from "@/utils/contants";
-import { useLocation } from "react-router-dom";
 
 type optionsCate = {
     label: string;
@@ -47,8 +46,6 @@ const EditDetail: FC<EditDetailProps> = ({
         formik.setFieldValue("categoryIds", value);
         // formik.setFieldValue("tagIds", selectedTags);
     }, [stateDes, value]);
-
-    const location = useLocation();
 
     useEffect(() => {
         const fetchCate = async () => {
@@ -162,7 +159,7 @@ const EditDetail: FC<EditDetailProps> = ({
                 onChange={(selectedValue: any) =>
                     handleChangeSelect(selectedValue)
                 }
-                disabled={isLoadig || location?.state?.key}
+                disabled={isLoadig}
             />
             {value?.tags && (
                 <>

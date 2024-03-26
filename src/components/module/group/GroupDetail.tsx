@@ -33,6 +33,8 @@ import { User } from "@/type/user";
 import {
     getAllBlogCategories,
     getLoadmoreBlogCategories,
+    likeBlogSuccess,
+    saveBlogSuccess,
 } from "@/store/categorySlice";
 
 const GroupDetail = () => {
@@ -321,6 +323,12 @@ const GroupDetail = () => {
                                         data={item}
                                         access={userOfGroup}
                                         setIsDelete={setIsDelete}
+                                        actionDispatchLike={likeBlogSuccess(
+                                            item._id
+                                        )}
+                                        actionDispatchSave={saveBlogSuccess(
+                                            item._id
+                                        )}
                                     />
                                 ))
                             ) : (

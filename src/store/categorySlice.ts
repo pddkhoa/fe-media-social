@@ -65,6 +65,31 @@ const categorySlice = createSlice({
         getLoadmoreBlogCategories: (state, action) => {
             state.blogOfCategories.push(...action.payload);
         },
+
+        likeBlogSuccess: (state, action) => {
+            const post: any = state.blogOfCategories.find(
+                (post) => post._id === action.payload
+            );
+
+            if (post && post.isLiked) {
+                post.isLiked = false;
+                post.likes = post.likes - 1;
+            } else {
+                post.isLiked = true;
+                post.likes = post.likes + 1;
+            }
+        },
+        saveBlogSuccess: (state, action) => {
+            const post: any = state.blogOfCategories.find(
+                (post) => post._id === action.payload
+            );
+
+            if (post && post.isSave) {
+                post.isSave = false;
+            } else {
+                post.isSave = true;
+            }
+        },
     },
 });
 
@@ -79,6 +104,8 @@ export const {
     getLoadmoreCategoriesByUser,
     getAllBlogCategories,
     getLoadmoreBlogCategories,
+    likeBlogSuccess,
+    saveBlogSuccess,
 } = categorySlice.actions;
 
 export default categorySlice.reducer;

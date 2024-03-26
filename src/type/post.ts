@@ -44,6 +44,7 @@ export type Post = {
     createdAt: string;
     updatedAt: string;
     __v: number;
+    isPermission: boolean;
 };
 
 export type CategoryPost = {
@@ -60,4 +61,5 @@ export type CategoryPost = {
     __v: number;
     statusUser: "Join" | "UnJoin" | "Pending"; // Assuming statusUser can be either Join or Leave
     avatar: Avatar;
+    isPermission: boolean;
 };

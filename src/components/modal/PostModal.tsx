@@ -1,34 +1,53 @@
+import ClientServices from "@/services/client";
 import { Post } from "@/type/post";
 import { formatDate } from "@/utils/format-date";
 import { useState } from "react";
+import toast from "react-hot-toast";
 import {
     PiArrowBendDoubleUpRight,
-    PiChatTextBold,
-    PiHeartBold,
+    PiBookmarkSimple,
+    PiBookmarkSimpleFill,
+    PiChatCentered,
+    PiFireFill,
+    PiFireLight,
+    PiShareNetwork,
     PiUsers,
     PiXBold,
 } from "react-icons/pi";
+import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import { Avatar, Button, Textarea, Title } from "rizzui";
 
 type PostsModalProps = {
     data: Post;
     onClose: () => void;
+    actionDispatchLike: {
+        payload: any;
+        type: "category/likeBlogSuccess";
+    };
+    actionDispatchSave: {
+        payload: any;
+        type: "category/saveBlogSuccess";
+    };
 };
 
-export default function PostsModal({ data, onClose }: PostsModalProps) {
-    console.log(data);
+export default function PostsModal({
+    data,
+    onClose,
+    actionDispatchLike,
+    actionDispatchSave,
+}: PostsModalProps) {
     return (
         <div className="round grid grow grid-cols-1 gap-0 h-[600px] overflow-hidden rounded-none bg-white dark:bg-gray-100/90 dark:backdrop-blur-xl lg:grid-cols-12 lg:rounded-xl">
             <div className="relative h-full lg:col-span-7">
                 <Button
                     rounded="pill"
-                    className="absolute right-5 top-5 z-10 h-[30px] w-[30px] p-1 lg:left-5 2xl:hidden"
+                    className="absolute right-5 top-5 z-10 h-[30px] w-[30px] p-1 lg:left-5 "
                     onClick={onClose}
                 >
                     <PiXBold className="w-5" />
                 </Button>
-                <div className=" h-full w-full ">
+                <div className="h-full w-full ">
                     <img
                         src={data?.avatar}
                         alt="random images"
@@ -38,7 +57,11 @@ export default function PostsModal({ data, onClose }: PostsModalProps) {
             </div>
 
             <div className="flex w-full flex-col gap-10 p-5 lg:col-span-5 xl:p-6 2xl:p-8">
-                <ModalCardText data={data} />
+                <ModalCardText
+                    data={data}
+                    actionDispatchLike={actionDispatchLike}
+                    actionDispatchSave={actionDispatchSave}
+                />
                 <div className="lg:h-[100px] overflow-auto">
                     {data?.comments?.map((item: any) => (
                         <ModalCardComment key={item.user} commentData={item} />
@@ -52,9 +75,46 @@ export default function PostsModal({ data, onClose }: PostsModalProps) {
 
 type ModalCardTextProps = {
     data: Post;
+    actionDispatchLike: {
+        payload: any;
+        type: "category/likeBlogSuccess";
+    };
+    actionDispatchSave: {
+        payload: any;
+        type: "category/saveBlogSuccess";
+    };
 };
 
-function ModalCardText({ data }: ModalCardTextProps) {
+function ModalCardText({
+    data,
+    actionDispatchLike,
+    actionDispatchSave,
+}: ModalCardTextProps) {
+    const dispatch = useDispatch();
+    const handleSaveBlog = async (id: string) => {
+        if (id) {
+            const { body } = await ClientServices.saveBlog(id);
+            if (body?.success) {
+                toast.success(body.message);
+                dispatch(actionDispatchSave);
+            } else {
+                toast.error(body?.message || "Error");
+            }
+        }
+    };
+
+    const handleLikeBlog = async (id: string) => {
+        if (id) {
+            const { body } = await ClientServices.likeBlog(id);
+            if (body?.success) {
+                toast.success(body.message);
+                dispatch(actionDispatchLike);
+            } else {
+                toast.error(body?.message || "Error");
+            }
+        }
+    };
+
     return (
         <>
             <div className="flex gap-4">
@@ -101,46 +161,48 @@ function ModalCardText({ data }: ModalCardTextProps) {
                 <div className="flex items-center gap-5">
                     <Button
                         variant="text"
-                        className="font-500 group ms-auto h-auto p-0 text-gray-700"
+                        onClick={() => {
+                            handleLikeBlog(data?._id);
+                        }}
+                        className="font-500 group ms-auto h-auto p-0 "
                     >
-                        <PiHeartBold className="h-auto w-4 text-gray-500 dark:group-hover:text-white" />
+                        {data?.isLiked ? (
+                            <PiFireFill className="h-5 w-5" />
+                        ) : (
+                            <PiFireLight className="h-5 w-5" />
+                        )}
                         <span className="ms-1.5 inline-block">Like</span>
                     </Button>
                     <Button
                         variant="text"
-                        className="font-500 group ms-auto h-auto p-0 text-gray-700"
+                        className="font-500 group ms-auto h-auto p-0 "
                     >
-                        <PiChatTextBold className="h-auto w-4 text-gray-500 dark:group-hover:text-white" />
+                        <PiChatCentered className="h-5 w-5" />
                         <span className="ms-1.5 inline-block">Comment</span>
                     </Button>
                 </div>
                 <div className="space-x-2">
-                    <button
-                        aria-label="Share this post"
+                    <Button
+                        variant="text"
                         type="button"
                         className="p-2 text-center"
                     >
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 512 512"
-                            className="w-4 h-4 fill-current dark:text-black"
-                        >
-                            <path d="M404,344a75.9,75.9,0,0,0-60.208,29.7L179.869,280.664a75.693,75.693,0,0,0,0-49.328L343.792,138.3a75.937,75.937,0,1,0-13.776-28.976L163.3,203.946a76,76,0,1,0,0,104.108l166.717,94.623A75.991,75.991,0,1,0,404,344Zm0-296a44,44,0,1,1-44,44A44.049,44.049,0,0,1,404,48ZM108,300a44,44,0,1,1,44-44A44.049,44.049,0,0,1,108,300ZM404,464a44,44,0,1,1,44-44A44.049,44.049,0,0,1,404,464Z"></path>
-                        </svg>
-                    </button>
-                    <button
-                        aria-label="Bookmark this post"
+                        <PiShareNetwork className="w-5 h-5" />
+                    </Button>
+                    <Button
+                        onClick={() => {
+                            handleSaveBlog(data?._id);
+                        }}
+                        variant="text"
                         type="button"
                         className="p-2"
                     >
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 512 512"
-                            className="w-4 h-4 fill-current dark:text-black"
-                        >
-                            <path d="M424,496H388.75L256.008,381.19,123.467,496H88V16H424ZM120,48V456.667l135.992-117.8L392,456.5V48Z"></path>
-                        </svg>
-                    </button>
+                        {data?.isSave ? (
+                            <PiBookmarkSimpleFill className="w-5 h-5" />
+                        ) : (
+                            <PiBookmarkSimple className="w-5 h-5" />
+                        )}
+                    </Button>
                 </div>
             </div>
         </>

@@ -6,39 +6,65 @@ import { useFormik } from "formik";
 import React, { useEffect, useState } from "react";
 import {
     PiArrowLeftBold,
-    PiArrowRightBold,
     PiClipboardTextLight,
+    PiArrowRightBold,
 } from "react-icons/pi";
-import { Stepper, Button } from "rizzui";
-import * as Yup from "yup";
+import { useDispatch } from "react-redux";
+import { useLocation } from "react-router-dom";
+import { Stepper, Button, Loader } from "rizzui";
 import edjsHTML from "editorjs-html";
+import * as Yup from "yup";
+import convertHTMLToEditorJS from "@/components/editor/Convert";
 import { Tag } from "@/type/tag";
+import { useModal } from "@/hooks/useModal";
+import ModalChangeStatus from "@/components/post/ModalChangeStatus";
 import BlogServices from "@/services/blog";
 import toast from "react-hot-toast";
-import { useLocation } from "react-router-dom";
-import { useDispatch } from "react-redux";
 import { countBlog } from "@/store/authSlice";
 
-export type FormDataType = {
-    title: string;
-    content: string;
-    description: string;
-    avatar: string;
-    categoryIds: any;
-    tagIds: Tag[];
-};
-
-const PageCreatePost = () => {
+const PageEditPost = () => {
     const [currentStep, setCurrentStep] = React.useState(0);
-    const [content, setContent] = useState<OutputData>();
     const [checkContent, setCheckContent] = useState(false);
-    const [saveDraft, setSaveDraft] = useState(false);
+    const [statusValue, setStatusValue] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const dispatch = useDispatch();
     const edjsParser = edjsHTML();
-
+    const { openModal, closeModal } = useModal();
     const location = useLocation();
-    const [formDataCreate, setFormDataCreate] = useState<FormDataType>();
+
+    const [formDataCreate, setFormDataCreate] = useState<any>(() => {
+        if (location?.state?.key?.category) {
+            return {
+                title: location?.state?.key?.title || "",
+                description: location?.state?.key?.description || "",
+                avatar: location?.state?.key?.avatar || "",
+                categoryIds: {
+                    label: location?.state?.key?.category?.name || "",
+                    value: location?.state?.key?.category?._id || "",
+                    tags: location?.state?.key?.category?.tags || [],
+                },
+                tagIds:
+                    location?.state?.key?.tags?.map((item: Tag) => item) || [],
+            };
+        } else {
+            return {
+                title: location?.state?.key?.title || "",
+                description: location?.state?.key?.description || "",
+                avatar: location?.state?.key?.avatar || "",
+                categoryIds: "",
+                tagIds:
+                    location?.state?.key?.tags?.map((item: Tag) => item) || [],
+            };
+        }
+    });
+    const [content, setContent] = useState<OutputData | undefined>(
+        convertHTMLToEditorJS(location?.state?.key?.content)
+    );
+
+    useEffect(() => {
+        if (content) setCheckContent(true);
+        else setCheckContent(false);
+    }, [content]);
 
     const formik = useFormik({
         initialValues: {
@@ -48,6 +74,7 @@ const PageCreatePost = () => {
             avatar: "",
             categoryIds: "",
             tagIds: [],
+            status: "",
         },
         validationSchema: Yup.object().shape({
             title: Yup.string().required("Title is required."),
@@ -57,58 +84,35 @@ const PageCreatePost = () => {
         onSubmit: async (values) => {
             const form = {
                 ...values,
+                status: statusValue,
                 categoryIds: formDataCreate?.categoryIds?.value,
-                tagIds: formDataCreate?.tagIds?.map((item) => item._id),
+                tagIds: formDataCreate?.tagIds?.map((item: Tag) => item._id),
                 content: edjsParser.parse(content as any).join(""),
                 avatar: formDataCreate?.avatar,
             };
-            setSaveDraft(true);
+
             setIsLoading(true);
 
             try {
-                if (saveDraft) {
-                    const { body } = await BlogServices.addPostDraft(
-                        form as any
-                    );
-                    if (body?.success) {
-                        toast.success(body.message);
-                        setIsLoading(false);
-                    } else {
-                        toast.error(body?.message || "Error");
-                        setIsLoading(false);
-                    }
+                const { body } = await BlogServices.editPost(
+                    form,
+                    location?.state?.key?._id
+                );
+                if (body?.success) {
+                    toast.success(body?.message);
+                    setIsLoading(false);
+                    closeModal();
+                    if (statusValue === "Published") dispatch(countBlog());
                 } else {
-                    const { body } = await BlogServices.addPost(form as any);
-
-                    if (body?.success) {
-                        toast.success(body.message);
-                        setIsLoading(false);
-                        dispatch(countBlog());
-                    } else {
-                        toast.error(body?.message || "Error");
-                        setIsLoading(false);
-                    }
+                    toast.error(body?.message || "Error");
+                    setIsLoading(false);
                 }
             } catch (error) {
                 console.log(error);
-                setSaveDraft(false);
                 setIsLoading(false);
             }
         },
     });
-
-    useEffect(() => {
-        if (location.state) {
-            setFormDataCreate((prevFormData: any) => ({
-                ...prevFormData,
-                categoryIds: {
-                    label: location.state.key.name,
-                    value: location.state.key._id,
-                    tags: location.state.key.tags,
-                },
-            }));
-        }
-    }, [location.state]);
 
     const renderEdit = (step: number) => {
         switch (step) {
@@ -171,25 +175,11 @@ const PageCreatePost = () => {
                 >
                     <PiArrowLeftBold /> Prev
                 </Button>
-                <Button
-                    size="sm"
-                    type="submit"
-                    disabled={
-                        formik.isSubmitting || !formik.isValid || !checkContent
-                    }
-                    onClick={() => {
-                        setSaveDraft(true);
-                        formik.handleSubmit;
-                    }}
-                    isLoading={isLoading}
-                    className="flex gap-2"
-                >
-                    Save Draft <PiClipboardTextLight className="w-4 h-4" />
-                </Button>
+
                 {currentStep === 2 && (
                     <Button
                         size="sm"
-                        type="submit"
+                        type="button"
                         disabled={
                             formik.isSubmitting ||
                             !formik.isValid ||
@@ -197,8 +187,17 @@ const PageCreatePost = () => {
                         }
                         isLoading={isLoading}
                         onClick={() => {
-                            setSaveDraft(false);
-                            formik.handleSubmit;
+                            openModal({
+                                view: isLoading ? (
+                                    <Loader />
+                                ) : (
+                                    <ModalChangeStatus
+                                        setStatusValue={setStatusValue}
+                                        submit={formik.handleSubmit}
+                                        isLoading={isLoading}
+                                    />
+                                ),
+                            });
                         }}
                         className="flex gap-2"
                     >
@@ -218,4 +217,4 @@ const PageCreatePost = () => {
     );
 };
 
-export default PageCreatePost;
+export default PageEditPost;

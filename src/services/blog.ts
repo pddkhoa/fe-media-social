@@ -122,6 +122,28 @@ class BlogServices {
             identity.get("/blog/listBlogSaveByUser")
         );
     }
+    static async editPost(
+        data: {
+            title: string;
+            description: string;
+            content: string;
+            avatar: string;
+            categoryIds: string;
+            tagIds: string[];
+            status: string;
+        },
+        idBlog: string
+    ) {
+        type body = {
+            success: string;
+            statusCode: number;
+            message: string;
+            result: Post;
+        };
+        return await requestApiHelper<body>(
+            identity.put(`blog/edit/${idBlog}`, data)
+        );
+    }
 }
 
 export default BlogServices;

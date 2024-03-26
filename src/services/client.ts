@@ -253,6 +253,29 @@ class ClientServices {
             identity.put(`category/removeTag`, data)
         );
     }
+
+    static async saveBlog(idBlog: string) {
+        type body = {
+            success: string;
+            statusCode: number;
+            message: string;
+            result: Post;
+        };
+        return await requestApiHelper<body>(
+            identity.post(`/user/saveBlog/${idBlog}`)
+        );
+    }
+    static async likeBlog(idBlog: string) {
+        type body = {
+            success: string;
+            statusCode: number;
+            message: string;
+            result: Post;
+        };
+        return await requestApiHelper<body>(
+            identity.post(`/user/likeBlog/${idBlog}`)
+        );
+    }
 }
 
 export default ClientServices;
