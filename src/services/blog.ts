@@ -1,4 +1,5 @@
 import identity from "@/api/interceptor";
+import { Comment } from "@/type/comment";
 import { CategoryPost, Post } from "@/type/post";
 import { requestApiHelper } from "@/utils/apiRequest";
 
@@ -142,6 +143,33 @@ class BlogServices {
         };
         return await requestApiHelper<body>(
             identity.put(`blog/edit/${idBlog}`, data)
+        );
+    }
+    static async getBlogByUserID(userId: string) {
+        type body = {
+            success: string;
+            statusCode: number;
+            message: string;
+            result: Post[];
+        };
+        return await requestApiHelper<body>(
+            identity.get(`/user/listBlog/${userId}`)
+        );
+    }
+
+    static async addComment(data: {
+        blogId: string;
+        replyToCommentId: string | null;
+        content: string;
+    }) {
+        type body = {
+            success: string;
+            statusCode: number;
+            message: string;
+            result: Comment;
+        };
+        return await requestApiHelper<body>(
+            identity.post("user/comment", data)
         );
     }
 }

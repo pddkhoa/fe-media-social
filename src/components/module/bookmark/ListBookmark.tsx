@@ -1,5 +1,9 @@
-import PostCard from "@/components/post/PostCard";
+import PostCard from "@/components/module/post/PostCard";
 import { SkeletonCateList, SkeletonPost } from "@/components/ui/SkeletonLoader";
+import {
+    likePostBookmarkSuccess,
+    savePostBookmarkSuccess,
+} from "@/store/blogSlice";
 import { Post } from "@/type/post";
 import { FC } from "react";
 import { Empty } from "rizzui";
@@ -58,6 +62,12 @@ const ListBookmark: FC<ListBookmarkProps> = ({
                                 <div key={item._id} className="col-span-1 ">
                                     <PostCard
                                         data={item}
+                                        actionDispatchLike={likePostBookmarkSuccess(
+                                            item._id
+                                        )}
+                                        actionDispatchSave={savePostBookmarkSuccess(
+                                            item._id
+                                        )}
                                         setIsDelete={setIsDelete}
                                     />
                                 </div>

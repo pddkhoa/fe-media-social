@@ -15,7 +15,7 @@ import {
     Popover,
     Title,
 } from "rizzui";
-import PostCard from "../../post/PostCard";
+import PostCard from "../post/PostCard";
 import { useNavigate, useParams } from "react-router-dom";
 import { useCallback, useEffect, useState } from "react";
 import { CategoryDetail } from "@/type/category";

@@ -4,6 +4,7 @@ import GroupHeader from "@/components/module/group/GroupHeader";
 import BlogServices from "@/services/blog";
 import { Post } from "@/type/post";
 import { useCallback, useEffect, useState } from "react";
+import { Empty, Loader } from "rizzui";
 
 const pageHeader = {
     title: "My Draft",
@@ -51,13 +52,21 @@ const PageDraft = () => {
                 layout={layout}
                 setLayout={setLayout}
             />
-            {blog && (
+            {isLoading ? (
+                <div className="flex justify-center items-center mt-10">
+                    <Loader />
+                </div>
+            ) : blog && blog?.length > 0 ? (
                 <ListDraft
                     data={blog}
                     layout={layout}
                     loader={isLoading}
                     setIsDelete={setIsDelete}
                 />
+            ) : (
+                <div className="flex justify-center items-center mt-10">
+                    <Empty />
+                </div>
             )}
         </div>
     );

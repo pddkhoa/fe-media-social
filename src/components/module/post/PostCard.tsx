@@ -9,14 +9,15 @@ import {
     PiShareNetwork,
 } from "react-icons/pi";
 import { ActionIcon, Modal, Popover } from "rizzui";
-import PostsModal from "../modal/PostModal";
+import PostsModal from "../../modal/PostModal";
 import { useState } from "react";
 import DropdownAuthor from "./DropdownAuthor";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import DropdownOther from "./DropdownOther";
-import ModalPrivate from "../modal/ModalPrivate";
+import ModalPrivate from "../../modal/ModalPrivate";
 import { formatDate } from "@/utils/format-date";
+import ModalDraft from "./ModalDraft";
 
 type POST_TYPE = "image" | "gallery" | "video";
 
@@ -25,14 +26,19 @@ type PostCard = {
     onClick?: () => void;
     data: Post;
     setIsDelete: React.Dispatch<React.SetStateAction<boolean>>;
-    access?: boolean;
-    actionDispatchLike: {
+    actionDispatchLike?: {
         payload: any;
-        type: "category/likeBlogSuccess";
+        type:
+            | "category/likeBlogSuccess"
+            | "post/likePostBookmarkSuccess"
+            | "post/likePostByUserSuccess";
     };
-    actionDispatchSave: {
+    actionDispatchSave?: {
         payload: any;
-        type: "category/saveBlogSuccess";
+        type:
+            | "category/saveBlogSuccess"
+            | "post/savePostBookmarkSuccess"
+            | "post/savePostByUserSuccess";
     };
 };
 
@@ -55,7 +61,7 @@ export default function PostCard({
                         <img
                             alt=""
                             src={data?.user?.avatar?.url}
-                            className="object-cover w-12 h-12 rounded-full shadow bg-gray-500"
+                            className="object-cover w-12 h-12 rounded-full shadow"
                         />
                         <div className="flex flex-col space-y-1">
                             <a
@@ -145,13 +151,17 @@ export default function PostCard({
                 containerClassName="dark:bg-gray-100 max-w-6xl max-h-[600px] w-fit h-full relative"
             >
                 {data &&
-                    (data?.isPermission ? (
+                    (data?.isPermission &&
+                    actionDispatchLike &&
+                    actionDispatchSave ? (
                         <PostsModal
                             data={data}
                             actionDispatchLike={actionDispatchLike}
                             onClose={() => setOpen(false)}
                             actionDispatchSave={actionDispatchSave}
                         />
+                    ) : data.status === "Draft" ? (
+                        <ModalDraft onClose={() => setOpen(false)} />
                     ) : (
                         <ModalPrivate onClose={() => setOpen(false)} />
                     ))}

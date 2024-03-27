@@ -3,7 +3,7 @@ import { Avatar, Badge } from "rizzui";
 import Output from "editorjs-blocks-react-renderer";
 import { Post } from "@/type/post";
 import { FC } from "react";
-import convertHTMLToEditorJS from "../editor/Convert";
+import convertHTMLToEditorJS from "../../editor/Convert";
 import "./PostDetail.css";
 
 type PostDetailProps = {

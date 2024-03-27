@@ -4,9 +4,15 @@ import { PiXBold } from "react-icons/pi";
 import { Badge, Modal, Title, Button, Empty, Loader } from "rizzui";
 import { cn } from "@/utils/class-name";
 import { useLocation } from "react-router-dom";
-import { Post } from "@/type/post";
 import BlogServices from "@/services/blog";
-import PostCard from "@/components/post/PostCard";
+import PostCard from "@/components/module/post/PostCard";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/store/store";
+import {
+    getPostByUser,
+    likePostByUserSuccess,
+    savePostByUserSuccess,
+} from "@/store/blogSlice";
 
 export default function ProfileDetails() {
     const location = useLocation();
@@ -17,11 +23,17 @@ export default function ProfileDetails() {
     });
 
     const [isLoading, setIsLoading] = useState(false);
-    const [postData, setPostData] = useState<Post[]>();
     const [isDelete, setIsDelete] = useState(false);
+    const dispatch = useDispatch();
+    const listBlog = useSelector(
+        (state: RootState) => state.post.listPostByUser
+    );
+    const userIdAuth = useSelector(
+        (state: RootState) => state.auth.userToken.user._id
+    );
 
     const tabs = [
-        { id: "posts", count: postData?.length },
+        { id: "posts", count: listBlog?.length },
         { id: "followers", count: followersData.length },
         { id: "following", count: followingData.length },
     ];
@@ -33,9 +45,9 @@ export default function ProfileDetails() {
         const fetchPostData = async () => {
             try {
                 setIsLoading(true);
-                const { body } = await BlogServices.getAllBlogByUser();
+                const { body } = await BlogServices.getBlogByUserID(userIdAuth);
                 if (body?.success) {
-                    setPostData(body.result);
+                    dispatch(getPostByUser(body?.result));
                     setIsLoading(false);
                 }
             } catch (error) {
@@ -92,12 +104,18 @@ export default function ProfileDetails() {
                         <div className="col-span-3 mx-auto mt-5">
                             <Loader />
                         </div>
-                    ) : postData && postData.length > 0 ? (
-                        postData.map((item) => (
+                    ) : listBlog && listBlog.length > 0 ? (
+                        listBlog.map((item) => (
                             <PostCard
                                 key={item._id}
                                 data={item}
                                 setIsDelete={setIsDelete}
+                                actionDispatchLike={likePostByUserSuccess(
+                                    item._id
+                                )}
+                                actionDispatchSave={savePostByUserSuccess(
+                                    item._id
+                                )}
                             />
                         ))
                     ) : (

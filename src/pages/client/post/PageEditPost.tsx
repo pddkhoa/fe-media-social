@@ -17,7 +17,7 @@ import * as Yup from "yup";
 import convertHTMLToEditorJS from "@/components/editor/Convert";
 import { Tag } from "@/type/tag";
 import { useModal } from "@/hooks/useModal";
-import ModalChangeStatus from "@/components/post/ModalChangeStatus";
+import ModalChangeStatus from "@/components/module/post/ModalChangeStatus";
 import BlogServices from "@/services/blog";
 import toast from "react-hot-toast";
 import { countBlog } from "@/store/authSlice";

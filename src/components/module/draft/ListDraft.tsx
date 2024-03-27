@@ -1,4 +1,4 @@
-import PostCard from "@/components/post/PostCard";
+import PostCard from "@/components/module/post/PostCard";
 import { SkeletonCateList, SkeletonPost } from "@/components/ui/SkeletonLoader";
 import { Post } from "@/type/post";
 import { FC } from "react";

@@ -1,12 +1,17 @@
+import BlogServices from "@/services/blog";
 import ClientServices from "@/services/client";
+import { postCommentToPostByUser } from "@/store/blogSlice";
+import { Comment } from "@/type/comment";
 import { Post } from "@/type/post";
 import { formatDate } from "@/utils/format-date";
+import { useFormik } from "formik";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import {
     PiArrowBendDoubleUpRight,
     PiBookmarkSimple,
     PiBookmarkSimpleFill,
+    PiCaretUp,
     PiChatCentered,
     PiFireFill,
     PiFireLight,
@@ -17,17 +22,24 @@ import {
 import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import { Avatar, Button, Textarea, Title } from "rizzui";
+import SimpleBar from "simplebar-react";
 
 type PostsModalProps = {
     data: Post;
     onClose: () => void;
     actionDispatchLike: {
         payload: any;
-        type: "category/likeBlogSuccess";
+        type:
+            | "category/likeBlogSuccess"
+            | "post/likePostBookmarkSuccess"
+            | "post/likePostByUserSuccess";
     };
     actionDispatchSave: {
         payload: any;
-        type: "category/saveBlogSuccess";
+        type:
+            | "category/saveBlogSuccess"
+            | "post/savePostBookmarkSuccess"
+            | "post/savePostByUserSuccess";
     };
 };
 
@@ -37,6 +49,19 @@ export default function PostsModal({
     actionDispatchLike,
     actionDispatchSave,
 }: PostsModalProps) {
+    const [activeComment, setActiveComment] = useState<any>();
+    //Root Comment
+    const rootComment = data?.comments?.filter(
+        (comment) => comment?.replyToCommentId === null
+    );
+    // Child Comment
+    const childComment = (commentId: string) => {
+        return data.comments?.filter(
+            (comment) => comment?.replyToCommentId?._id === commentId
+        );
+    };
+
+    console.log(childComment);
     return (
         <div className="round grid grow grid-cols-1 gap-0 h-[600px] overflow-hidden rounded-none bg-white dark:bg-gray-100/90 dark:backdrop-blur-xl lg:grid-cols-12 lg:rounded-xl">
             <div className="relative h-full lg:col-span-7">
@@ -56,18 +81,29 @@ export default function PostsModal({
                 </div>
             </div>
 
-            <div className="flex w-full flex-col gap-10 p-5 lg:col-span-5 xl:p-6 2xl:p-8">
+            <div className="flex w-full flex-col gap-5 p-4 lg:col-span-5">
                 <ModalCardText
                     data={data}
                     actionDispatchLike={actionDispatchLike}
                     actionDispatchSave={actionDispatchSave}
                 />
-                <div className="lg:h-[100px] overflow-auto">
-                    {data?.comments?.map((item: any) => (
-                        <ModalCardComment key={item.user} commentData={item} />
-                    ))}
-                </div>
-                <ModalCommentBox />
+                <SimpleBar className="lg:h-[190px]  py-1">
+                    {rootComment &&
+                        rootComment.length > 0 &&
+                        rootComment?.map((item: Comment) => (
+                            <ModalCardComment
+                                key={item._id}
+                                commentData={item}
+                                child={childComment(item._id) as any}
+                                childComment={childComment}
+                                activeComment={activeComment}
+                                setActiveComment={setActiveComment}
+                                nestingLevel={0}
+                                idBlog={data._id}
+                            />
+                        ))}
+                </SimpleBar>
+                <ModalCommentBox idBlog={data?._id} parentId={null} />
             </div>
         </div>
     );
@@ -77,11 +113,17 @@ type ModalCardTextProps = {
     data: Post;
     actionDispatchLike: {
         payload: any;
-        type: "category/likeBlogSuccess";
+        type:
+            | "category/likeBlogSuccess"
+            | "post/likePostBookmarkSuccess"
+            | "post/likePostByUserSuccess";
     };
     actionDispatchSave: {
         payload: any;
-        type: "category/saveBlogSuccess";
+        type:
+            | "category/saveBlogSuccess"
+            | "post/savePostBookmarkSuccess"
+            | "post/savePostByUserSuccess";
     };
 };
 
@@ -208,84 +250,183 @@ function ModalCardText({
         </>
     );
 }
-export type CommentPropsType = {
-    commentData: {
-        user: string;
-        userImg: string;
-        userComment: string;
-    };
+type CommentPropsType = {
+    commentData: Comment;
+    child?: ((commentId: string) => any) | undefined;
+    childComment: (commentId: string) => any[];
+    setActiveComment: React.Dispatch<React.SetStateAction<any>>;
+    activeComment: any;
+    nestingLevel: number;
+    idBlog: string;
 };
 
-function ModalCardComment({ commentData }: CommentPropsType) {
-    const renderHtml = (data: string) => {
-        return { __html: data };
-    };
+function ModalCardComment({
+    commentData,
+    child,
+    childComment,
+    setActiveComment,
+    activeComment,
+    nestingLevel,
+    idBlog,
+}: CommentPropsType) {
+    const isReplying =
+        activeComment &&
+        activeComment.type === "replying" &&
+        activeComment.id === commentData._id;
+
+    const MAX_NESTING = 3;
+    const [hideChildComment, setHideChildComment] = useState(false);
+    const replies: Comment[] = childComment(commentData._id);
+    const sumChildComment = replies.length;
+
     return (
-        <div className="flex items-start gap-4 pr-3 pt-6">
-            <Avatar
-                name="Marie Fanned"
-                className="bg-[#F1A74F] font-medium tracking-wider text-white"
-                src={commentData.userImg}
-            />
-            <div>
-                <Title as="h2" className="text-sm font-medium text-gray-1000">
-                    <Link to={"/"} className="inline-block hover:underline">
-                        {commentData.user}
-                    </Link>
-                </Title>
-                <span
-                    className="mt-1.5 block text-sm font-normal text-gray-800 [&_a]:text-primary-light"
-                    dangerouslySetInnerHTML={renderHtml(
-                        commentData.userComment
-                    )}
+        <>
+            <div className="flex items-start gap-4 pr-3  p-2">
+                <Avatar
+                    name={commentData?.user?.name}
+                    src={commentData?.user?.avatar?.url}
                 />
-                <div className="mt-3 flex gap-6">
-                    <LikeCounter />
-                    <Button
-                        variant="text"
-                        size="sm"
-                        className="h-auto p-0 font-medium"
-                    >
-                        Reply
-                    </Button>
-                    <p className="text-xs font-normal">7 hours</p>
+                <div>
+                    <span className="mt-1.5 block text-sm font-normal text-gray-800 [&_a]:text-primary-light">
+                        {commentData?.content}
+                    </span>
+                    <div className="mt-3 flex gap-5 items-center">
+                        {nestingLevel <= MAX_NESTING ? (
+                            <>
+                                <Button
+                                    variant="text"
+                                    size="sm"
+                                    className="h-auto p-0 font-medium"
+                                    onClick={() => {
+                                        setActiveComment({
+                                            id: commentData?._id,
+                                            type: "replying",
+                                        });
+                                    }}
+                                >
+                                    Reply
+                                </Button>
+                                <p className="text-xs font-normal">
+                                    {formatDate(commentData?.createdAt as any)}
+                                </p>
+                                {sumChildComment > 0 ? (
+                                    <div className="text-xs flex items-center gap-2">
+                                        <PiCaretUp
+                                            onClick={() => {
+                                                setHideChildComment(
+                                                    !hideChildComment
+                                                );
+                                            }}
+                                            className={`w-4 h-4 duration-150 cursor-pointer  ${
+                                                hideChildComment
+                                                    ? "rotate-180"
+                                                    : ""
+                                            }`}
+                                        />
+                                        <span className="flex gap-2 items-center ">
+                                            {sumChildComment}
+                                        </span>
+                                    </div>
+                                ) : null}
+                            </>
+                        ) : null}
+                    </div>
                 </div>
             </div>
-        </div>
+            {isReplying && (
+                <div className=" ml-5 mx-4 ">
+                    <ModalCommentBox
+                        parentId={commentData._id}
+                        idBlog={idBlog}
+                    />
+                </div>
+            )}
+
+            {hideChildComment
+                ? replies &&
+                  replies?.length > 0 && (
+                      <div className="pt-1  ml-10">
+                          {replies?.map((commentChild) => (
+                              <ModalCardComment
+                                  childComment={childComment}
+                                  commentData={commentChild}
+                                  key={commentChild._id}
+                                  setActiveComment={setActiveComment}
+                                  activeComment={activeComment}
+                                  nestingLevel={nestingLevel + 1}
+                                  idBlog={idBlog}
+                              />
+                          ))}
+                      </div>
+                  )
+                : null}
+        </>
     );
 }
 
-function ModalCommentBox() {
+type ModalCommentBoxProps = {
+    parentId: string | null;
+    idBlog: string;
+};
+
+function ModalCommentBox({ parentId, idBlog }: ModalCommentBoxProps) {
+    const [isLoading, setIsLoading] = useState(false);
+    const dispatch = useDispatch();
+
+    const formik = useFormik({
+        initialValues: {
+            blogId: idBlog,
+            replyToCommentId: parentId,
+            content: "",
+        },
+
+        validateOnChange: true,
+        onSubmit: async (values, { resetForm }) => {
+            setIsLoading(true);
+            const { body } = await BlogServices.addComment(values);
+            try {
+                if (body?.success) {
+                    setIsLoading(false);
+                    toast.success(body.message);
+                    dispatch(
+                        postCommentToPostByUser({
+                            postId: idBlog,
+                            comment: body?.result,
+                        })
+                    );
+                    resetForm();
+                } else {
+                    setIsLoading(false);
+                    toast.error(body?.message || "Error");
+                }
+            } catch (error) {
+                setIsLoading(false);
+            }
+        },
+    });
     return (
-        <div className="relative mt-8">
+        <form onSubmit={formik.handleSubmit} className="relative mt-8">
             <Textarea
                 variant="flat"
                 size="sm"
+                name="content"
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                value={formik.values.content}
                 placeholder="Share your thoughts"
                 className="w-full resize-none"
                 textareaClassName="resize-none py-2 text-sm h-[90px]"
             />
             <Button
                 variant="text"
+                type="submit"
                 color="primary"
+                isLoading={isLoading}
+                disabled={isLoading}
                 className="absolute bottom-2 end-2"
             >
                 Post
             </Button>
-        </div>
-    );
-}
-
-function LikeCounter() {
-    const [count, setCount] = useState(false);
-    return (
-        <Button
-            variant="text"
-            size="sm"
-            className="h-auto p-0 font-medium"
-            onClick={() => setCount(() => !count)}
-        >
-            <span className="me-1.5">{count ? 2 : 1}</span> Like
-        </Button>
+        </form>
     );
 }
