@@ -9,7 +9,7 @@ import {
     PiShareNetwork,
 } from "react-icons/pi";
 import { ActionIcon, Modal, Popover } from "rizzui";
-import PostsModal from "../../modal/PostModal";
+import PostsModal from "./PostModal";
 import { useState } from "react";
 import DropdownAuthor from "./DropdownAuthor";
 import { useSelector } from "react-redux";
@@ -40,6 +40,12 @@ type PostCard = {
             | "post/savePostBookmarkSuccess"
             | "post/savePostByUserSuccess";
     };
+
+    handleCommentPost: (data: {
+        blogId: string;
+        replyToCommentId: string | null;
+        content: string;
+    }) => Promise<void>;
 };
 
 export default function PostCard({
@@ -47,6 +53,7 @@ export default function PostCard({
     setIsDelete,
     actionDispatchLike,
     actionDispatchSave,
+    handleCommentPost,
 }: PostCard) {
     const [open, setOpen] = useState(false);
     const isAuthor = useSelector(
@@ -148,7 +155,7 @@ export default function PostCard({
                 onClose={() => setOpen(false)}
                 className="[&>div]:p-0 lg:[&>div]:p-4"
                 overlayClassName="dark:bg-opacity-40 dark:backdrop-blur-lg"
-                containerClassName="dark:bg-gray-100 max-w-6xl max-h-[600px] w-fit h-full relative"
+                containerClassName="dark:bg-gray-100 max-w-7xl max-h-[650px] w-full h-full relative"
             >
                 {data &&
                     (data?.isPermission &&
@@ -159,6 +166,7 @@ export default function PostCard({
                             actionDispatchLike={actionDispatchLike}
                             onClose={() => setOpen(false)}
                             actionDispatchSave={actionDispatchSave}
+                            handleCommentPost={handleCommentPost}
                         />
                     ) : data.status === "Draft" ? (
                         <ModalDraft onClose={() => setOpen(false)} />

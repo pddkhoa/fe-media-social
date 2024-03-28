@@ -2,9 +2,15 @@ import PageHeader from "@/components/breadcrumb/PageHeader";
 import ListBookmark from "@/components/module/bookmark/ListBookmark";
 import GroupHeader from "@/components/module/group/GroupHeader";
 import BlogServices from "@/services/blog";
-import { getPostBookmark } from "@/store/blogSlice";
+import {
+    doneCommentSuccess,
+    getPostBookmark,
+    pendingCommentSuccess,
+    postCommentToPostBookmark,
+} from "@/store/blogSlice";
 import { RootState } from "@/store/store";
 import { useState, useCallback, useEffect } from "react";
+import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 import { Empty, Loader } from "rizzui";
 
@@ -45,6 +51,33 @@ const PageBookmark = () => {
         fetchData();
     }, [fetchData, isDelete]);
 
+    const handleCommentPost = async (data: {
+        blogId: string;
+        replyToCommentId: string | null;
+        content: string;
+    }) => {
+        dispatch(pendingCommentSuccess());
+        const { body } = await BlogServices.addComment(data);
+        try {
+            if (body?.success) {
+                toast.success(body.message);
+                dispatch(
+                    postCommentToPostBookmark({
+                        postId: data.blogId,
+                        comment: body?.result,
+                    })
+                );
+                dispatch(doneCommentSuccess());
+            } else {
+                dispatch(doneCommentSuccess());
+                toast.error(body?.message || "Error");
+            }
+        } catch (error) {
+            dispatch(doneCommentSuccess());
+            console.log(error);
+        }
+    };
+
     return (
         <div>
             {" "}
@@ -67,6 +100,7 @@ const PageBookmark = () => {
                     layout={layout}
                     loader={isLoading}
                     setIsDelete={setIsDelete}
+                    handleCommentPost={handleCommentPost}
                 />
             ) : (
                 <div className="flex justify-center items-center mt-10">

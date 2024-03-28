@@ -9,10 +9,14 @@ import PostCard from "@/components/module/post/PostCard";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import {
+    doneCommentSuccess,
     getPostByUser,
     likePostByUserSuccess,
+    pendingCommentSuccess,
+    postCommentToPostByUser,
     savePostByUserSuccess,
 } from "@/store/blogSlice";
+import toast from "react-hot-toast";
 
 export default function ProfileDetails() {
     const location = useLocation();
@@ -73,6 +77,34 @@ export default function ProfileDetails() {
         setActive(() => id);
     }
 
+    const handleCommentPost = async (data: {
+        blogId: string;
+        replyToCommentId: string | null;
+        content: string;
+    }) => {
+        dispatch(pendingCommentSuccess());
+
+        const { body } = await BlogServices.addComment(data);
+        try {
+            if (body?.success) {
+                toast.success(body.message);
+                dispatch(
+                    postCommentToPostByUser({
+                        postId: data.blogId,
+                        comment: body?.result,
+                    })
+                );
+                dispatch(doneCommentSuccess());
+            } else {
+                toast.error(body?.message || "Error");
+                dispatch(doneCommentSuccess());
+            }
+        } catch (error) {
+            console.log(error);
+            dispatch(doneCommentSuccess());
+        }
+    };
+
     return (
         <>
             <div className="mx-auto mt-10 w-full max-w-[1294px] @2xl:mt-7 @6xl:mt-0">
@@ -116,6 +148,7 @@ export default function ProfileDetails() {
                                 actionDispatchSave={savePostByUserSuccess(
                                     item._id
                                 )}
+                                handleCommentPost={handleCommentPost}
                             />
                         ))
                     ) : (

@@ -1,7 +1,7 @@
 import { Category } from "@/type/category";
 import { Post } from "@/type/post";
 import { STATUS_USER_GROUP } from "@/utils/contants";
-import { createSlice } from "@reduxjs/toolkit";
+import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 const categorySlice = createSlice({
     name: "category",
@@ -90,6 +90,19 @@ const categorySlice = createSlice({
                 post.isSave = true;
             }
         },
+        postCommentSuccess: (
+            state,
+            action: PayloadAction<{ postId: string; comment: any }>
+        ) => {
+            const { postId, comment } = action.payload;
+            const post = state.blogOfCategories.find(
+                (post) => post._id === postId
+            );
+            if (post) {
+                post.comments.push(comment);
+                post.sumComment = post.sumComment + 1;
+            }
+        },
     },
 });
 
@@ -106,6 +119,7 @@ export const {
     getLoadmoreBlogCategories,
     likeBlogSuccess,
     saveBlogSuccess,
+    postCommentSuccess,
 } = categorySlice.actions;
 
 export default categorySlice.reducer;

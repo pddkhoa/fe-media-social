@@ -13,6 +13,11 @@ type ListBookmarkProps = {
     layout: string;
     loader?: boolean;
     setIsDelete: React.Dispatch<React.SetStateAction<boolean>>;
+    handleCommentPost: (data: {
+        blogId: string;
+        replyToCommentId: string | null;
+        content: string;
+    }) => Promise<void>;
 };
 
 const ListBookmark: FC<ListBookmarkProps> = ({
@@ -20,6 +25,7 @@ const ListBookmark: FC<ListBookmarkProps> = ({
     layout,
     loader,
     setIsDelete,
+    handleCommentPost,
 }) => {
     return (
         <div className="mx-auto mt-10  w-full max-w-[1294px] @2xl:mt-7 @6xl:mt-0">
@@ -69,6 +75,7 @@ const ListBookmark: FC<ListBookmarkProps> = ({
                                             item._id
                                         )}
                                         setIsDelete={setIsDelete}
+                                        handleCommentPost={handleCommentPost}
                                     />
                                 </div>
                             ))

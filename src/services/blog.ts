@@ -172,6 +172,29 @@ class BlogServices {
             identity.post("user/comment", data)
         );
     }
+
+    static async deleteComment(data: { blogId: string; commentId: string }) {
+        type body = {
+            success: string;
+            statusCode: number;
+            message: string;
+            result: Comment;
+        };
+        return await requestApiHelper<body>(
+            identity.post("user/deleteComment", data)
+        );
+    }
+    static async editComment(data: { blogId: string; commentId: string }) {
+        type body = {
+            success: string;
+            statusCode: number;
+            message: string;
+            result: Comment;
+        };
+        return await requestApiHelper<body>(
+            identity.patch("user/comment", data)
+        );
+    }
 }
 
 export default BlogServices;

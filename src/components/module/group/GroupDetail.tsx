@@ -34,8 +34,11 @@ import {
     getAllBlogCategories,
     getLoadmoreBlogCategories,
     likeBlogSuccess,
+    postCommentSuccess,
     saveBlogSuccess,
 } from "@/store/categorySlice";
+import BlogServices from "@/services/blog";
+import { pendingCommentSuccess } from "@/store/blogSlice";
 
 const GroupDetail = () => {
     const categoriesId = useParams();
@@ -156,6 +159,34 @@ const GroupDetail = () => {
                 toast.error(body?.message || "Error");
                 dispatch(uploadSuccess());
             }
+        }
+    };
+    const handleCommentPost = async (data: {
+        blogId: string;
+        replyToCommentId: string | null;
+        content: string;
+    }) => {
+        dispatch(pendingCommentSuccess(true));
+
+        const { body } = await BlogServices.addComment(data);
+        try {
+            if (body?.success) {
+                toast.success(body.message);
+                dispatch(
+                    postCommentSuccess({
+                        postId: data.blogId,
+                        comment: body?.result,
+                    })
+                );
+            } else {
+                dispatch(pendingCommentSuccess(false));
+
+                toast.error(body?.message || "Error");
+            }
+        } catch (error) {
+            dispatch(pendingCommentSuccess(false));
+
+            console.log(error);
         }
     };
 
@@ -321,7 +352,6 @@ const GroupDetail = () => {
                                     <PostCard
                                         key={item._id}
                                         data={item}
-                                        access={userOfGroup}
                                         setIsDelete={setIsDelete}
                                         actionDispatchLike={likeBlogSuccess(
                                             item._id
@@ -329,6 +359,7 @@ const GroupDetail = () => {
                                         actionDispatchSave={saveBlogSuccess(
                                             item._id
                                         )}
+                                        handleCommentPost={handleCommentPost}
                                     />
                                 ))
                             ) : (

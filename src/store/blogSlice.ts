@@ -11,6 +11,8 @@ const postSlice = createSlice({
         listPostPopular: [] as Post[],
         listPostBestDis: [] as Post[],
         listPostFeed: [] as Post[],
+        pendingComment: false,
+        postDetail: {} as Post,
     },
     reducers: {
         getPostByUser: (state, action) => {
@@ -102,9 +104,53 @@ const postSlice = createSlice({
             const post = state.listPostByUser.find(
                 (post) => post._id === postId
             );
+            state.pendingComment = true;
+
             if (post) {
                 post.comments.push(comment);
                 post.sumComment = post.sumComment + 1;
+            }
+        },
+        postCommentToPostBookmark: (
+            state,
+            action: PayloadAction<{ postId: string; comment: any }>
+        ) => {
+            const { postId, comment } = action.payload;
+            const post = state.listPostBookmark.find(
+                (post) => post._id === postId
+            );
+            state.pendingComment = true;
+
+            if (post) {
+                post.comments.push(comment);
+                post.sumComment = post.sumComment + 1;
+            }
+        },
+        pendingCommentSuccess: (state) => {
+            state.pendingComment = true;
+        },
+        doneCommentSuccess: (state) => {
+            state.pendingComment = false;
+        },
+        getPostDetail: (state, action) => {
+            state.postDetail = action.payload;
+        },
+        addCommentToPostDetail: (
+            state,
+            action: PayloadAction<{ postId: string; comment: any }>
+        ) => {
+            const { comment } = action.payload;
+            state.postDetail.comments.push(comment);
+            state.postDetail.sumComment += 1;
+        },
+        deleteCommentToPostDetail: (state, action) => {
+            const { postId, commentId } = action.payload;
+
+            if (state.postDetail._id === postId) {
+                state.postDetail.comments = state.postDetail.comments.filter(
+                    (comment) => comment._id !== commentId
+                );
+                state.postDetail.sumComment -= 1;
             }
         },
     },
@@ -120,7 +166,13 @@ export const {
     savePostBookmarkSuccess,
     likePostDraftSuccess,
     savePostDraftSuccess,
+    postCommentToPostBookmark,
     postCommentToPostByUser,
+    pendingCommentSuccess,
+    doneCommentSuccess,
+    getPostDetail,
+    addCommentToPostDetail,
+    deleteCommentToPostDetail,
 } = postSlice.actions;
 
 export default postSlice.reducer;

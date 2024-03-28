@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { PiArrowsClockwiseFill } from "react-icons/pi";
 import { Button, Empty, EmptyProductBoxIcon, Modal } from "rizzui";
-import PostsModal from "../../modal/PostModal";
+import PostsModal from "./PostModal";
 import { useLocation } from "react-router-dom";
 import { Post } from "@/type/post";
 import { SkeletonPost } from "../../ui/SkeletonLoader";

@@ -1,6 +1,6 @@
-import BlogServices from "@/services/blog";
+import { useModal } from "@/hooks/useModal";
 import ClientServices from "@/services/client";
-import { postCommentToPostByUser } from "@/store/blogSlice";
+import { RootState } from "@/store/store";
 import { Comment } from "@/type/comment";
 import { Post } from "@/type/post";
 import { formatDate } from "@/utils/format-date";
@@ -13,15 +13,16 @@ import {
     PiBookmarkSimpleFill,
     PiCaretUp,
     PiChatCentered,
+    PiDotsThreeOutlineFill,
     PiFireFill,
     PiFireLight,
     PiShareNetwork,
     PiUsers,
     PiXBold,
 } from "react-icons/pi";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { Avatar, Button, Textarea, Title } from "rizzui";
+import { Avatar, Button, Dropdown, Empty, Textarea, Title } from "rizzui";
 import SimpleBar from "simplebar-react";
 
 type PostsModalProps = {
@@ -41,6 +42,15 @@ type PostsModalProps = {
             | "post/savePostBookmarkSuccess"
             | "post/savePostByUserSuccess";
     };
+    handleCommentPost: (data: {
+        blogId: string;
+        replyToCommentId: string | null;
+        content: string;
+    }) => Promise<void>;
+    handleDeleteComment: (data: {
+        blogId: string;
+        commentId: string;
+    }) => Promise<void>;
 };
 
 export default function PostsModal({
@@ -48,6 +58,8 @@ export default function PostsModal({
     onClose,
     actionDispatchLike,
     actionDispatchSave,
+    handleCommentPost,
+    handleDeleteComment,
 }: PostsModalProps) {
     const [activeComment, setActiveComment] = useState<any>();
     //Root Comment
@@ -57,13 +69,12 @@ export default function PostsModal({
     // Child Comment
     const childComment = (commentId: string) => {
         return data.comments?.filter(
-            (comment) => comment?.replyToCommentId?._id === commentId
+            (comment: any) => comment?.replyToCommentId?._id === commentId
         );
     };
 
-    console.log(childComment);
     return (
-        <div className="round grid grow grid-cols-1 gap-0 h-[600px] overflow-hidden rounded-none bg-white dark:bg-gray-100/90 dark:backdrop-blur-xl lg:grid-cols-12 lg:rounded-xl">
+        <div className="round grid grow grid-cols-1 gap-0  h-[650px] overflow-hidden rounded-none  dark:backdrop-blur-xl lg:grid-cols-12 lg:rounded-xl">
             <div className="relative h-full lg:col-span-7">
                 <Button
                     rounded="pill"
@@ -81,15 +92,14 @@ export default function PostsModal({
                 </div>
             </div>
 
-            <div className="flex w-full flex-col gap-5 p-4 lg:col-span-5">
+            <div className="flex w-full  flex-col gap-3 p-4 lg:col-span-5">
                 <ModalCardText
                     data={data}
                     actionDispatchLike={actionDispatchLike}
                     actionDispatchSave={actionDispatchSave}
                 />
-                <SimpleBar className="lg:h-[190px]  py-1">
-                    {rootComment &&
-                        rootComment.length > 0 &&
+                <SimpleBar className="lg:h-[250px] p-2 py-1">
+                    {rootComment && rootComment.length > 0 ? (
                         rootComment?.map((item: Comment) => (
                             <ModalCardComment
                                 key={item._id}
@@ -100,10 +110,20 @@ export default function PostsModal({
                                 setActiveComment={setActiveComment}
                                 nestingLevel={0}
                                 idBlog={data._id}
+                                handleCommentPost={handleCommentPost}
+                                handleDeleteComment={handleDeleteComment}
+                                isModal={true}
                             />
-                        ))}
+                        ))
+                    ) : (
+                        <Empty text="Not found comment" />
+                    )}
                 </SimpleBar>
-                <ModalCommentBox idBlog={data?._id} parentId={null} />
+                <ModalCommentBox
+                    idBlog={data?._id}
+                    parentId={null}
+                    handleCommentPost={handleCommentPost}
+                />
             </div>
         </div>
     );
@@ -159,8 +179,8 @@ function ModalCardText({
 
     return (
         <>
-            <div className="flex gap-4">
-                <div className="flex gap-4">
+            <div className="flex gap-2">
+                <div className="flex gap-2">
                     <Avatar
                         name={data?.user?.name}
                         className="bg-[#F1A74F] tracking-wider text-white"
@@ -180,7 +200,7 @@ function ModalCardText({
                     <span className="ms-1.5 inline-block">Follow</span>
                 </Button>
             </div>
-            <p className="text-sm leading-6 text-gray-500 dark:text-gray-1000 ">
+            <p className="text-sm leading-6 text-gray-500 ">
                 {data?.description ? (
                     data.description
                 ) : (
@@ -199,7 +219,7 @@ function ModalCardText({
                     More Detail <PiArrowBendDoubleUpRight />
                 </Link>
             </p>
-            <div className="flex items-center justify-between gap-5 border-b border-b-gray-100 pb-6 dark:border-b-gray-400">
+            <div className="flex items-center justify-between gap-4 border-b border-b-gray-100  dark:border-b-gray-400">
                 <div className="flex items-center gap-5">
                     <Button
                         variant="text"
@@ -258,16 +278,28 @@ type CommentPropsType = {
     activeComment: any;
     nestingLevel: number;
     idBlog: string;
+    handleCommentPost: (data: {
+        blogId: string;
+        replyToCommentId: string | null;
+        content: string;
+    }) => Promise<void>;
+    handleDeleteComment: (data: {
+        blogId: string;
+        commentId: string;
+    }) => Promise<void>;
+    isModal: boolean;
 };
 
-function ModalCardComment({
+export function ModalCardComment({
     commentData,
-    child,
     childComment,
     setActiveComment,
     activeComment,
     nestingLevel,
     idBlog,
+    handleCommentPost,
+    handleDeleteComment,
+    isModal,
 }: CommentPropsType) {
     const isReplying =
         activeComment &&
@@ -286,6 +318,7 @@ function ModalCardComment({
                     name={commentData?.user?.name}
                     src={commentData?.user?.avatar?.url}
                 />
+
                 <div>
                     <span className="mt-1.5 block text-sm font-normal text-gray-800 [&_a]:text-primary-light">
                         {commentData?.content}
@@ -332,12 +365,22 @@ function ModalCardComment({
                         ) : null}
                     </div>
                 </div>
+                {!isModal && (
+                    <div className="ml-auto flex items-center ">
+                        <DropdownOption
+                            parentId={commentData._id}
+                            idBlog={idBlog}
+                            handleDeleteComment={handleDeleteComment}
+                        />
+                    </div>
+                )}
             </div>
             {isReplying && (
                 <div className=" ml-5 mx-4 ">
                     <ModalCommentBox
                         parentId={commentData._id}
                         idBlog={idBlog}
+                        handleCommentPost={handleCommentPost}
                     />
                 </div>
             )}
@@ -355,6 +398,9 @@ function ModalCardComment({
                                   activeComment={activeComment}
                                   nestingLevel={nestingLevel + 1}
                                   idBlog={idBlog}
+                                  handleCommentPost={handleCommentPost}
+                                  handleDeleteComment={handleDeleteComment}
+                                  isModal={true}
                               />
                           ))}
                       </div>
@@ -367,11 +413,21 @@ function ModalCardComment({
 type ModalCommentBoxProps = {
     parentId: string | null;
     idBlog: string;
+    handleCommentPost: (data: {
+        blogId: string;
+        replyToCommentId: string | null;
+        content: string;
+    }) => Promise<void>;
 };
 
-function ModalCommentBox({ parentId, idBlog }: ModalCommentBoxProps) {
-    const [isLoading, setIsLoading] = useState(false);
-    const dispatch = useDispatch();
+export function ModalCommentBox({
+    parentId,
+    idBlog,
+    handleCommentPost,
+}: ModalCommentBoxProps) {
+    const isPending = useSelector(
+        (state: RootState) => state.post.pendingComment
+    );
 
     const formik = useFormik({
         initialValues: {
@@ -382,26 +438,8 @@ function ModalCommentBox({ parentId, idBlog }: ModalCommentBoxProps) {
 
         validateOnChange: true,
         onSubmit: async (values, { resetForm }) => {
-            setIsLoading(true);
-            const { body } = await BlogServices.addComment(values);
-            try {
-                if (body?.success) {
-                    setIsLoading(false);
-                    toast.success(body.message);
-                    dispatch(
-                        postCommentToPostByUser({
-                            postId: idBlog,
-                            comment: body?.result,
-                        })
-                    );
-                    resetForm();
-                } else {
-                    setIsLoading(false);
-                    toast.error(body?.message || "Error");
-                }
-            } catch (error) {
-                setIsLoading(false);
-            }
+            handleCommentPost(values);
+            resetForm();
         },
     });
     return (
@@ -421,12 +459,62 @@ function ModalCommentBox({ parentId, idBlog }: ModalCommentBoxProps) {
                 variant="text"
                 type="submit"
                 color="primary"
-                isLoading={isLoading}
-                disabled={isLoading}
+                isLoading={isPending}
+                disabled={isPending}
                 className="absolute bottom-2 end-2"
             >
                 Post
             </Button>
         </form>
+    );
+}
+
+type DropdownOptionProps = {
+    handleDeleteComment: (data: {
+        blogId: string;
+        commentId: string;
+    }) => Promise<void>;
+    parentId: string;
+    idBlog: string;
+};
+
+function DropdownOption({
+    handleDeleteComment,
+    parentId,
+    idBlog,
+}: DropdownOptionProps) {
+    const { openModal } = useModal();
+
+    const handleDelete = () => {
+        handleDeleteComment({
+            blogId: idBlog,
+            commentId: parentId,
+        });
+    };
+
+    return (
+        <Dropdown>
+            <Dropdown.Trigger>
+                <PiDotsThreeOutlineFill className="w-4 h-4 cursor-pointer" />
+            </Dropdown.Trigger>
+            <Dropdown.Menu>
+                <Dropdown.Item
+                    onClick={handleDelete}
+                    className="hover:bg-gray-300"
+                >
+                    Delete
+                </Dropdown.Item>
+                <Dropdown.Item
+                    onClick={() => {
+                        openModal({
+                            view: <div className="z-50 p-8">Report</div>,
+                        });
+                    }}
+                    className="hover:bg-gray-300"
+                >
+                    Report
+                </Dropdown.Item>
+            </Dropdown.Menu>
+        </Dropdown>
     );
 }

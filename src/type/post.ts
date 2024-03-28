@@ -1,3 +1,4 @@
+import { Comment } from "./comment";
 import { Avatar, User } from "./user";
 
 export type Post = {
@@ -40,7 +41,7 @@ export type Post = {
     }[];
     listUserLikes: any[]; // Kiểu này cần xác định chính xác nếu bạn có thông tin về người dùng
     savedBy: any[]; // Kiểu này cần xác định chính xác nếu bạn có thông tin về người dùng
-    comments: any[]; // Kiểu này cần xác định chính xác nếu bạn có thông tin về bình luận
+    comments: Comment[]; // Kiểu này cần xác định chính xác nếu bạn có thông tin về bình luận
     createdAt: string;
     updatedAt: string;
     __v: number;
