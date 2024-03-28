@@ -38,7 +38,7 @@ import {
     saveBlogSuccess,
 } from "@/store/categorySlice";
 import BlogServices from "@/services/blog";
-import { pendingCommentSuccess } from "@/store/blogSlice";
+import { doneCommentSuccess, pendingCommentSuccess } from "@/store/blogSlice";
 
 const GroupDetail = () => {
     const categoriesId = useParams();
@@ -166,7 +166,7 @@ const GroupDetail = () => {
         replyToCommentId: string | null;
         content: string;
     }) => {
-        dispatch(pendingCommentSuccess(true));
+        dispatch(pendingCommentSuccess());
 
         const { body } = await BlogServices.addComment(data);
         try {
@@ -178,13 +178,14 @@ const GroupDetail = () => {
                         comment: body?.result,
                     })
                 );
+                dispatch(doneCommentSuccess());
             } else {
-                dispatch(pendingCommentSuccess(false));
+                dispatch(doneCommentSuccess());
 
                 toast.error(body?.message || "Error");
             }
         } catch (error) {
-            dispatch(pendingCommentSuccess(false));
+            dispatch(doneCommentSuccess());
 
             console.log(error);
         }

@@ -3,6 +3,7 @@ import authReducer from "./authSlice";
 import categoryReducer from "./categorySlice";
 import imageReducer from "./imageSlice";
 import postReducer from "./blogSlice";
+import discoverReducer from "./discoverSlice";
 
 import {
     persistStore,
@@ -26,6 +27,7 @@ const rootReducer = combineReducers({
     category: categoryReducer,
     image: imageReducer,
     post: postReducer,
+    discover: discoverReducer,
 });
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 

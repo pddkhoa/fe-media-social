@@ -195,6 +195,50 @@ class BlogServices {
             identity.patch("user/comment", data)
         );
     }
+
+    static async getBlogLastest(index: string) {
+        type body = {
+            success: string;
+            statusCode: number;
+            message: string;
+            result: {
+                posts: Post[];
+                size: number;
+            };
+        };
+        return await requestApiHelper<body>(
+            identity.get(`blog/listBlogNew?index=${index}`)
+        );
+    }
+
+    static async getBlogPopular(index: string) {
+        type body = {
+            success: string;
+            statusCode: number;
+            message: string;
+            result: {
+                posts: Post[];
+                size: number;
+            };
+        };
+        return await requestApiHelper<body>(
+            identity.get(`blog/listBlogPopularity?index=${index}`)
+        );
+    }
+    static async getBlogDiscuss(index: string) {
+        type body = {
+            success: string;
+            statusCode: number;
+            message: string;
+            result: {
+                posts: Post[];
+                size: number;
+            };
+        };
+        return await requestApiHelper<body>(
+            identity.get(`blog/listBlogDiscussions?index=${index}`)
+        );
+    }
 }
 
 export default BlogServices;

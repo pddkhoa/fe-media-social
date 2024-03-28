@@ -58,7 +58,7 @@ export const menuItems = [
     },
     {
         name: "Best Discussion",
-        href: "/discussion",
+        href: "/discusstion",
         icon: <PiBracketsAngleFill />,
     },
 

@@ -1,7 +1,6 @@
 import { Fragment } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { menuItems, menuItemsAdmin } from "./Items";
-import Logo from "@/components/ui/Logo";
 import { cn } from "@/utils/class-name";
 import { PiCaretDownBold } from "react-icons/pi";
 import { Collapse, Title } from "rizzui";
@@ -22,7 +21,10 @@ export default function Sidebar({ className }: { className?: string }) {
         >
             <div className="sticky top-0 z-40 bg-gray-0/10 px-6 pb-5 pt-5 dark:bg-gray-100/5 2xl:px-8 2xl:pt-6">
                 <Link to={"/"} aria-label="Site Logo">
-                    <Logo className="max-w-[155px]" />
+                    <img
+                        src="/background-black.png"
+                        className="h-[80px] w-full object-cover"
+                    />
                 </Link>
             </div>
 

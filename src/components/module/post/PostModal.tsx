@@ -30,24 +30,18 @@ type PostsModalProps = {
     onClose: () => void;
     actionDispatchLike: {
         payload: any;
-        type:
-            | "category/likeBlogSuccess"
-            | "post/likePostBookmarkSuccess"
-            | "post/likePostByUserSuccess";
+        type: any;
     };
     actionDispatchSave: {
         payload: any;
-        type:
-            | "category/saveBlogSuccess"
-            | "post/savePostBookmarkSuccess"
-            | "post/savePostByUserSuccess";
+        type: any;
     };
-    handleCommentPost: (data: {
+    handleCommentPost?: (data: {
         blogId: string;
         replyToCommentId: string | null;
         content: string;
     }) => Promise<void>;
-    handleDeleteComment: (data: {
+    handleDeleteComment?: (data: {
         blogId: string;
         commentId: string;
     }) => Promise<void>;
@@ -83,47 +77,59 @@ export default function PostsModal({
                 >
                     <PiXBold className="w-5" />
                 </Button>
-                <div className="h-full w-full ">
-                    <img
-                        src={data?.avatar}
-                        alt="random images"
-                        className="h-full w-full object-cover"
-                    />
+                <div className="h-full w-full">
+                    {data?.avatar ? (
+                        <img
+                            src={data?.avatar}
+                            alt="random images"
+                            className="h-full w-full object-cover"
+                        />
+                    ) : (
+                        <div className="flex justify-center items-center h-full ">
+                            <Empty />
+                        </div>
+                    )}
                 </div>
             </div>
 
-            <div className="flex w-full  flex-col gap-3 p-4 lg:col-span-5">
+            <div className="flex w-full flex-col gap-1 p-4 lg:col-span-5">
                 <ModalCardText
                     data={data}
                     actionDispatchLike={actionDispatchLike}
                     actionDispatchSave={actionDispatchSave}
                 />
-                <SimpleBar className="lg:h-[250px] p-2 py-1">
-                    {rootComment && rootComment.length > 0 ? (
-                        rootComment?.map((item: Comment) => (
-                            <ModalCardComment
-                                key={item._id}
-                                commentData={item}
-                                child={childComment(item._id) as any}
-                                childComment={childComment}
-                                activeComment={activeComment}
-                                setActiveComment={setActiveComment}
-                                nestingLevel={0}
-                                idBlog={data._id}
-                                handleCommentPost={handleCommentPost}
-                                handleDeleteComment={handleDeleteComment}
-                                isModal={true}
-                            />
-                        ))
-                    ) : (
-                        <Empty text="Not found comment" />
-                    )}
-                </SimpleBar>
-                <ModalCommentBox
-                    idBlog={data?._id}
-                    parentId={null}
-                    handleCommentPost={handleCommentPost}
-                />
+                {handleCommentPost && (
+                    <>
+                        <SimpleBar className="h-72 p-2 py-3">
+                            {rootComment && rootComment.length > 0 ? (
+                                rootComment?.map((item: Comment) => (
+                                    <ModalCardComment
+                                        key={item._id}
+                                        commentData={item}
+                                        child={childComment(item._id) as any}
+                                        childComment={childComment}
+                                        activeComment={activeComment}
+                                        setActiveComment={setActiveComment}
+                                        nestingLevel={0}
+                                        idBlog={data._id}
+                                        handleCommentPost={handleCommentPost}
+                                        handleDeleteComment={
+                                            handleDeleteComment as any
+                                        }
+                                        isModal={true}
+                                    />
+                                ))
+                            ) : (
+                                <Empty text="Not found comment" />
+                            )}
+                        </SimpleBar>
+                        <ModalCommentBox
+                            idBlog={data?._id}
+                            parentId={null}
+                            handleCommentPost={handleCommentPost}
+                        />
+                    </>
+                )}
             </div>
         </div>
     );
@@ -133,17 +139,11 @@ type ModalCardTextProps = {
     data: Post;
     actionDispatchLike: {
         payload: any;
-        type:
-            | "category/likeBlogSuccess"
-            | "post/likePostBookmarkSuccess"
-            | "post/likePostByUserSuccess";
+        type: any;
     };
     actionDispatchSave: {
         payload: any;
-        type:
-            | "category/saveBlogSuccess"
-            | "post/savePostBookmarkSuccess"
-            | "post/savePostByUserSuccess";
+        type: any;
     };
 };
 

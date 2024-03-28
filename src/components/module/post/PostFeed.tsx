@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { PiArrowsClockwiseFill } from "react-icons/pi";
 import { Button, Empty, EmptyProductBoxIcon, Modal } from "rizzui";
-import PostsModal from "./PostModal";
 import { useLocation } from "react-router-dom";
 import { Post } from "@/type/post";
 import { SkeletonPost } from "../../ui/SkeletonLoader";
@@ -30,8 +29,6 @@ export default function PostFeed({ postData, isLoadingPost }: PostFeedProps) {
             setPostLimit(postLimit + 3);
         }, 600);
     }
-
-    let currentPost: any;
 
     return (
         <>
@@ -98,12 +95,12 @@ export default function PostFeed({ postData, isLoadingPost }: PostFeedProps) {
           </Button>
         )} */}
 
-                {currentPost && (
+                {/* {currentPost && (
                     <PostsModal
                         data={currentPost}
                         onClose={() => setOpen(false)}
                     />
-                )}
+                )} */}
             </Modal>
         </>
     );

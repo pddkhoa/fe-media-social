@@ -14,7 +14,7 @@ type GroupListProps = {
     totalPage: number | undefined;
     currentPage: number;
     setIsActive?: React.Dispatch<React.SetStateAction<boolean>>;
-    searchText: string;
+    searchText?: string;
 };
 
 const GroupList: FC<GroupListProps> = ({

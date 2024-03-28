@@ -25,6 +25,15 @@ const Contacts = lazy(() => import("@/pages/client/contacts/PageContacts"));
 const DetailPost = lazy(() => import("@/pages/client/post/PageDetailPost"));
 const PageBookmark = lazy(() => import("@/pages/client/bookmark/PageBookmark"));
 const PageDraft = lazy(() => import("@/pages/client/draft/PageDraft"));
+const PageLastest = lazy(
+    () => import("@/pages/client/discover/PageListPostLastest")
+);
+const PagePopular = lazy(
+    () => import("@/pages/client/discover/PageListPostPopular")
+);
+const PageDiscusstion = lazy(
+    () => import("@/pages/client/discover/PageListPostDis")
+);
 
 const ClientRoutes = () => {
     return (
@@ -142,6 +151,30 @@ const ClientRoutes = () => {
                         element={
                             <Suspense fallback={<div>Loading ...</div>}>
                                 <PageDraft />
+                            </Suspense>
+                        }
+                    />
+                    <Route
+                        path="/lastest"
+                        element={
+                            <Suspense fallback={<div>Loading ...</div>}>
+                                <PageLastest />
+                            </Suspense>
+                        }
+                    />
+                    <Route
+                        path="/discusstion"
+                        element={
+                            <Suspense fallback={<div>Loading ...</div>}>
+                                <PageDiscusstion />
+                            </Suspense>
+                        }
+                    />
+                    <Route
+                        path="/popular"
+                        element={
+                            <Suspense fallback={<div>Loading ...</div>}>
+                                <PagePopular />
                             </Suspense>
                         }
                     />

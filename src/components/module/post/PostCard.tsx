@@ -28,20 +28,14 @@ type PostCard = {
     setIsDelete: React.Dispatch<React.SetStateAction<boolean>>;
     actionDispatchLike?: {
         payload: any;
-        type:
-            | "category/likeBlogSuccess"
-            | "post/likePostBookmarkSuccess"
-            | "post/likePostByUserSuccess";
+        type: any;
     };
     actionDispatchSave?: {
         payload: any;
-        type:
-            | "category/saveBlogSuccess"
-            | "post/savePostBookmarkSuccess"
-            | "post/savePostByUserSuccess";
+        type: any;
     };
 
-    handleCommentPost: (data: {
+    handleCommentPost?: (data: {
         blogId: string;
         replyToCommentId: string | null;
         content: string;
@@ -160,7 +154,8 @@ export default function PostCard({
                 {data &&
                     (data?.isPermission &&
                     actionDispatchLike &&
-                    actionDispatchSave ? (
+                    actionDispatchSave &&
+                    handleCommentPost ? (
                         <PostsModal
                             data={data}
                             actionDispatchLike={actionDispatchLike}
