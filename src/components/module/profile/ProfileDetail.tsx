@@ -1,4 +1,3 @@
-import { followersData, followingData } from "@/data/ProfileData";
 import { useState, useEffect } from "react";
 import { PiXBold } from "react-icons/pi";
 import { Badge, Modal, Title, Button, Empty, Loader } from "rizzui";
@@ -17,13 +16,30 @@ import {
     savePostByUserSuccess,
 } from "@/store/blogSlice";
 import toast from "react-hot-toast";
+import { UserWall } from "@/type/wall";
+import ModalListUser from "./ModalListUser";
 
-export default function ProfileDetails() {
+type ProfileDetailsProps = {
+    userDetail: UserWall;
+    lisFollower: UserWall[];
+    listFollowing: UserWall[];
+    handleFollower: (id: string) => Promise<void>;
+    handleFollowing: (id: string) => Promise<void>;
+};
+
+export default function ProfileDetails({
+    userDetail,
+    lisFollower,
+    listFollowing,
+    handleFollower,
+    handleFollowing,
+}: ProfileDetailsProps) {
     const location = useLocation();
     const [open, setOpen] = useState(false);
     const [modalData, setModalData] = useState({
         title: "Followers",
-        data: followersData,
+        data: lisFollower,
+        handleFollow: handleFollower,
     });
 
     const [isLoading, setIsLoading] = useState(false);
@@ -32,14 +48,11 @@ export default function ProfileDetails() {
     const listBlog = useSelector(
         (state: RootState) => state.post.listPostByUser
     );
-    const userIdAuth = useSelector(
-        (state: RootState) => state.auth.userToken.user._id
-    );
 
     const tabs = [
-        { id: "posts", count: listBlog?.length },
-        { id: "followers", count: followersData.length },
-        { id: "following", count: followingData.length },
+        { id: "posts", count: userDetail?.totalBlog },
+        { id: "followers", count: userDetail?.totalFollower },
+        { id: "following", count: userDetail?.totalFollowing },
     ];
     const [active, setActive] = useState(tabs[0].id);
 
@@ -49,7 +62,9 @@ export default function ProfileDetails() {
         const fetchPostData = async () => {
             try {
                 setIsLoading(true);
-                const { body } = await BlogServices.getBlogByUserID(userIdAuth);
+                const { body } = await BlogServices.getBlogByUserID(
+                    userDetail._id
+                );
                 if (body?.success) {
                     dispatch(getPostByUser(body?.result));
                     setIsLoading(false);
@@ -60,7 +75,7 @@ export default function ProfileDetails() {
             }
         };
         fetchPostData();
-    }, [isDelete]);
+    }, [isDelete, dispatch, userDetail._id]);
 
     useEffect(() => {
         setOpen(() => false);
@@ -68,10 +83,18 @@ export default function ProfileDetails() {
 
     function handleTabClick(id: string) {
         if (id === "followers") {
-            setModalData({ title: "Followers", data: followersData });
+            setModalData({
+                title: "Followers",
+                data: lisFollower,
+                handleFollow: handleFollower,
+            });
             setOpen(() => true);
         } else if (id === "following") {
-            setModalData({ title: "Following", data: followingData });
+            setModalData({
+                title: "Following",
+                data: listFollowing,
+                handleFollow: handleFollowing,
+            });
             setOpen(() => true);
         }
         setActive(() => id);
@@ -186,7 +209,12 @@ export default function ProfileDetails() {
                         <PiXBold className="h-5 w-5 text-base" />
                     </Button>
                 </div>
-                {/* {modalData && <FollowerModal data={modalData.data} />} */}
+                {modalData && (
+                    <ModalListUser
+                        data={modalData.data}
+                        handleFollow={modalData.handleFollow}
+                    />
+                )}
             </Modal>
         </>
     );

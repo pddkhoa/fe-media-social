@@ -8,7 +8,7 @@ import {
     PiFireLight,
     PiShareNetwork,
 } from "react-icons/pi";
-import { ActionIcon, Modal, Popover } from "rizzui";
+import { ActionIcon, Avatar, Modal, Popover } from "rizzui";
 import PostsModal from "./PostModal";
 import { useState } from "react";
 import DropdownAuthor from "./DropdownAuthor";
@@ -18,6 +18,7 @@ import DropdownOther from "./DropdownOther";
 import ModalPrivate from "../../modal/ModalPrivate";
 import { formatDate } from "@/utils/format-date";
 import ModalDraft from "./ModalDraft";
+import { Link } from "react-router-dom";
 
 type POST_TYPE = "image" | "gallery" | "video";
 
@@ -59,19 +60,20 @@ export default function PostCard({
             <div className="flex flex-col max-w-xl p-6 space-y-6 overflow-hidden rounded-md shadow-md bg-gray-100">
                 <div className="flex justify-between">
                     <div className="flex space-x-4">
-                        <img
-                            alt=""
-                            src={data?.user?.avatar?.url}
-                            className="object-cover w-12 h-12 rounded-full shadow"
-                        />
+                        <Link to={`/profile/${data?.user?._id}`}>
+                            <Avatar
+                                name={data?.user?.name}
+                                src={data?.user?.avatar?.url}
+                                className="object-cover w-12 h-12 rounded-full shadow"
+                            />
+                        </Link>
                         <div className="flex flex-col space-y-1">
-                            <a
-                                rel="noopener noreferrer"
-                                href="#"
+                            <Link
+                                to={`/profile/${data?.user?._id}`}
                                 className="text-sm font-semibold"
                             >
                                 {data?.user?.name}
-                            </a>
+                            </Link>
                             <span className="text-xs text-gray-400">
                                 {formatDate(data?.createdAt as any)}
                             </span>

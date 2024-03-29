@@ -4,6 +4,7 @@ import categoryReducer from "./categorySlice";
 import imageReducer from "./imageSlice";
 import postReducer from "./blogSlice";
 import discoverReducer from "./discoverSlice";
+import wallReducer from "./wallSlice";
 
 import {
     persistStore,
@@ -28,6 +29,7 @@ const rootReducer = combineReducers({
     image: imageReducer,
     post: postReducer,
     discover: discoverReducer,
+    wall: wallReducer,
 });
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 

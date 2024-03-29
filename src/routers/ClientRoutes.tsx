@@ -49,6 +49,14 @@ const ClientRoutes = () => {
                         }
                     />
                     <Route
+                        path="/profile/:id"
+                        element={
+                            <Suspense fallback={<div>Loading ...</div>}>
+                                <Profile />
+                            </Suspense>
+                        }
+                    />
+                    <Route
                         path="/profile"
                         element={
                             <Suspense fallback={<div>Loading ...</div>}>
