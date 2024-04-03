@@ -1,7 +1,9 @@
 import { useModal } from "@/hooks/useModal";
+import { RootState } from "@/store/store";
 import { User } from "@/type/user";
-import { useState } from "react";
 import { PiXBold } from "react-icons/pi";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { Avatar, Button, Title } from "rizzui";
 
 type FollowerRowProps = {
@@ -41,7 +43,11 @@ export default function FollowerModal({ data }: FollowModalProps) {
 }
 
 function FollowerRow({ row }: FollowerRowProps) {
-    const [state, setState] = useState(false);
+    const navigate = useNavigate();
+    const isAuth = useSelector(
+        (state: RootState) => state.auth.userToken.user._id
+    );
+
     return (
         <div className="flex items-center justify-between pb-3 pt-2 p-4">
             <div className="flex items-center gap-2">
@@ -50,16 +56,19 @@ function FollowerRow({ row }: FollowerRowProps) {
                     {row.name}
                 </p>
             </div>
-            <Button
-                size="sm"
-                rounded="pill"
-                variant={state ? "solid" : "flat"}
-                onClick={() => setState(() => !state)}
-                className="font-medium capitalize md:h-9 md:px-4"
-            >
-                {/* {state ? row.buttonText[0] : row.buttonText[1]} */}
-                Follow
-            </Button>
+            {isAuth !== row._id && (
+                <Button
+                    size="sm"
+                    rounded="pill"
+                    variant={"flat"}
+                    onClick={() => {
+                        navigate(`/profile/${row._id}`);
+                    }}
+                    className="font-medium capitalize md:h-9 md:px-4"
+                >
+                    Visit Site
+                </Button>
+            )}
         </div>
     );
 }

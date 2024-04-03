@@ -22,6 +22,7 @@ const PageProfileMain = () => {
     const [userDetail, setUserDetail] = useState<UserWall>();
     const dispatch = useDispatch();
     const location = useLocation();
+    const [isFollow, setIsFollow] = useState(false);
     const lisFollower = useSelector(
         (state: RootState) => state.wall.listUserFollower
     );
@@ -67,10 +68,11 @@ const PageProfileMain = () => {
     }, [dispatch, user._id, idUser.id]);
 
     useEffect(() => {
+        setIsFollow(false);
         fetchData();
         fetchFollower();
         fetchFollowing();
-    }, [fetchData, fetchFollower, fetchFollowing, location.pathname]);
+    }, [fetchData, fetchFollower, fetchFollowing, location.pathname, isFollow]);
 
     const handleFollower = async (id: string) => {
         if (id) {
@@ -79,6 +81,7 @@ const PageProfileMain = () => {
             if (body?.success) {
                 dispatch(followUserFollower(id));
                 toast.success(body.message);
+                setIsFollow(true);
                 dispatch(doneFollowingSuccess());
             } else {
                 toast.error(body?.message || "Error");
@@ -93,6 +96,7 @@ const PageProfileMain = () => {
             if (body?.success) {
                 dispatch(followUserFollowing(id));
                 toast.success(body.message);
+                setIsFollow(true);
                 dispatch(doneFollowingSuccess());
             } else {
                 toast.error(body?.message || "Error");

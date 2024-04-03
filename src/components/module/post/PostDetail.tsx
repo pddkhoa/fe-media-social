@@ -81,6 +81,8 @@ const PostDetail: FC<PostDetailProps> = ({ data }) => {
         }
     };
 
+    console.log(data);
+
     return (
         <div className="max-w-5xl py-8 mx-auto space-y-12">
             <article className="space-y-8">

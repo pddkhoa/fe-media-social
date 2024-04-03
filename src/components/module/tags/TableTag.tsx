@@ -9,6 +9,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import ClientServices from "@/services/client";
 import toast from "react-hot-toast";
+import { useModal } from "@/hooks/useModal";
 
 export default function TableListTag({
     className,
@@ -23,6 +24,7 @@ export default function TableListTag({
         (state: RootState) => state.auth.userToken.user._id
     );
     const { dataTable, setSearchTerm, searchTerm } = useTable(data);
+    const { openModal, closeModal } = useModal();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const handleDelete = async (tagId: string) => {
@@ -36,9 +38,9 @@ export default function TableListTag({
     };
 
     const columns = useMemo(
-        () => getColumnsTag({ isAuth, handleDelete }),
+        () => getColumnsTag({ isAuth, handleDelete, openModal, closeModal }),
         // eslint-disable-next-line react-hooks/exhaustive-deps
-        [isAuth, handleDelete]
+        [isAuth, handleDelete, openModal, closeModal]
     );
 
     const { visibleColumns } = useColumn(columns);

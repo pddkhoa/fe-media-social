@@ -1,17 +1,26 @@
+import ModalReportTag from "@/components/modal/ModalReportTag";
 import AvatarCard from "@/components/ui/AvatarCard";
 import { HeaderCell } from "@/components/ui/Table";
 import { Tag } from "@/type/tag";
 import dayjs from "dayjs";
-import { PiTrash } from "react-icons/pi";
+import { PiGavel, PiTrash } from "react-icons/pi";
 import { Button, Popover, Title } from "rizzui";
 
 type Columns = {
     sortConfig?: any;
     isAuth: string;
     handleDelete: (tagId: string) => Promise<void>;
+    openModal: ({
+        view,
+        customSize,
+    }: {
+        view: React.ReactNode;
+        customSize?: string | undefined;
+    }) => void;
+    closeModal: () => void;
 };
 
-export const getColumnsTag = ({ isAuth, handleDelete }: Columns) => [
+export const getColumnsTag = ({ isAuth, handleDelete, openModal }: Columns) => [
     {
         title: <HeaderCell title="Tag's Name" />,
         dataIndex: "name",
@@ -63,7 +72,7 @@ export const getColumnsTag = ({ isAuth, handleDelete }: Columns) => [
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         render: (_: string, row: Tag) => (
             <>
-                {isAuth === row.user._id && (
+                {isAuth === row.user._id ? (
                     <div className="flex items-center justify-end gap-3 pe-4">
                         <Popover>
                             <Popover.Trigger>
@@ -105,6 +114,21 @@ export const getColumnsTag = ({ isAuth, handleDelete }: Columns) => [
                                 )}
                             </Popover.Content>
                         </Popover>
+                    </div>
+                ) : (
+                    <div className="flex items-center justify-end gap-3 pe-4">
+                        <Button
+                            onClick={() => {
+                                openModal({
+                                    view: <ModalReportTag data={row} />,
+                                });
+                            }}
+                            variant="flat"
+                            size="sm"
+                            color="secondary"
+                        >
+                            <PiGavel className="w-5 h-5" />
+                        </Button>
                     </div>
                 )}
             </>

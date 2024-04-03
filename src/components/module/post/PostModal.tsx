@@ -1,3 +1,4 @@
+import ModalReportComment from "@/components/modal/ModalReportComment";
 import { useModal } from "@/hooks/useModal";
 import ClientServices from "@/services/client";
 import { RootState } from "@/store/store";
@@ -212,7 +213,7 @@ function ModalCardText({
                     </>
                 )}
                 <Link
-                    to={"/post"}
+                    to={`/post`}
                     state={data}
                     className="font-medium flex gap-2 items-center text-black hover:underline hover:text-blue-600"
                 >
@@ -370,6 +371,7 @@ export function ModalCardComment({
                         <DropdownOption
                             parentId={commentData._id}
                             idBlog={idBlog}
+                            dataComment={commentData}
                             handleDeleteComment={handleDeleteComment}
                         />
                     </div>
@@ -476,12 +478,14 @@ type DropdownOptionProps = {
     }) => Promise<void>;
     parentId: string;
     idBlog: string;
+    dataComment: Comment;
 };
 
 function DropdownOption({
     handleDeleteComment,
     parentId,
     idBlog,
+    dataComment,
 }: DropdownOptionProps) {
     const { openModal } = useModal();
 
@@ -507,7 +511,7 @@ function DropdownOption({
                 <Dropdown.Item
                     onClick={() => {
                         openModal({
-                            view: <div className="z-50 p-8">Report</div>,
+                            view: <ModalReportComment data={dataComment} />,
                         });
                     }}
                     className="hover:bg-gray-300"

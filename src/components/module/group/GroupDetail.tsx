@@ -1,8 +1,11 @@
 import {
     PiArrowsClockwiseFill,
     PiCheckCircleFill,
+    PiDotsThreeOutline,
     PiDotsThreeOutlineVertical,
+    PiHandTap,
     PiPlus,
+    PiSignIn,
     PiUserCirclePlus,
     PiUserList,
 } from "react-icons/pi";
@@ -22,7 +25,7 @@ import { CategoryDetail } from "@/type/category";
 import ClientServices from "@/services/client";
 import { getBadgeStatus } from "@/components/ui/BadgeStatus";
 import { useModal } from "@/hooks/useModal";
-import FollowerModal from "@/components/modal/FollowModal";
+import FollowerModal from "@/components/module/group/FollowModal";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import DropdownOptionDetail from "./DropdownOptionDetail";
@@ -39,6 +42,7 @@ import {
 } from "@/store/categorySlice";
 import BlogServices from "@/services/blog";
 import { doneCommentSuccess, pendingCommentSuccess } from "@/store/blogSlice";
+import { STATUS_USER_GROUP } from "@/utils/contants";
 
 const GroupDetail = () => {
     const categoriesId = useParams();
@@ -59,6 +63,8 @@ const GroupDetail = () => {
     const [userOfGroup, setUserOfGroup] = useState(false);
     const navigate = useNavigate();
     const dispatch = useDispatch();
+    const [loadingJoin, setLoadingJoin] = useState(false);
+    const [activeJoin, setActiveJoin] = useState(false);
 
     const fetchCate = useCallback(async () => {
         try {
@@ -74,7 +80,7 @@ const GroupDetail = () => {
             console.error("Error fetching data:", error);
             setIsLoading(false);
         }
-    }, [setDataCate]);
+    }, [setDataCate, activeJoin]);
 
     const fetchBlog = useCallback(
         async (page: number) => {
@@ -191,6 +197,41 @@ const GroupDetail = () => {
         }
     };
 
+    const handleJoinCate = async (id: string) => {
+        try {
+            setLoadingJoin(true);
+            const { body } = await CategoriesServices.joinCategories(id);
+            if (body?.success) {
+                toast.success(body?.message);
+                setLoadingJoin(false);
+                setActiveJoin(true);
+            } else {
+                toast.error(body?.message || "Error");
+                setLoadingJoin(false);
+            }
+        } catch (error) {
+            console.log(error);
+            setLoadingJoin(false);
+        }
+    };
+    const handleLeaveCate = async (id: string) => {
+        try {
+            setLoadingJoin(true);
+            const { body } = await CategoriesServices.leaveCategories(id);
+            if (body?.success) {
+                toast.success(body.message);
+                setLoadingJoin(false);
+                setActiveJoin(true);
+            } else {
+                toast.error(body?.message || "Error");
+                setLoadingJoin(false);
+            }
+        } catch (error) {
+            console.log(error);
+            setLoadingJoin(false);
+        }
+    };
+
     if (isLoading)
         return (
             <div className="flex justify-center mt-16">
@@ -260,7 +301,77 @@ const GroupDetail = () => {
                                 <p className="text-xs text-gray-500 @3xl:text-sm 3xl:text-base mt-2">
                                     <div className="flex items-center justify-between gap-2">
                                         <div className="flex-grow">
-                                            <div className="flex gap-3 justify-center items-center">
+                                            <div className="flex gap-3 justify-end items-center">
+                                                {dataCate?.statusUser ===
+                                                    STATUS_USER_GROUP.INVITED && (
+                                                    <Button
+                                                        size="sm"
+                                                        className="w-full flex gap-3"
+                                                        variant="outline"
+                                                        isLoading={loadingJoin}
+                                                        onClick={() =>
+                                                            handleJoinCate(
+                                                                dataCate?._id
+                                                            )
+                                                        }
+                                                    >
+                                                        Join Group{" "}
+                                                        <PiHandTap className="h-4 w-4" />
+                                                    </Button>
+                                                )}
+                                                {dataCate?.statusUser ===
+                                                    STATUS_USER_GROUP.UNJOIN && (
+                                                    <Button
+                                                        size="sm"
+                                                        className="w-full flex gap-3"
+                                                        variant="outline"
+                                                        isLoading={loadingJoin}
+                                                        onClick={() =>
+                                                            handleJoinCate(
+                                                                dataCate?._id
+                                                            )
+                                                        }
+                                                    >
+                                                        Join Group{" "}
+                                                        <PiHandTap className="h-4 w-4" />
+                                                    </Button>
+                                                )}
+                                                {dataCate?.statusUser ===
+                                                    STATUS_USER_GROUP.JOINED && (
+                                                    <Button
+                                                        size="sm"
+                                                        className="w-full flex gap-3"
+                                                        variant="outline"
+                                                        color="danger"
+                                                        isLoading={loadingJoin}
+                                                        onClick={() =>
+                                                            handleLeaveCate(
+                                                                dataCate?._id
+                                                            )
+                                                        }
+                                                    >
+                                                        Leave Group{" "}
+                                                        <PiSignIn className="h-4 w-4" />
+                                                    </Button>
+                                                )}
+                                                {dataCate?.statusUser ===
+                                                    STATUS_USER_GROUP.PENDING && (
+                                                    <Button
+                                                        size="sm"
+                                                        className="w-full flex gap-3"
+                                                        variant="flat"
+                                                        color="danger"
+                                                        isLoading={loadingJoin}
+                                                        onClick={() => {
+                                                            handleLeaveCate(
+                                                                dataCate?._id
+                                                            );
+                                                        }}
+                                                    >
+                                                        Resquesting{" "}
+                                                        <PiDotsThreeOutline className="h-4 w-4" />
+                                                    </Button>
+                                                )}
                                                 <Button
                                                     variant="outline"
                                                     size="sm"
@@ -277,7 +388,7 @@ const GroupDetail = () => {
                                                         });
                                                     }}
                                                 >
-                                                    List Members{" "}
+                                                    Members{" "}
                                                     <PiUserList className="h-5 w-5" />
                                                 </Button>
 

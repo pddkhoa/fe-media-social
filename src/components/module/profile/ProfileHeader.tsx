@@ -1,6 +1,10 @@
+import UserServices from "@/services/user";
+import { RootState } from "@/store/store";
 import { UserWall } from "@/type/wall";
 import { useState } from "react";
+import toast from "react-hot-toast";
 import { PiChatCircleText, PiUsers } from "react-icons/pi";
+import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { Title, Button, Avatar } from "rizzui";
 
@@ -13,8 +17,27 @@ export default function ProfileHeader({
     isView,
     userDetail,
 }: ProfileHeaderProps) {
-    const [follow, setFollow] = useState(false);
+    const [follow, setFollow] = useState(userDetail?.isfollow);
     const navigate = useNavigate();
+    const isAuth = useSelector(
+        (state: RootState) => state.auth.userToken.user._id
+    );
+    const [loading, setLoading] = useState(false);
+
+    const handleFollow = async (id: string | undefined) => {
+        if (id) {
+            setLoading(true);
+            const { body } = await UserServices.followUser(id);
+            if (body?.success) {
+                toast.success(body.message);
+                setFollow(!userDetail?.isfollow);
+                setLoading(false);
+            } else {
+                toast.error(body?.message || "Error");
+                setLoading(false);
+            }
+        }
+    };
 
     return (
         <div className="relative -mt-2">
@@ -73,7 +96,7 @@ export default function ProfileHeader({
                         </ul>
                     </div>
                 </div>
-                <div className="grid grid-cols-2 pt-3 @3xl:pt-4">
+                <div className="grid grid-cols-4 gap-5 pt-3 @3xl:pt-4">
                     {isView ? (
                         <Button
                             onClick={() => {
@@ -85,30 +108,40 @@ export default function ProfileHeader({
                         </Button>
                     ) : (
                         <>
+                            {isAuth !== userDetail?._id && (
+                                <Button
+                                    color="primary"
+                                    className="font-500 ms-3.5 text-white col-span-2"
+                                    isLoading={loading}
+                                    disabled={loading}
+                                    onClick={() =>
+                                        handleFollow(userDetail?._id)
+                                    }
+                                >
+                                    <PiUsers className="h-auto w-[18px]" />
+                                    {follow ? (
+                                        <span className="ms-1.5 inline-block">
+                                            Following
+                                        </span>
+                                    ) : (
+                                        <span className="ms-1.5 inline-block">
+                                            Follow
+                                        </span>
+                                    )}
+                                </Button>
+                            )}
                             <Button
                                 variant="outline"
-                                className="font-500 text-gray-900"
+                                className={`font-500 text-gray-900  ${
+                                    isAuth !== userDetail?._id
+                                        ? "col-span-2"
+                                        : "col-span-4"
+                                }`}
                             >
                                 <PiChatCircleText className="h-auto w-[18px]" />
                                 <span className="ms-1.5 inline-block">
                                     Message
                                 </span>
-                            </Button>
-                            <Button
-                                color="primary"
-                                className="font-500 ms-3.5 text-white"
-                                onClick={() => setFollow(!follow)}
-                            >
-                                <PiUsers className="h-auto w-[18px]" />
-                                {follow ? (
-                                    <span className="ms-1.5 inline-block">
-                                        Following
-                                    </span>
-                                ) : (
-                                    <span className="ms-1.5 inline-block">
-                                        Follow
-                                    </span>
-                                )}
                             </Button>
                         </>
                     )}

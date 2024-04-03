@@ -1,5 +1,5 @@
 /* eslint-disable no-dupe-else-if */
-import FollowerModal from "@/components/modal/FollowModal";
+import FollowerModal from "@/components/module/group/FollowModal";
 import { getBadgeStatus } from "@/components/ui/BadgeStatus";
 import { useModal } from "@/hooks/useModal";
 import CategoriesServices from "@/services/categories";

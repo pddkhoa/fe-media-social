@@ -1,141 +1,195 @@
-import { RefObject, useState } from "react";
-import { FaFileCircleQuestion } from "react-icons/fa6";
+import UserServices from "@/services/user";
+import { NotificationType } from "@/type/notification";
+import { cn } from "@/utils/class-name";
+import { TYPE_NOTI } from "@/utils/contants";
+import { RefObject, useCallback, useEffect, useState } from "react";
 import { PiCheck } from "react-icons/pi";
-import { Title, Badge, Popover } from "rizzui";
-
-const data = [
-  {
-    id: 1,
-    name: "Invitation for crafting engaging designs",
-    icon: <FaFileCircleQuestion />,
-    unRead: true,
-    sendTime: "2023-06-01T09:35:31.820Z",
-  },
-  {
-    id: 2,
-    name: "Isomorphic dashboard redesign",
-    icon: <FaFileCircleQuestion />,
-    unRead: true,
-    sendTime: "2023-05-30T09:35:31.820Z",
-  },
-  {
-    id: 3,
-    name: "3 New Incoming Project Files:",
-    icon: <FaFileCircleQuestion />,
-    unRead: false,
-    sendTime: "2023-06-01T09:35:31.820Z",
-  },
-  {
-    id: 4,
-    name: "Swornak purchased isomorphic",
-    icon: <FaFileCircleQuestion />,
-    unRead: false,
-    sendTime: "2023-05-21T09:35:31.820Z",
-  },
-  {
-    id: 5,
-    name: "Task #45890 merged with #45890 in “Ads Pro Admin Dashboard project:",
-    icon: <FaFileCircleQuestion />,
-    unRead: true,
-    sendTime: "2023-06-01T09:35:31.820Z",
-  },
-  {
-    id: 6,
-    name: "3 new application design concepts added",
-    icon: <FaFileCircleQuestion />,
-    unRead: true,
-    sendTime: "2023-05-15T09:35:31.820Z",
-  },
-  {
-    id: 7,
-    name: "Your order has been placed",
-    icon: <FaFileCircleQuestion />,
-    unRead: false,
-    sendTime: "2023-05-16T09:35:31.820Z",
-  },
-  {
-    name: "Order has been shipped to #123221",
-    icon: <FaFileCircleQuestion />,
-    unRead: false,
-    sendTime: "2023-05-01T09:35:31.820Z",
-  },
-];
+import { useNavigate } from "react-router-dom";
+import { Title, Badge, Popover, Avatar, Empty, Loader } from "rizzui";
+import SimpleBar from "simplebar-react";
 
 function NotificationsList({
-  setIsOpen,
+    setIsOpen,
 }: {
-  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+    setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
-  return (
-    <div className="w-[320px] text-left rtl:text-right sm:w-[360px] 2xl:w-[420px]">
-      <div className="mb-3 flex items-center justify-between ps-6">
-        <Title as="h5">Notifications</Title>
-      </div>
-      <div className="max-h-[420px] overflow-auto">
-        <div className="grid cursor-pointer grid-cols-1 gap-1 ps-4">
-          {data.map((item) => (
-            <div
-              key={item.name + item.id}
-              className="group grid grid-cols-[auto_minmax(0,1fr)] gap-3 rounded-md px-2 py-2 pe-3 transition-colors hover:bg-gray-100 dark:hover:bg-gray-50"
-            >
-              <div className="flex h-9 w-9 items-center justify-center rounded bg-gray-100/70 p-1 dark:bg-gray-50/50 [&>svg]:h-auto [&>svg]:w-5">
-                {item.icon}
-              </div>
-              <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center">
-                <div className="w-full">
-                  <Title
-                    as="h6"
-                    className="mb-0.5 w-11/12 truncate text-sm font-semibold"
-                  >
-                    {item.name}
-                  </Title>
-                  {/* <span className="ms-auto whitespace-nowrap pe-8 text-xs text-gray-500">
-                    {dayjs(item.sendTime).fromNow(true)}
-                  </span> */}
+    const [dataNoti, setDataNoti] = useState<NotificationType[]>([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const navigate = useNavigate();
+
+    const fetchNoti = useCallback(async () => {
+        try {
+            setIsLoading(true);
+            const { body } = await UserServices.getNotification();
+            if (body?.success) {
+                setDataNoti(body?.result);
+                setIsLoading(false);
+            }
+        } catch (error) {
+            console.error("Error fetching data:", error);
+            setIsLoading(false);
+        }
+    }, [setDataNoti]);
+
+    useEffect(() => {
+        fetchNoti();
+    }, [fetchNoti]);
+
+    const displayNoti = dataNoti?.slice(0, 6);
+
+    const handleClickRead = async (noti: NotificationType) => {
+        const { body } = await UserServices.readNotification(noti._id);
+        if (body?.success) {
+            switch (noti.type) {
+                case TYPE_NOTI.LIKE:
+                    navigate("/post", { state: noti.blog });
+
+                    break;
+                case TYPE_NOTI.COMMENT:
+                    navigate("/post", { state: noti.blog });
+
+                    break;
+                case TYPE_NOTI.INVITE:
+                    navigate(`/group/detail/${noti.category?._id}`);
+
+                    break;
+                case TYPE_NOTI.FOLLOW:
+                    navigate(`/profile/${noti.sender._id}`);
+
+                    break;
+
+                default:
+                    break;
+            }
+        }
+    };
+
+    return (
+        <div className="w-[320px] text-left rtl:text-right sm:w-[360px] 2xl:w-[420px]">
+            <div className="mb-2 flex items-center justify-between ps-6">
+                <Title as="h5">Notification</Title>
+                <div
+                    onClick={() => setIsOpen(false)}
+                    className="cursor-pointer hover:underline"
+                >
+                    View all
                 </div>
-                <div className="ms-auto flex-shrink-0">
-                  {item.unRead ? (
-                    <Badge
-                      renderAsDot
-                      size="lg"
-                      color="primary"
-                      className="scale-90"
-                    />
-                  ) : (
-                    <span className="inline-block rounded-full bg-gray-100 p-0.5 dark:bg-gray-50">
-                      <PiCheck className="h-auto w-[9px]" />
-                    </span>
-                  )}
-                </div>
-              </div>
             </div>
-          ))}
+            {isLoading ? (
+                <div className="flex justify-center items-center pt-8">
+                    <Loader />
+                </div>
+            ) : (
+                <SimpleBar className="max-h-[450px] ">
+                    <div className="grid grid-cols-1 ps-4 p-2">
+                        {displayNoti && displayNoti.length > 0 ? (
+                            displayNoti.map((item) => (
+                                <div
+                                    key={item._id}
+                                    onClick={() => {
+                                        handleClickRead(item);
+                                    }}
+                                    className="group grid cursor-pointer grid-cols-[auto_minmax(0,1fr)] gap-3 rounded-md px-2 py-2.5 pe-3 transition-colors hover:bg-gray-100 dark:hover:bg-gray-50"
+                                >
+                                    <div className={cn("relative")}>
+                                        <Avatar
+                                            src={item.sender.avatar.url}
+                                            name={item.sender.name}
+                                        />
+                                    </div>
+                                    <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center">
+                                        <div className="w-full">
+                                            <Title
+                                                as="h6"
+                                                className="mb-0.5 text-sm font-semibold"
+                                            >
+                                                {item.sender.name}
+                                            </Title>
+                                            <div className="flex">
+                                                {item.type ===
+                                                    TYPE_NOTI.LIKE && (
+                                                    <p className="w-10/12 line-clamp-2 pe-7 text-xs text-gray-500">
+                                                        Like a your post:{" "}
+                                                        <span className="font-semibold">
+                                                            {item.blog.title}
+                                                        </span>
+                                                    </p>
+                                                )}
+                                                {item.type ===
+                                                    TYPE_NOTI.COMMENT && (
+                                                    <p className="w-10/12 line-clamp-2 pe-7 text-xs text-gray-500">
+                                                        Comment on your post:{" "}
+                                                        <span className="font-semibold">
+                                                            {item.blog.title}
+                                                        </span>
+                                                    </p>
+                                                )}
+
+                                                {item.type ===
+                                                    TYPE_NOTI.FOLLOW && (
+                                                    <p className="w-10/12 line-clamp-2 pe-7 text-xs text-gray-500">
+                                                        Follow you
+                                                    </p>
+                                                )}
+                                                {item.type ===
+                                                    TYPE_NOTI.INVITE && (
+                                                    <p className="w-11/12 line-clamp-2 pe-7 text-xs text-gray-500">
+                                                        invite you to join the
+                                                        group{" "}
+                                                        <span className="font-semibold">
+                                                            {
+                                                                item.category
+                                                                    ?.name
+                                                            }
+                                                        </span>
+                                                    </p>
+                                                )}
+                                                {/* <span className="ms-auto whitespace-nowrap pe-8 text-xs text-gray-500">
+                                            {dayjs(item.sendTime).fromNow(true)}
+                                        </span> */}
+                                            </div>
+                                        </div>
+                                        <div className="ms-auto flex-shrink-0">
+                                            {!item.isRead ? (
+                                                <Badge
+                                                    renderAsDot
+                                                    size="lg"
+                                                    color="primary"
+                                                    className="scale-90"
+                                                />
+                                            ) : (
+                                                <span className="inline-block rounded-full bg-gray-100 p-0.5 dark:bg-gray-50">
+                                                    <PiCheck className="h-auto w-[9px]" />
+                                                </span>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                            ))
+                        ) : (
+                            <Empty />
+                        )}
+                    </div>
+                </SimpleBar>
+            )}
         </div>
-      </div>
-      <div
-        onClick={() => setIsOpen(false)}
-        className="-me-6 block px-6 pb-0.5 pt-3 text-center hover:underline"
-      >
-        View All Activity
-      </div>
-    </div>
-  );
+    );
 }
 
 export default function NotificationDropdown({
-  children,
+    children,
 }: {
-  children: JSX.Element & { ref?: RefObject<unknown> };
+    children: JSX.Element & { ref?: RefObject<unknown> };
 }) {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [_isOpen, setIsOpen] = useState(false);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [_isOpen, setIsOpen] = useState(false);
 
-  return (
-    <Popover placement={"bottom-end"}>
-      <Popover.Trigger>{children}</Popover.Trigger>
-      <Popover.Content className="z-50 pb-6 pe-6 ps-0 pt-5 h-fit overflow-auto dark:bg-gray-100 [&>svg]:hidden [&>svg]:dark:fill-gray-100 sm:[&>svg]:inline-flex">
-        <NotificationsList setIsOpen={setIsOpen} />
-      </Popover.Content>
-    </Popover>
-  );
+    return (
+        <Popover placement={"bottom-end"}>
+            <Popover.Trigger>{children}</Popover.Trigger>
+            <Popover.Content className="z-50 pb-6 pe-6 ps-0 pt-5 h-fit overflow-auto dark:bg-gray-100 [&>svg]:hidden [&>svg]:dark:fill-gray-100 sm:[&>svg]:inline-flex">
+                <NotificationsList setIsOpen={setIsOpen} />
+            </Popover.Content>
+        </Popover>
+    );
 }

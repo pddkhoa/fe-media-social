@@ -1,7 +1,5 @@
-import { RootState } from "@/store/store";
 import { UserWall } from "@/type/wall";
-import { FC } from "react";
-import { useSelector } from "react-redux";
+import { FC, useState } from "react";
 import { Avatar, Button, Empty } from "rizzui";
 
 type ModalListUserProps = {
@@ -33,9 +31,18 @@ type UserRowProps = {
 };
 
 function UserRow({ row, handleFollow }: UserRowProps) {
-    const isLoading = useSelector(
-        (state: RootState) => state.wall.pendingFollow
-    );
+    const [isRowPending, setIsRowPending] = useState(false);
+    const [stateFollow, setStateFollow] = useState(row?.isfollow);
+    const handleFollowClick = async () => {
+        setIsRowPending(true);
+        try {
+            await handleFollow(row._id);
+        } catch (error) {
+            console.error("Error while following:", error);
+        } finally {
+            setIsRowPending(false);
+        }
+    };
     return (
         <div className="flex items-center justify-between pb-3 pt-2 p-4">
             <div className="flex items-center gap-2">
@@ -47,13 +54,16 @@ function UserRow({ row, handleFollow }: UserRowProps) {
             <Button
                 size="sm"
                 rounded="pill"
-                isLoading={isLoading}
-                disabled={isLoading}
-                variant={row.isfollow ? "solid" : "flat"}
-                onClick={() => handleFollow(row._id)}
+                isLoading={isRowPending}
+                disabled={isRowPending}
+                variant={stateFollow ? "solid" : "flat"}
+                onClick={() => {
+                    handleFollowClick();
+                    setStateFollow(!stateFollow);
+                }}
                 className="font-medium capitalize md:h-9 md:px-4"
             >
-                {row.isfollow ? "Unfollow" : "Follow"}
+                {stateFollow ? "Unfollow" : "Follow"}
             </Button>
         </div>
     );
