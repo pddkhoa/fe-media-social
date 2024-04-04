@@ -79,6 +79,37 @@ class UserServices {
         );
     }
 
+    static async reportUser(data: {
+        userId: string | undefined;
+        message: string;
+        reason: string;
+    }) {
+        type body = {
+            success: string;
+            statusCode: number;
+            message: string;
+            result: UserReport;
+        };
+        return await requestApiHelper<body>(
+            identity.post(`user/reportUser`, data)
+        );
+    }
+    static async reportPost(data: {
+        blogId: string | undefined;
+        message: string;
+        reason: string;
+    }) {
+        type body = {
+            success: string;
+            statusCode: number;
+            message: string;
+            result: UserReport;
+        };
+        return await requestApiHelper<body>(
+            identity.post(`user/reportBlog`, data)
+        );
+    }
+
     static async getNotification() {
         type body = {
             success: string;

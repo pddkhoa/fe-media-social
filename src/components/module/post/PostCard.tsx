@@ -93,7 +93,7 @@ export default function PostCard({
                                         setIsDelete={setIsDelete}
                                     />
                                 ) : (
-                                    <DropdownOther />
+                                    <DropdownOther data={data} />
                                 )}
                             </Popover.Content>
                         </Popover>

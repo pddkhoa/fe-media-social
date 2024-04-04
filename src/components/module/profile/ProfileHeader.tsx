@@ -3,10 +3,15 @@ import { RootState } from "@/store/store";
 import { UserWall } from "@/type/wall";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { PiChatCircleText, PiUsers } from "react-icons/pi";
+import {
+    PiChatCircleText,
+    PiDotsThreeOutlineFill,
+    PiUsers,
+} from "react-icons/pi";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { Title, Button, Avatar } from "rizzui";
+import { Title, Button, Avatar, Popover } from "rizzui";
+import DropdownOption from "./DropdownOption";
 
 type ProfileHeaderProps = {
     isView?: boolean;
@@ -96,42 +101,22 @@ export default function ProfileHeader({
                         </ul>
                     </div>
                 </div>
-                <div className="grid grid-cols-4 gap-5 pt-3 @3xl:pt-4">
+                <div className="grid grid-cols-6 gap-3 pt-3 ">
                     {isView ? (
                         <Button
                             onClick={() => {
                                 navigate("/profile");
                             }}
+                            size="sm"
                             className="col-span-2"
                         >
                             View Profile
                         </Button>
                     ) : (
                         <>
-                            {isAuth !== userDetail?._id && (
-                                <Button
-                                    color="primary"
-                                    className="font-500 ms-3.5 text-white col-span-2"
-                                    isLoading={loading}
-                                    disabled={loading}
-                                    onClick={() =>
-                                        handleFollow(userDetail?._id)
-                                    }
-                                >
-                                    <PiUsers className="h-auto w-[18px]" />
-                                    {follow ? (
-                                        <span className="ms-1.5 inline-block">
-                                            Following
-                                        </span>
-                                    ) : (
-                                        <span className="ms-1.5 inline-block">
-                                            Follow
-                                        </span>
-                                    )}
-                                </Button>
-                            )}
                             <Button
                                 variant="outline"
+                                size="sm"
                                 className={`font-500 text-gray-900  ${
                                     isAuth !== userDetail?._id
                                         ? "col-span-2"
@@ -143,6 +128,46 @@ export default function ProfileHeader({
                                     Message
                                 </span>
                             </Button>
+                            {isAuth !== userDetail?._id && (
+                                <>
+                                    <Button
+                                        color="primary"
+                                        size="sm"
+                                        className="font-500 ms-3.5 text-white col-span-2"
+                                        isLoading={loading}
+                                        disabled={loading}
+                                        onClick={() =>
+                                            handleFollow(userDetail?._id)
+                                        }
+                                    >
+                                        <PiUsers className="h-auto w-[18px]" />
+                                        {follow ? (
+                                            <span className="ms-1.5 inline-block">
+                                                Following
+                                            </span>
+                                        ) : (
+                                            <span className="ms-1.5 inline-block">
+                                                Follow
+                                            </span>
+                                        )}
+                                    </Button>
+
+                                    <Popover placement="bottom-start">
+                                        <Popover.Trigger>
+                                            <Button
+                                                variant="outline"
+                                                className="col-span-2 mx-4"
+                                                size="sm"
+                                            >
+                                                <PiDotsThreeOutlineFill />
+                                            </Button>
+                                        </Popover.Trigger>
+                                        <Popover.Content className="z-50 p-0 dark:bg-gray-50 [&>svg]:dark:fill-gray-50">
+                                            <DropdownOption data={userDetail} />
+                                        </Popover.Content>
+                                    </Popover>
+                                </>
+                            )}
                         </>
                     )}
                 </div>

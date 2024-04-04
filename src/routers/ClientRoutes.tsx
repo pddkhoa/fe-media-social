@@ -15,6 +15,10 @@ const CreatePost = lazy(() => import("@/pages/client/post/PageCreatePost"));
 const EditPost = lazy(() => import("@/pages/client/post/PageEditPost"));
 
 const NewsFeed = lazy(() => import("@/pages/client/newsfeed/PageNewsFeed"));
+const Notification = lazy(
+    () => import("@/pages/client/notification/PageNotification")
+);
+
 const GroupMain = lazy(() => import("@/pages/client/group/PageGroup"));
 const CreateGroup = lazy(() => import("@/pages/client/group/PageCreateGroup"));
 const PageMyGroup = lazy(() => import("@/pages/client/group/PageMyGroup"));
@@ -86,6 +90,15 @@ const ClientRoutes = () => {
                         element={
                             <Suspense fallback={<div>Loading ...</div>}>
                                 <EditPost />
+                            </Suspense>
+                        }
+                    />
+
+                    <Route
+                        path="/notification"
+                        element={
+                            <Suspense fallback={<div>Loading ...</div>}>
+                                <Notification />
                             </Suspense>
                         }
                     />

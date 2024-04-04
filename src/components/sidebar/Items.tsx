@@ -1,4 +1,5 @@
 import {
+    PiArrowCircleUpFill,
     PiAsteriskSimpleFill,
     PiBellRingingBold,
     PiBookBookmark,
@@ -36,6 +37,11 @@ export const menuItems = [
         icon: <PiGlobeHemisphereWestFill />,
     },
     {
+        name: "Notification",
+        href: "/notification",
+        icon: <PiBellRingingBold />,
+    },
+    {
         name: "Messenger",
         href: "/messenger",
         icon: <PiMessengerLogo />,
@@ -49,7 +55,7 @@ export const menuItems = [
     {
         name: "Lastest",
         href: "/lastest",
-        icon: <PiBellRingingBold />,
+        icon: <PiArrowCircleUpFill />,
     },
     {
         name: "Popular",
