@@ -46,6 +46,8 @@ export type Post = {
     updatedAt: string;
     __v: number;
     isPermission: boolean;
+    isShare: boolean;
+    shareBy: User;
 };
 
 export type CategoryPost = {

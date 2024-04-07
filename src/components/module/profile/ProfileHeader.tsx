@@ -15,7 +15,7 @@ import DropdownOption from "./DropdownOption";
 
 type ProfileHeaderProps = {
     isView?: boolean;
-    userDetail: UserWall | undefined;
+    userDetail?: UserWall | undefined;
 };
 
 export default function ProfileHeader({

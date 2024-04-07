@@ -137,7 +137,7 @@ const ModalReportTag: FC<ModalReportTagProps> = ({ data }) => {
                 placeholder="Write you message..."
             />
             <div className="flex justify-end gap-3">
-                <Button onClick={closeModal} variant="flat">
+                <Button type="button" onClick={closeModal} variant="flat">
                     Close
                 </Button>
 

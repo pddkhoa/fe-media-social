@@ -1,9 +1,11 @@
 import UserServices from "@/services/user";
+import { endLoadingPage, startLoadingPage } from "@/store/notiSlice";
 import { NotificationType } from "@/type/notification";
 import { cn } from "@/utils/class-name";
 import { TYPE_NOTI } from "@/utils/contants";
 import { RefObject, useCallback, useEffect, useState } from "react";
 import { PiCheck } from "react-icons/pi";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { Title, Badge, Popover, Avatar, Empty, Loader } from "rizzui";
 import SimpleBar from "simplebar-react";
@@ -16,6 +18,7 @@ function NotificationsList({
     const [dataNoti, setDataNoti] = useState<NotificationType[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     const fetchNoti = useCallback(async () => {
         try {
@@ -38,6 +41,7 @@ function NotificationsList({
     const displayNoti = dataNoti?.slice(0, 6);
 
     const handleClickRead = async (noti: NotificationType) => {
+        dispatch(startLoadingPage());
         const { body } = await UserServices.readNotification(noti._id);
         if (body?.success) {
             switch (noti.type) {
@@ -61,6 +65,7 @@ function NotificationsList({
                 default:
                     break;
             }
+            dispatch(endLoadingPage());
         }
     };
 
@@ -69,7 +74,9 @@ function NotificationsList({
             <div className="mb-2 flex items-center justify-between ps-6">
                 <Title as="h5">Notification</Title>
                 <div
-                    onClick={() => setIsOpen(false)}
+                    onClick={() => {
+                        setIsOpen(false), navigate("/notification");
+                    }}
                     className="cursor-pointer hover:underline"
                 >
                     View all

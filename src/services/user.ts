@@ -1,5 +1,6 @@
 import identity from "@/api/interceptor";
 import { NotificationType } from "@/type/notification";
+import { Post } from "@/type/post";
 import { ReportType, UserReport } from "@/type/report";
 import { UserWall } from "@/type/wall";
 import { requestApiHelper } from "@/utils/apiRequest";
@@ -139,6 +140,29 @@ class UserServices {
             result: ReportType[];
         };
         return await requestApiHelper<body>(identity.get(`user/report`));
+    }
+    static async getNotificationByType(type: string) {
+        type body = {
+            success: string;
+            statusCode: number;
+            message: string;
+            result: NotificationType[];
+        };
+        return await requestApiHelper<body>(
+            identity.get(`user/listNotifyByType/${type}`)
+        );
+    }
+
+    static async sharePost(idPost: string) {
+        type body = {
+            success: string;
+            statusCode: number;
+            message: string;
+            result: Post;
+        };
+        return await requestApiHelper<body>(
+            identity.post(`user/shareBlog/${idPost}`)
+        );
     }
 }
 

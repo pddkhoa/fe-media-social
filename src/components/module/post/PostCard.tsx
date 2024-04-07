@@ -18,7 +18,7 @@ import DropdownOther from "./DropdownOther";
 import ModalPrivate from "../../modal/ModalPrivate";
 import { formatDate } from "@/utils/format-date";
 import ModalDraft from "./ModalDraft";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 type POST_TYPE = "image" | "gallery" | "video";
 
@@ -26,7 +26,7 @@ type PostCard = {
     type?: POST_TYPE;
     onClick?: () => void;
     data: Post;
-    setIsDelete: React.Dispatch<React.SetStateAction<boolean>>;
+    setIsDelete?: React.Dispatch<React.SetStateAction<boolean>> | undefined;
     actionDispatchLike?: {
         payload: any;
         type: any;
@@ -50,6 +50,7 @@ export default function PostCard({
     actionDispatchSave,
     handleCommentPost,
 }: PostCard) {
+    const navigate = useNavigate();
     const [open, setOpen] = useState(false);
     const isAuthor = useSelector(
         (state: RootState) => state.auth.userToken.user._id
@@ -57,28 +58,71 @@ export default function PostCard({
 
     return (
         <>
-            <div className="flex flex-col max-w-xl p-6 space-y-6 overflow-hidden rounded-md shadow-md bg-gray-100">
+            <div className="flex flex-col max-w-xl p-6 space-y-6 overflow-hidden rounded-md shadow bg-gray-100">
                 <div className="flex justify-between">
-                    <div className="flex space-x-4">
-                        <Link to={`/profile/${data?.user?._id}`}>
-                            <Avatar
-                                name={data?.user?.name}
-                                src={data?.user?.avatar?.url}
-                                className="object-cover w-12 h-12 rounded-full shadow"
-                            />
-                        </Link>
-                        <div className="flex flex-col space-y-1">
-                            <Link
-                                to={`/profile/${data?.user?._id}`}
-                                className="text-sm font-semibold"
-                            >
-                                {data?.user?.name}
-                            </Link>
-                            <span className="text-xs text-gray-400">
-                                {formatDate(data?.createdAt as any)}
-                            </span>
+                    {data.category ? (
+                        <div
+                            onClick={() => {
+                                navigate(`/group/detail/${data.category._id}`);
+                            }}
+                            className="relative inline-flex gap-5 w-[80%] cursor-pointer group "
+                        >
+                            {data?.category?.avatar?.url ? (
+                                <img
+                                    src={data?.category?.avatar?.url}
+                                    className="object-cover h-12 w-12 rounded-lg group-hover:brightness-95"
+                                />
+                            ) : (
+                                <div className="bg-gradient-to-r h-12 w-12 rounded-lg from-[#F8E1AF] to-[#F6CFCF] bg-opacity-30 group-hover:brightness-95" />
+                            )}
+                            <p className="font-semibold mt-1 group-hover:text-gray-800">
+                                {data?.category?.name}
+                            </p>
+                            <div className="absolute top-8 left-8 -translate-y-[25%]">
+                                <Link
+                                    className="flex gap-2 items-center"
+                                    to={`/profile/${data?.user?._id}`}
+                                >
+                                    <Avatar
+                                        name={data?.user?.name}
+                                        src={data?.user?.avatar?.url}
+                                        customSize={30}
+                                        className="object-cover w-12 h-12 rounded-full shadow"
+                                    />
+                                    <div className="flex flex-col mt-2">
+                                        <div className="text-xs font-semibold">
+                                            {data?.user?.name}
+                                        </div>
+                                        <span className="text-[10px] text-gray-400 pointer-events-none">
+                                            {formatDate(data?.createdAt as any)}
+                                        </span>
+                                    </div>
+                                </Link>
+                            </div>
                         </div>
-                    </div>
+                    ) : (
+                        <div className="relative inline-flex gap-5 w-[80%]">
+                            <Link
+                                className="flex gap-2 items-center"
+                                to={`/profile/${data?.user?._id}`}
+                            >
+                                <Avatar
+                                    name={data?.user?.name}
+                                    src={data?.user?.avatar?.url}
+                                    size="md"
+                                    className="object-cover w-12 h-12 rounded-full shadow"
+                                />
+                                <div className="flex flex-col mt-2">
+                                    <div className="text-sm font-semibold">
+                                        {data?.user?.name}
+                                    </div>
+                                    <span className="text-[10px] text-gray-400 pointer-events-none">
+                                        {formatDate(data?.createdAt as any)}
+                                    </span>
+                                </div>
+                            </Link>
+                        </div>
+                    )}
                     <div>
                         <Popover placement="bottom-start">
                             <Popover.Trigger>
@@ -87,7 +131,7 @@ export default function PostCard({
                                 </ActionIcon>
                             </Popover.Trigger>
                             <Popover.Content className="z-50 p-0 dark:bg-gray-50 [&>svg]:dark:fill-gray-50">
-                                {isAuthor === data?.user?._id ? (
+                                {isAuthor === data?.user?._id && setIsDelete ? (
                                     <DropdownAuthor
                                         data={data}
                                         setIsDelete={setIsDelete}
@@ -125,24 +169,18 @@ export default function PostCard({
                         )}
                     </div>
                     <div className="flex space-x-2 text-sm ">
-                        <button
-                            type="button"
-                            className="flex items-center p-1 space-x-1.5"
-                        >
+                        <div className="flex items-center p-1 space-x-1.5">
                             <PiChatCentered className="h-5 w-5" />
                             <span>{data?.sumComment}</span>
-                        </button>
-                        <button
-                            type="button"
-                            className="flex items-center p-1 space-x-1.5"
-                        >
+                        </div>
+                        <div className="flex items-center p-1 space-x-1.5">
                             {data?.isLiked ? (
                                 <PiFireFill className="h-5 w-5" />
                             ) : (
                                 <PiFireLight className="h-5 w-5" />
                             )}
                             <span>{data?.likes}</span>
-                        </button>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -24,8 +24,27 @@ const postSlice = createSlice({
         getPostDraft: (state, action) => {
             state.listPostDraft = action.payload;
         },
+        getPostFeed: (state, action) => {
+            state.listPostFeed = action.payload;
+        },
+        getLoadmorePostFeed: (state, action) => {
+            state.listPostFeed.push(...action.payload);
+        },
         likePostByUserSuccess: (state, action) => {
             const post: any = state.listPostByUser.find(
+                (post) => post._id === action.payload
+            );
+
+            if (post && post.isLiked) {
+                post.isLiked = false;
+                post.likes = post.likes - 1;
+            } else {
+                post.isLiked = true;
+                post.likes = post.likes + 1;
+            }
+        },
+        likePostFeedSuccess: (state, action) => {
+            const post: any = state.listPostFeed.find(
                 (post) => post._id === action.payload
             );
 
@@ -96,6 +115,17 @@ const postSlice = createSlice({
                 post.isSave = true;
             }
         },
+        savePostFeedSuccess: (state, action) => {
+            const post: any = state.listPostFeed.find(
+                (post) => post._id === action.payload
+            );
+
+            if (post && post.isSave) {
+                post.isSave = false;
+            } else {
+                post.isSave = true;
+            }
+        },
         postCommentToPostByUser: (
             state,
             action: PayloadAction<{ postId: string; comment: any }>
@@ -119,6 +149,19 @@ const postSlice = createSlice({
             const post = state.listPostBookmark.find(
                 (post) => post._id === postId
             );
+            state.pendingComment = true;
+
+            if (post) {
+                post.comments.push(comment);
+                post.sumComment = post.sumComment + 1;
+            }
+        },
+        postCommentToPostFeed: (
+            state,
+            action: PayloadAction<{ postId: string; comment: any }>
+        ) => {
+            const { postId, comment } = action.payload;
+            const post = state.listPostFeed.find((post) => post._id === postId);
             state.pendingComment = true;
 
             if (post) {
@@ -173,6 +216,11 @@ export const {
     getPostDetail,
     addCommentToPostDetail,
     deleteCommentToPostDetail,
+    getPostFeed,
+    likePostFeedSuccess,
+    savePostFeedSuccess,
+    postCommentToPostFeed,
+    getLoadmorePostFeed,
 } = postSlice.actions;
 
 export default postSlice.reducer;

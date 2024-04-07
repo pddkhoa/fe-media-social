@@ -1,51 +1,49 @@
-import { atom, useAtom } from "jotai";
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 import { Badge } from "rizzui";
 import SimpleBar from "simplebar-react";
 import { cn } from "@/utils/class-name";
 
-export const supportNavItems = [
-    {
-        value: "all-open",
-        label: "All Notification",
-        count: 1603,
-    },
-    {
-        value: "Like",
-        label: "Like",
-        count: 88,
-    },
-    {
-        value: "Comment",
-        label: "Comment",
-        count: 1515,
-    },
+type TabListProps = {
+    setValueTab: React.Dispatch<any>;
+    dataTotal: number;
+};
 
-    {
-        value: "Follow",
-        label: "Follow",
-        count: 991,
-    },
-    {
-        value: "Invited",
-        label: "Invited",
-        count: 991,
-    },
-];
+export function TabList({ setValueTab, dataTotal }: TabListProps) {
+    const supportNavItems = [
+        {
+            value: "All",
+            label: "All Notification",
+            count: dataTotal,
+        },
+        {
+            value: "Like",
+            label: "Like",
+        },
+        {
+            value: "Comment",
+            label: "Comment",
+        },
 
-export const tabAtom = atom(supportNavItems[0].value);
-
-// export default function InboxTabs({ className }: { className?: string }) {
-//     return <MessageDetails className={cn(className)} />;
-// }
-
-export function TabList() {
-    const [tab, setTab] = useAtom(tabAtom);
+        {
+            value: "Follow",
+            label: "Follow",
+        },
+        {
+            value: "Invite",
+            label: "Invite",
+        },
+        {
+            value: "Accept",
+            label: "Accept",
+        },
+    ];
+    const [tab, setTab] = useState(supportNavItems[0].value);
     const [isPending, startTransition] = useTransition();
 
     function selectTab(nextTab: string) {
         startTransition(() => {
             setTab(nextTab);
+            setValueTab(nextTab);
         });
     }
 
@@ -70,7 +68,7 @@ interface TabButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     item: {
         value: string;
         label: string;
-        count: number;
+        count?: number;
     };
     isActive: boolean;
     onClick: () => void;
@@ -97,13 +95,15 @@ export function TabButton({
             {...props}
         >
             <span className="whitespace-nowrap">{item.label}</span>
-            <Badge
-                size="sm"
-                variant={isActive ? "solid" : "flat"}
-                className={cn(!isActive && "bg-gray-100")}
-            >
-                {item.count}
-            </Badge>
+            {item.count && (
+                <Badge
+                    size="sm"
+                    variant={isActive ? "solid" : "flat"}
+                    className={cn(!isActive && "bg-gray-100")}
+                >
+                    {item.count}
+                </Badge>
+            )}
             <span
                 className={cn(
                     "absolute -bottom-px left-0 h-0.5 w-full",

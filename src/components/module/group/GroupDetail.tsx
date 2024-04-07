@@ -4,9 +4,7 @@ import {
     PiDotsThreeOutline,
     PiDotsThreeOutlineVertical,
     PiHandTap,
-    PiPlus,
     PiSignIn,
-    PiUserCirclePlus,
     PiUserList,
 } from "react-icons/pi";
 import {
@@ -400,7 +398,6 @@ const GroupDetail = () => {
                                                             className="flex gap-3"
                                                         >
                                                             Invite Members{" "}
-                                                            <PiUserCirclePlus className="h-5 w-5" />
                                                         </Button>
                                                         <Button
                                                             variant="outline"
@@ -418,7 +415,6 @@ const GroupDetail = () => {
                                                             }}
                                                         >
                                                             Create Post{" "}
-                                                            <PiPlus className="h-3 w-3" />
                                                         </Button>
                                                     </>
                                                 ) : null}

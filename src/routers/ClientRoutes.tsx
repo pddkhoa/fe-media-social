@@ -1,6 +1,7 @@
 import MainLayout from "@/layouts/MainLayout";
 import { Suspense, lazy } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
+import { Loader } from "rizzui";
 const Profile = lazy(() => import("@/pages/client/profile/PageProfileMain"));
 const ProfileSetting = lazy(
     () => import("@/pages/client/profile/PageProfileSetting")
@@ -55,7 +56,7 @@ const ClientRoutes = () => {
                     <Route
                         path="/profile/:id"
                         element={
-                            <Suspense fallback={<div>Loading ...</div>}>
+                            <Suspense fallback={<Loader />}>
                                 <Profile />
                             </Suspense>
                         }

@@ -100,13 +100,7 @@ const GroupList: FC<GroupListProps> = ({
                     ) : (
                         <>
                             <div className="grid grid-cols-3 gap-5 ">
-                                {loader ? (
-                                    <>
-                                        <SkeletonCate />
-                                        <SkeletonCate />
-                                        <SkeletonCate />
-                                    </>
-                                ) : listCate && listCate?.length > 0 ? (
+                                {listCate && listCate?.length > 0 ? (
                                     listCate?.map((item) => (
                                         <div
                                             key={item._id}

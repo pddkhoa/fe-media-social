@@ -20,4 +20,5 @@ export const TYPE_NOTI = {
     COMMENT: "Comment",
     FOLLOW: "Follow",
     INVITE: "Invite",
+    ACCEPT: "Accept",
 };

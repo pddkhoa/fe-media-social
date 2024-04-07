@@ -2,7 +2,7 @@ import Spinner from "@/components/ui/Spinner";
 import { cn } from "@/utils/class-name";
 import { useState, useEffect } from "react";
 import { Title, Badge, Empty, Button, Popover } from "rizzui";
-import MessageBody from "./MessageBody";
+import MessageBody from "./NotificationBody";
 import { NotificationType } from "@/type/notification";
 import { PiDotsThreeOutlineFill } from "react-icons/pi";
 import DropdownOption from "./DropdownOption";
@@ -75,7 +75,7 @@ export function MessageDetails({
                         <Title as="h4" className="font-semibold">
                             Notification
                         </Title>
-                        <Badge variant="outline" color="danger" size="sm">
+                        <Badge variant="outline" color="danger" size="md">
                             {message?.type}
                         </Badge>
                     </div>

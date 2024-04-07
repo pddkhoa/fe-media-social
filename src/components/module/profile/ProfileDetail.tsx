@@ -18,6 +18,7 @@ import {
 import toast from "react-hot-toast";
 import { UserWall } from "@/type/wall";
 import ModalListUser from "./ModalListUser";
+import { Post } from "@/type/post";
 
 type ProfileDetailsProps = {
     userDetail: UserWall;
@@ -25,6 +26,7 @@ type ProfileDetailsProps = {
     listFollowing: UserWall[];
     handleFollower: (id: string) => Promise<void>;
     handleFollowing: (id: string) => Promise<void>;
+    postShare: Post[];
 };
 
 export default function ProfileDetails({
@@ -33,6 +35,7 @@ export default function ProfileDetails({
     listFollowing,
     handleFollower,
     handleFollowing,
+    postShare,
 }: ProfileDetailsProps) {
     const location = useLocation();
     const [open, setOpen] = useState(false);
@@ -51,6 +54,8 @@ export default function ProfileDetails({
 
     const tabs = [
         { id: "posts", count: userDetail?.totalBlog },
+        { id: "share", count: postShare?.length },
+
         { id: "followers", count: userDetail?.totalFollower },
         { id: "following", count: userDetail?.totalFollowing },
     ];
@@ -159,25 +164,52 @@ export default function ProfileDetails({
                         <div className="col-span-3 mx-auto mt-5">
                             <Loader />
                         </div>
-                    ) : listBlog && listBlog.length > 0 ? (
-                        listBlog.map((item) => (
-                            <PostCard
-                                key={item._id}
-                                data={item}
-                                setIsDelete={setIsDelete}
-                                actionDispatchLike={likePostByUserSuccess(
-                                    item._id
-                                )}
-                                actionDispatchSave={savePostByUserSuccess(
-                                    item._id
-                                )}
-                                handleCommentPost={handleCommentPost}
-                            />
-                        ))
                     ) : (
-                        <div className="col-span-3">
-                            <Empty />
-                        </div>
+                        <>
+                            {active === "posts" ? (
+                                listBlog && listBlog.length > 0 ? (
+                                    listBlog.map((item) => (
+                                        <PostCard
+                                            key={item._id}
+                                            data={item}
+                                            setIsDelete={setIsDelete}
+                                            actionDispatchLike={likePostByUserSuccess(
+                                                item._id
+                                            )}
+                                            actionDispatchSave={savePostByUserSuccess(
+                                                item._id
+                                            )}
+                                            handleCommentPost={
+                                                handleCommentPost
+                                            }
+                                        />
+                                    ))
+                                ) : (
+                                    <div className="col-span-3">
+                                        <Empty />
+                                    </div>
+                                )
+                            ) : postShare && postShare.length > 0 ? (
+                                postShare.map((item) => (
+                                    <PostCard
+                                        key={item._id}
+                                        data={item}
+                                        setIsDelete={setIsDelete}
+                                        actionDispatchLike={likePostByUserSuccess(
+                                            item._id
+                                        )}
+                                        actionDispatchSave={savePostByUserSuccess(
+                                            item._id
+                                        )}
+                                        handleCommentPost={handleCommentPost}
+                                    />
+                                ))
+                            ) : (
+                                <div className="col-span-3">
+                                    <Empty />
+                                </div>
+                            )}
+                        </>
                     )}
                 </div>
             </div>

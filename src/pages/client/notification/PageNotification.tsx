@@ -1,9 +1,10 @@
 import PageHeader from "@/components/breadcrumb/PageHeader";
-import InboxTabs from "@/components/module/notification/MessageDetail";
-import MessageList from "@/components/module/notification/MessageList";
+import InboxTabs from "@/components/module/notification/NotificationDetail";
+import NotificationList from "@/components/module/notification/NotificationList";
 import { TabList } from "@/components/module/notification/TabList";
+import UserServices from "@/services/user";
 import { NotificationType } from "@/type/notification";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const pageHeader = {
     title: "Notifications",
@@ -17,6 +18,30 @@ const pageHeader = {
 
 const PageNotification = () => {
     const [message, setMessage] = useState<NotificationType>();
+    const [isLoading, setIsLoading] = useState(true);
+    const [valueTab, setValueTab] = useState<any>();
+    const [dataNoti, setDataNoti] = useState<NotificationType[]>([]);
+
+    useEffect(() => {
+        const fetchNoti = async () => {
+            try {
+                setIsLoading(true);
+
+                const { body } =
+                    valueTab !== "All"
+                        ? await UserServices.getNotificationByType(valueTab)
+                        : await UserServices.getNotification();
+                if (body?.success) {
+                    setDataNoti(body?.result);
+                    setIsLoading(false);
+                }
+            } catch (error) {
+                console.error("Error fetching data:", error);
+                setIsLoading(false);
+            }
+        };
+        fetchNoti();
+    }, [valueTab, setValueTab]);
 
     return (
         <>
@@ -25,10 +50,15 @@ const PageNotification = () => {
                 title={pageHeader.title}
             />
             <div className="mt-5">
-                <TabList />
+                <TabList
+                    setValueTab={setValueTab}
+                    dataTotal={dataNoti.length}
+                />
                 <div className=" container  mt-5 items-start grid grid-cols-12 gap-7">
-                    <MessageList
+                    <NotificationList
                         setMessage={setMessage}
+                        dataNoti={dataNoti}
+                        isLoading={isLoading}
                         className="col-span-4 overflow-auto"
                     />
                     <InboxTabs message={message} className="col-span-8" />

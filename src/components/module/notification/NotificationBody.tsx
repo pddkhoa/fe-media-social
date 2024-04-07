@@ -1,5 +1,5 @@
 import { Avatar, Title } from "rizzui";
-import { DotSeparator } from "./MessageDetail";
+import { DotSeparator } from "./NotificationDetail";
 import { FiExternalLink } from "react-icons/fi";
 import { NotificationType } from "@/type/notification";
 import { TYPE_NOTI } from "@/utils/contants";
@@ -63,6 +63,14 @@ export default function MessageBody({ message }: MessageBodyProps) {
                         {message.type === TYPE_NOTI.INVITE && (
                             <p className="w-11/12 line-clamp-2 pe-7 text-xs text-gray-500">
                                 invite you to join the group{" "}
+                                <span className="font-semibold">
+                                    {message.category?.name}
+                                </span>
+                            </p>
+                        )}
+                        {message.type === TYPE_NOTI.ACCEPT && (
+                            <p className="w-11/12 line-clamp-2 pe-7 text-xs text-gray-500">
+                                accept to join the group{" "}
                                 <span className="font-semibold">
                                     {message.category?.name}
                                 </span>

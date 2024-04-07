@@ -239,6 +239,32 @@ class BlogServices {
             identity.get(`blog/listBlogDiscussions?index=${index}`)
         );
     }
+
+    static async getBlogInFeed(index: string) {
+        type body = {
+            success: string;
+            statusCode: number;
+            message: string;
+            result: {
+                posts: Post[];
+                size: number;
+            };
+        };
+        return await requestApiHelper<body>(
+            identity.get(`blog/${index}/listBlogInFeed`)
+        );
+    }
+    static async getBlogShare(userId: string) {
+        type body = {
+            success: string;
+            statusCode: number;
+            message: string;
+            result: Post[];
+        };
+        return await requestApiHelper<body>(
+            identity.get(`blog/${userId}/listBlogShareBy`)
+        );
+    }
 }
 
 export default BlogServices;

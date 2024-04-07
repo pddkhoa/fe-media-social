@@ -1,5 +1,6 @@
 import ProfileDetails from "@/components/module/profile/ProfileDetail";
 import ProfileHeader from "@/components/module/profile/ProfileHeader";
+import BlogServices from "@/services/blog";
 import UserServices from "@/services/user";
 import { RootState } from "@/store/store";
 import {
@@ -10,18 +11,24 @@ import {
     getListFollowing,
     pendingFollowingSuccess,
 } from "@/store/wallSlice";
+import { Post } from "@/type/post";
 import { UserWall } from "@/type/wall";
 import { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useParams } from "react-router-dom";
+import { Loader } from "rizzui";
 
 const PageProfileMain = () => {
     const user = useSelector((state: RootState) => state.auth.userToken.user);
     const idUser = useParams();
     const [userDetail, setUserDetail] = useState<UserWall>();
+    const [postShare, setPostShare] = useState<Post[]>([]);
     const dispatch = useDispatch();
     const location = useLocation();
+    const loadingPage = useSelector(
+        (state: RootState) => state.noti.loadingPage
+    );
     const [isFollow, setIsFollow] = useState(false);
     const lisFollower = useSelector(
         (state: RootState) => state.wall.listUserFollower
@@ -29,6 +36,20 @@ const PageProfileMain = () => {
     const listFollowing = useSelector(
         (state: RootState) => state.wall.listUserFollowing
     );
+
+    const fetchPostShare = useCallback(async () => {
+        try {
+            const { body } = await BlogServices.getBlogShare(
+                idUser.id ? idUser.id : user._id
+            );
+            if (body?.success) {
+                setPostShare(body?.result);
+            }
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    }, [setPostShare, user._id, idUser.id]);
+
     const fetchData = useCallback(async () => {
         try {
             const { body } = await UserServices.getWallDetail(
@@ -72,7 +93,15 @@ const PageProfileMain = () => {
         fetchData();
         fetchFollower();
         fetchFollowing();
-    }, [fetchData, fetchFollower, fetchFollowing, location.pathname, isFollow]);
+        fetchPostShare();
+    }, [
+        fetchPostShare,
+        fetchData,
+        fetchFollower,
+        fetchFollowing,
+        location.pathname,
+        isFollow,
+    ]);
 
     const handleFollower = async (id: string) => {
         if (id) {
@@ -105,6 +134,13 @@ const PageProfileMain = () => {
         }
     };
 
+    if (loadingPage)
+        return (
+            <div className="flex h-full w-full justify-center items-center">
+                <Loader size="xl" variant="spinner" />
+            </div>
+        );
+
     return (
         <>
             {userDetail && lisFollower && listFollowing && (
@@ -116,6 +152,7 @@ const PageProfileMain = () => {
                         listFollowing={listFollowing}
                         handleFollower={handleFollower}
                         handleFollowing={handleFollowing}
+                        postShare={postShare}
                     />
                 </>
             )}

@@ -1,7 +1,6 @@
-import UserServices from "@/services/user";
 import { NotificationType } from "@/type/notification";
 import { TYPE_NOTI } from "@/utils/contants";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import { PiCheck } from "react-icons/pi";
 import { cn, Title, Loader, Avatar, Badge, Empty } from "rizzui";
 import SimpleBar from "simplebar-react";
@@ -18,17 +17,18 @@ export function NotificationItem({ data, onClick }: NotiItemProps) {
         <div
             ref={hoverRef}
             onClick={() => onClick(data)}
-            className={cn(
-                "grid cursor-pointer grid-cols-[24px_1fr] items-start gap-3 border-t hover:border-primary hover:shadow-md border-gray-200 p-5"
-            )}
+            className={`grid cursor-pointer grid-cols-[24px_1fr] items-start gap-3 border-t  hover:border-primary  hover:shadow-md border-gray-200 p-5 `}
         >
-            <Avatar name="PK" size="sm" />
+            <Avatar
+                name={data.sender.name}
+                src={data.sender.avatar.url}
+                size="sm"
+            />
 
             <div>
                 <div className="flex items-center justify-between lg:flex-col lg:items-start 2xl:flex-row 2xl:items-center">
                     <Title as="h4" className="flex items-center">
                         <span className="text-sm font-semibold dark:text-gray-700">
-                            {" "}
                             {data?.sender?.name}
                         </span>
 
@@ -71,7 +71,7 @@ export function NotificationItem({ data, onClick }: NotiItemProps) {
                     )}
                     {data.type === TYPE_NOTI.INVITE && (
                         <p className="w-11/12 line-clamp-2 pe-7 text-xs text-gray-500">
-                            invite you to join the group{" "}
+                            Invited you to join the group{" "}
                             <span className="font-semibold">
                                 {data.category?.name}
                             </span>
@@ -88,30 +88,16 @@ interface InboxListProps {
     setMessage: React.Dispatch<
         React.SetStateAction<NotificationType | undefined>
     >;
+    dataNoti: NotificationType[];
+    isLoading: boolean;
 }
 
-export default function MessageList({ className, setMessage }: InboxListProps) {
-    const [isLoading, setIsLoading] = useState(true);
-    const [dataNoti, setDataNoti] = useState<NotificationType[]>([]);
-
-    const fetchNoti = useCallback(async () => {
-        try {
-            setIsLoading(true);
-            const { body } = await UserServices.getNotification();
-            if (body?.success) {
-                setDataNoti(body?.result);
-                setIsLoading(false);
-            }
-        } catch (error) {
-            console.error("Error fetching data:", error);
-            setIsLoading(false);
-        }
-    }, [setDataNoti]);
-
-    useEffect(() => {
-        fetchNoti();
-    }, [fetchNoti]);
-
+export default function NotificationList({
+    className,
+    setMessage,
+    dataNoti,
+    isLoading,
+}: InboxListProps) {
     const handleSetMessage = (data: any) => {
         setMessage(data);
     };
@@ -120,9 +106,9 @@ export default function MessageList({ className, setMessage }: InboxListProps) {
         <>
             <div className={cn(className, "sticky")}>
                 <div className="overflow-auto rounded-lg border border-gray-200">
-                    <SimpleBar className="max-h-[40rem]">
+                    <SimpleBar className="min-h-[35rem]">
                         {isLoading ? (
-                            <div className="flex justify-center items-center h-[10rem]">
+                            <div className="flex justify-center items-center h-[35rem]">
                                 <Loader />
                             </div>
                         ) : dataNoti && dataNoti.length > 0 ? (
@@ -134,7 +120,9 @@ export default function MessageList({ className, setMessage }: InboxListProps) {
                                 />
                             ))
                         ) : (
-                            <Empty />
+                            <div className="flex justify-center items-center h-[35rem]">
+                                <Empty />
+                            </div>
                         )}
                     </SimpleBar>
                 </div>

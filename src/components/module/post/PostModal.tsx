@@ -18,13 +18,13 @@ import {
     PiFireFill,
     PiFireLight,
     PiShareNetwork,
-    PiUsers,
     PiXBold,
 } from "react-icons/pi";
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
-import { Avatar, Button, Dropdown, Empty, Textarea, Title } from "rizzui";
+import { Link, useNavigate } from "react-router-dom";
+import { Avatar, Button, Dropdown, Empty, Popover, Textarea } from "rizzui";
 import SimpleBar from "simplebar-react";
+import DropdownSharePost from "./DropdownSharePost";
 
 type PostsModalProps = {
     data: Post;
@@ -154,6 +154,7 @@ function ModalCardText({
     actionDispatchSave,
 }: ModalCardTextProps) {
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const handleSaveBlog = async (id: string) => {
         if (id) {
             const { body } = await ClientServices.saveBlog(id);
@@ -181,27 +182,84 @@ function ModalCardText({
     return (
         <>
             <div className="flex gap-2">
-                <div className="flex gap-2">
-                    <Avatar
-                        name={data?.user?.name}
-                        className="bg-[#F1A74F] tracking-wider text-white"
-                        src={data?.user?.avatar?.url}
-                    />
-                    <div>
-                        <Title as="h2" className="text-base text-gray-1000">
-                            {data?.user?.name}
-                        </Title>
-                        <p className="text-xs text-gray-500 dark:text-gray-500">
-                            {formatDate(data?.createdAt as any)}
+                {data.category ? (
+                    <div className="relative inline-flex gap-5 w-[80%] cursor-pointer group ">
+                        {data?.category?.avatar?.url ? (
+                            <img
+                                onClick={() => {
+                                    navigate(
+                                        `/group/detail/${data.category._id}`
+                                    );
+                                }}
+                                src={data?.category?.avatar?.url}
+                                className="object-cover h-12 w-12 rounded-lg group-hover:brightness-95"
+                            />
+                        ) : (
+                            <div
+                                title="visit group"
+                                onClick={() => {
+                                    navigate(
+                                        `/group/detail/${data.category._id}`
+                                    );
+                                }}
+                                className="bg-gradient-to-r h-12 w-12 rounded-lg from-[#F8E1AF] to-[#F6CFCF] bg-opacity-30 group-hover:brightness-95"
+                            />
+                        )}
+                        <p
+                            onClick={() => {
+                                navigate(`/group/detail/${data.category._id}`);
+                            }}
+                            className="font-semibold mt-1 group-hover:text-gray-800"
+                        >
+                            {data?.category?.name}
                         </p>
+                        <div className="absolute top-8 left-8 -translate-y-[25%] group">
+                            <Link
+                                className="flex gap-2 items-center hover:brightness-105"
+                                to={`/profile/${data?.user?._id}`}
+                            >
+                                <Avatar
+                                    name={data?.user?.name}
+                                    src={data?.user?.avatar?.url}
+                                    customSize={30}
+                                    className="object-cover w-12 h-12 rounded-full shadow"
+                                />
+                                <div className="flex flex-col mt-2">
+                                    <div className="text-xs font-semibold">
+                                        {data?.user?.name}
+                                    </div>
+                                    <span className="text-[10px] text-gray-400 pointer-events-none">
+                                        {formatDate(data?.createdAt as any)}
+                                    </span>
+                                </div>
+                            </Link>
+                        </div>
                     </div>
-                </div>
-                <Button color="primary" className="font-500 ms-auto text-white">
-                    <PiUsers className="h-auto w-[18px]" />
-                    <span className="ms-1.5 inline-block">Follow</span>
-                </Button>
+                ) : (
+                    <div className="relative inline-flex gap-5 w-[80%]">
+                        <Link
+                            className="flex gap-2 items-center"
+                            to={`/profile/${data?.user?._id}`}
+                        >
+                            <Avatar
+                                name={data?.user?.name}
+                                src={data?.user?.avatar?.url}
+                                size="md"
+                                className="object-cover w-12 h-12 rounded-full shadow"
+                            />
+                            <div className="flex flex-col mt-2">
+                                <div className="text-sm font-semibold">
+                                    {data?.user?.name}
+                                </div>
+                                <span className="text-[10px] text-gray-400 pointer-events-none">
+                                    {formatDate(data?.createdAt as any)}
+                                </span>
+                            </div>
+                        </Link>
+                    </div>
+                )}
             </div>
-            <p className="text-sm leading-6 text-gray-500 ">
+            <p className="text-sm leading-6 text-gray-500 mt-6">
                 {data?.description ? (
                     data.description
                 ) : (
@@ -245,13 +303,21 @@ function ModalCardText({
                     </Button>
                 </div>
                 <div className="space-x-2">
-                    <Button
-                        variant="text"
-                        type="button"
-                        className="p-2 text-center"
-                    >
-                        <PiShareNetwork className="w-5 h-5" />
-                    </Button>
+                    <Popover placement="bottom-end">
+                        <Popover.Trigger>
+                            <Button
+                                variant="text"
+                                type="button"
+                                className="p-2 text-center"
+                            >
+                                <PiShareNetwork className="w-5 h-5" />
+                            </Button>
+                        </Popover.Trigger>
+                        <Popover.Content className="p-5 [&>svg]:dark:fill-gray-200">
+                            <DropdownSharePost data={data} />
+                        </Popover.Content>
+                    </Popover>
+
                     <Button
                         onClick={() => {
                             handleSaveBlog(data?._id);

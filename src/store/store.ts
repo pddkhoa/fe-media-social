@@ -5,6 +5,7 @@ import imageReducer from "./imageSlice";
 import postReducer from "./blogSlice";
 import discoverReducer from "./discoverSlice";
 import wallReducer from "./wallSlice";
+import notiReducer from "./notiSlice";
 
 import {
     persistStore,
@@ -30,6 +31,7 @@ const rootReducer = combineReducers({
     post: postReducer,
     discover: discoverReducer,
     wall: wallReducer,
+    noti: notiReducer,
 });
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
