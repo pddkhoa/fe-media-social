@@ -19,7 +19,7 @@ const pageHeader = {
 const PageNotification = () => {
     const [message, setMessage] = useState<NotificationType>();
     const [isLoading, setIsLoading] = useState(true);
-    const [valueTab, setValueTab] = useState<any>();
+    const [valueTab, setValueTab] = useState<any>("All");
     const [dataNoti, setDataNoti] = useState<NotificationType[]>([]);
 
     useEffect(() => {
@@ -52,7 +52,7 @@ const PageNotification = () => {
             <div className="mt-5">
                 <TabList
                     setValueTab={setValueTab}
-                    dataTotal={dataNoti.length}
+                    dataTotal={dataNoti?.length}
                 />
                 <div className=" container  mt-5 items-start grid grid-cols-12 gap-7">
                     <NotificationList
