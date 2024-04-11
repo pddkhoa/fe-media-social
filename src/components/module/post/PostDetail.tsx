@@ -15,6 +15,7 @@ import {
 } from "@/store/blogSlice";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
+import useAuth from "@/hooks/useAuth";
 
 type PostDetailProps = {
     data: Post;
@@ -24,6 +25,9 @@ const PostDetail: FC<PostDetailProps> = ({ data }) => {
     const [activeComment, setActiveComment] = useState<any>();
     const dispatch = useDispatch();
     const [isDelete, setIsDelete] = useState(false);
+
+    const { axiosJWT } = useAuth();
+
     //Root Comment
     const rootComment = data?.comments?.filter(
         (comment) => comment?.replyToCommentId === null
@@ -41,7 +45,7 @@ const PostDetail: FC<PostDetailProps> = ({ data }) => {
         content: string;
     }) => {
         dispatch(pendingCommentSuccess());
-        const { body } = await BlogServices.addComment(data);
+        const { body } = await BlogServices.addComment(data, axiosJWT);
         try {
             if (body?.success) {
                 toast.success(body.message);
@@ -64,7 +68,7 @@ const PostDetail: FC<PostDetailProps> = ({ data }) => {
 
     const handleDeleteComment = async (data: any) => {
         setIsDelete(true);
-        const { body } = await BlogServices.deleteComment(data);
+        const { body } = await BlogServices.deleteComment(data, axiosJWT);
         if (body?.success) {
             toast.success(body.message);
             console.log(data.commentId);
@@ -81,8 +85,6 @@ const PostDetail: FC<PostDetailProps> = ({ data }) => {
         }
     };
 
-    console.log(data);
-
     return (
         <div className="max-w-5xl py-8 mx-auto space-y-12">
             <article className="space-y-8">
@@ -92,10 +94,13 @@ const PostDetail: FC<PostDetailProps> = ({ data }) => {
                     </h1>
                     <div className="flex flex-col items-start justify-between w-full md:flex-row md:items-center ">
                         <div className="flex items-center md:space-x-2">
-                            <Avatar
-                                src={data?.user?.avatar?.url}
-                                name={data?.user?.name}
-                            />
+                            {data?.user?.avatar ? (
+                                <Avatar
+                                    initials={data?.user?.name}
+                                    src={data?.user?.avatar?.url}
+                                    name={data?.user?.name}
+                                />
+                            ) : null}
                             <p className="text-sm">
                                 {data?.user?.name} -{" "}
                                 {formatDate(data?.createdAt as any)}
@@ -163,27 +168,7 @@ const PostDetail: FC<PostDetailProps> = ({ data }) => {
                     )}
                 </div>
             </div>
-            <div className="pt-8 border-t border-dashed dark:border-gray-400">
-                <div className="flex flex-col space-y-4 md:space-y-0 md:space-x-6 md:flex-row">
-                    <Avatar
-                        customSize={80}
-                        name={data?.user?.name}
-                        src={data?.user?.avatar?.url}
-                        className="self-center flex-shrink-0 w-24 h-24 border rounded-full md:justify-self-start "
-                    />
-                    <div className="flex flex-col pt-2">
-                        <h4 className="text-md font-semibold">
-                            {data?.user?.name}
-                        </h4>
-                        <p className="dark:text-gray-600">
-                            Sed non nibh iaculis, posuere diam vitae,
-                            consectetur neque. Integer velit ligula, semper sed
-                            nisl in, cursus commodo elit. Pellentesque sit amet
-                            mi luctus ligula euismod lobortis ultricies et nibh.
-                        </p>
-                    </div>
-                </div>
-            </div>
+
             <div className="pt-8 border-t border-dashed dark:border-gray-400">
                 <div className="flex flex-col space-y-4 ">
                     {isDelete ? (

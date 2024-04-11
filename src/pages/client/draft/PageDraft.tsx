@@ -1,6 +1,7 @@
 import PageHeader from "@/components/breadcrumb/PageHeader";
 import ListDraft from "@/components/module/draft/ListDraft";
 import GroupHeader from "@/components/module/group/GroupHeader";
+import useAuth from "@/hooks/useAuth";
 import BlogServices from "@/services/blog";
 import { Post } from "@/type/post";
 import { useCallback, useEffect, useState } from "react";
@@ -21,11 +22,12 @@ const PageDraft = () => {
     const [blog, setBlog] = useState<Post[]>();
     const [isLoading, setIsLoading] = useState(false);
     const [isDelete, setIsDelete] = useState(false);
+    const { axiosJWT } = useAuth();
 
     const fetchData = useCallback(async () => {
         try {
             setIsLoading(true);
-            const { body } = await BlogServices.getAllBlogDraft();
+            const { body } = await BlogServices.getAllBlogDraft(axiosJWT);
             if (body?.success) {
                 setBlog(body?.result);
                 setIsLoading(false);

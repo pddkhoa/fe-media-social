@@ -1,5 +1,6 @@
+import useAuth from "@/hooks/useAuth";
 import { useModal } from "@/hooks/useModal";
-import ClientServices from "@/services/client";
+import CategoriesServices from "@/services/categories";
 import { CategoryDetail } from "@/type/category";
 import { cn } from "@/utils/class-name";
 import { FC, useState } from "react";
@@ -16,11 +17,15 @@ export const ModalDeleteGroup: FC<ModalDeleteGroupProps> = ({ data }) => {
     const { closeModal } = useModal();
     const [isDelete, setIsDelete] = useState(false);
     const navigate = useNavigate();
+    const { axiosJWT } = useAuth();
 
     const handleDeleteGroup = async (id: string) => {
         try {
             setIsDelete(true);
-            const { body } = await ClientServices.deleteCategories(id);
+            const { body } = await CategoriesServices.deleteCategories(
+                id,
+                axiosJWT
+            );
             if (body?.success) {
                 setIsDelete(false);
                 toast.success(body.message);

@@ -1,12 +1,13 @@
 import PageHeader from "@/components/breadcrumb/PageHeader";
 import TableListTag from "@/components/module/tags/TableTag";
 import { useModal } from "@/hooks/useModal";
-import ClientServices from "@/services/client";
 import { Tag } from "@/type/tag";
 import { useCallback, useEffect, useState } from "react";
 import { PiSelectionPlusFill } from "react-icons/pi";
 import { Button, Empty, Loader } from "rizzui";
 import ModalAddNewTags from "../../../components/module/tags/ModalAddNewTags";
+import TagServices from "@/services/tag";
+import useAuth from "@/hooks/useAuth";
 
 const pageHeader = {
     title: "Tags",
@@ -28,11 +29,12 @@ const PageTags = () => {
     const [isAdd, setIsAdd] = useState(false);
     const { openModal } = useModal();
     const [isDelete, setIsDelete] = useState(false);
+    const { axiosJWT } = useAuth();
 
     const fetchTag = useCallback(async () => {
         try {
             setIsLoading(true);
-            const { body } = await ClientServices.getAllTags();
+            const { body } = await TagServices.getAllTags(axiosJWT);
             if (body?.success) {
                 setDataTag(body?.result);
                 setIsLoading(false);

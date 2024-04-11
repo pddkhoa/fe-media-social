@@ -4,12 +4,14 @@ import { PiPlusBold, PiUserCirclePlus, PiXBold } from "react-icons/pi";
 import { Badge, Button, Input, Loader, Textarea } from "rizzui";
 import { useModal } from "@/hooks/useModal";
 import { ModalAddTags } from "../../modal/AddTagsModal";
-import ClientServices from "@/services/client";
 import { Tag } from "@/type/tag";
 import toast from "react-hot-toast";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { PrivacyGroups } from "./FormPrivacy";
+import useAuth from "@/hooks/useAuth";
+import CategoriesServices from "@/services/categories";
+import TagServices from "@/services/tag";
 
 const FormCreateGroup = () => {
     const { openModal } = useModal();
@@ -18,12 +20,13 @@ const FormCreateGroup = () => {
     const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
     const [selectPrivacy, setSelectPrivacy] = useState<string>("Publish");
     const [isLoadingAdd, setIsLoadingAdd] = useState(false);
+    const { axiosJWT } = useAuth();
 
     useEffect(() => {
         const fetchTag = async () => {
             try {
                 setIsLoading(true);
-                const { body } = await ClientServices.getAllTags();
+                const { body } = await TagServices.getAllTags(axiosJWT);
                 if (body?.success) {
                     setDataTag(body?.result);
                     setIsLoading(false);
@@ -78,7 +81,10 @@ const FormCreateGroup = () => {
             };
             setIsLoadingAdd(true);
             try {
-                const { body } = await ClientServices.addCategories(report);
+                const { body } = await CategoriesServices.addCategories(
+                    report,
+                    axiosJWT
+                );
                 if (body?.success) {
                     toast.success(body?.message);
                     setIsLoadingAdd(false);

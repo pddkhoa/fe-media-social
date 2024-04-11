@@ -12,6 +12,7 @@ import { CategoryPost } from "@/type/post";
 import { pendingUpload, uploadSuccess } from "@/store/imageSlice";
 import { useDispatch } from "react-redux";
 import { TYPE_UPLOAD } from "@/utils/contants";
+import useAuth from "@/hooks/useAuth";
 
 type optionsCate = {
     label: string;
@@ -40,6 +41,7 @@ const EditDetail: FC<EditDetailProps> = ({
         formDataCreate?.tagIds ? formDataCreate.tagIds : []
     );
     const dispatch = useDispatch();
+    const { axiosJWT } = useAuth();
 
     useEffect(() => {
         formik.setFieldValue("description", stateDes);
@@ -51,7 +53,9 @@ const EditDetail: FC<EditDetailProps> = ({
         const fetchCate = async () => {
             try {
                 setIsLoading(true);
-                const { body } = await BlogServices.getCateByUserNotPagi();
+                const { body } = await BlogServices.getCateByUserNotPagi(
+                    axiosJWT
+                );
                 if (body?.success) {
                     const mappedCategories = body?.result?.map(
                         (category: CategoryPost) => ({
@@ -125,7 +129,10 @@ const EditDetail: FC<EditDetailProps> = ({
             dispatch(pendingUpload());
             const formData = new FormData();
             formData.append("image", files[0]);
-            const { body } = await BlogServices.uploadAvatarPost(formData);
+            const { body } = await BlogServices.uploadAvatarPost(
+                formData,
+                axiosJWT
+            );
             if (body?.success) {
                 toast.success(body.message);
                 closeModal();

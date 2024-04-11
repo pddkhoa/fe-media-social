@@ -1,3 +1,4 @@
+import useAuth from "@/hooks/useAuth";
 import { useModal } from "@/hooks/useModal";
 import TagServices from "@/services/tag";
 import { Tag } from "@/type/tag";
@@ -33,6 +34,7 @@ const ModalRemoveTag: FC<ModalRemoveTagProps> = ({
     const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
     const [checkedTags, setCheckedTags] = useState<Tag[]>([]);
     const [isRemove, setIsRemove] = useState(false);
+    const { axiosJWT } = useAuth();
 
     let menuItemsFiltered = data;
     if (searchText.length > 0) {
@@ -88,10 +90,13 @@ const ModalRemoveTag: FC<ModalRemoveTagProps> = ({
         try {
             setIsRemove(true);
             if (isCate && setIsActive && arrayIdTag) {
-                const { body } = await TagServices.removeTagFromCate({
-                    categoryId: isCate,
-                    tagIds: arrayIdTag,
-                });
+                const { body } = await TagServices.removeTagFromCate(
+                    {
+                        categoryId: isCate,
+                        tagIds: arrayIdTag,
+                    },
+                    axiosJWT
+                );
                 if (body?.success) {
                     setIsRemove(false);
 

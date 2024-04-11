@@ -1,3 +1,4 @@
+import useAuth from "@/hooks/useAuth";
 import { useModal } from "@/hooks/useModal";
 import CategoriesServices from "@/services/categories";
 import { User } from "@/type/user";
@@ -58,6 +59,7 @@ export default function ModalUserRequest({
 function UserRequestRow({ row, setIsActive, idCategory }: RowUserRequestProps) {
     const [isLoading, setIsLoading] = useState(false);
     const [stateActice, setStateActive] = useState(false);
+    const { axiosJWT } = useAuth();
 
     const handleEvalute = async (data: {
         categoryId: string;
@@ -65,7 +67,10 @@ function UserRequestRow({ row, setIsActive, idCategory }: RowUserRequestProps) {
         status: number;
     }) => {
         setIsLoading(true);
-        const { body } = await CategoriesServices.evaluteRequestCate(data);
+        const { body } = await CategoriesServices.evaluteRequestCate(
+            data,
+            axiosJWT
+        );
         if (body?.success) {
             toast.success(body?.message);
             setIsActive(true);

@@ -1,6 +1,7 @@
 import PageHeader from "@/components/breadcrumb/PageHeader";
 import ListPostDiscuss from "@/components/module/discover/ListPostDiscuss";
 import GroupHeader from "@/components/module/group/GroupHeader";
+import useAuth from "@/hooks/useAuth";
 import BlogServices from "@/services/blog";
 import { doneCommentSuccess, pendingCommentSuccess } from "@/store/blogSlice";
 import {
@@ -31,6 +32,7 @@ const PageListPostDis = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPage, setTotalPage] = useState<number>();
     const [isDelete, setIsDelete] = useState(false);
+    const { axiosJWT } = useAuth();
 
     const listBlog = useSelector(
         (state: RootState) => state.discover.listPostBestDis
@@ -41,7 +43,8 @@ const PageListPostDis = () => {
             try {
                 setIsLoading(true);
                 const { body } = await BlogServices.getBlogDiscuss(
-                    page.toString()
+                    page.toString(),
+                    axiosJWT
                 );
                 if (body?.success) {
                     if (page === 1) {
@@ -74,7 +77,7 @@ const PageListPostDis = () => {
         content: string;
     }) => {
         dispatch(pendingCommentSuccess());
-        const { body } = await BlogServices.addComment(data);
+        const { body } = await BlogServices.addComment(data, axiosJWT);
         try {
             if (body?.success) {
                 toast.success(body.message);

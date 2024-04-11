@@ -1,6 +1,5 @@
 import ModalReportComment from "@/components/modal/ModalReportComment";
 import { useModal } from "@/hooks/useModal";
-import ClientServices from "@/services/client";
 import { RootState } from "@/store/store";
 import { Comment } from "@/type/comment";
 import { Post } from "@/type/post";
@@ -25,6 +24,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { Avatar, Button, Dropdown, Empty, Popover, Textarea } from "rizzui";
 import SimpleBar from "simplebar-react";
 import DropdownSharePost from "./DropdownSharePost";
+import UserServices from "@/services/user";
+import useAuth from "@/hooks/useAuth";
 
 type PostsModalProps = {
     data: Post;
@@ -69,8 +70,8 @@ export default function PostsModal({
     };
 
     return (
-        <div className="round grid grow grid-cols-1 gap-0  h-[650px] overflow-hidden rounded-none  dark:backdrop-blur-xl lg:grid-cols-12 lg:rounded-xl">
-            <div className="relative h-full lg:col-span-7">
+        <div className="round grid grow grid-cols-1 gap-0  h-full w-full overflow-hidden rounded-none  dark:backdrop-blur-xl lg:grid-cols-12 lg:rounded-xl">
+            <div className=" h-full col-span-7">
                 <Button
                     rounded="pill"
                     className="absolute right-5 top-5 z-10 h-[30px] w-[30px] p-1 lg:left-5 "
@@ -83,7 +84,7 @@ export default function PostsModal({
                         <img
                             src={data?.avatar}
                             alt="random images"
-                            className="h-full w-full object-cover"
+                            className="w-full h-full object-cover "
                         />
                     ) : (
                         <div className="flex justify-center items-center h-full ">
@@ -93,7 +94,7 @@ export default function PostsModal({
                 </div>
             </div>
 
-            <div className="flex w-full flex-col gap-1 p-4 lg:col-span-5">
+            <div className="flex w-full flex-col gap-1 p-4 col-span-5">
                 <ModalCardText
                     data={data}
                     actionDispatchLike={actionDispatchLike}
@@ -155,9 +156,11 @@ function ModalCardText({
 }: ModalCardTextProps) {
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const { axiosJWT } = useAuth();
+
     const handleSaveBlog = async (id: string) => {
         if (id) {
-            const { body } = await ClientServices.saveBlog(id);
+            const { body } = await UserServices.saveBlog(id, axiosJWT);
             if (body?.success) {
                 toast.success(body.message);
                 dispatch(actionDispatchSave);
@@ -169,7 +172,7 @@ function ModalCardText({
 
     const handleLikeBlog = async (id: string) => {
         if (id) {
-            const { body } = await ClientServices.likeBlog(id);
+            const { body } = await UserServices.likeBlog(id, axiosJWT);
             if (body?.success) {
                 toast.success(body.message);
                 dispatch(actionDispatchLike);
@@ -209,7 +212,7 @@ function ModalCardText({
                             onClick={() => {
                                 navigate(`/group/detail/${data.category._id}`);
                             }}
-                            className="font-semibold mt-1 group-hover:text-gray-800"
+                            className="font-semibold mt-1 group-hover:text-gray-800 truncate"
                         >
                             {data?.category?.name}
                         </p>

@@ -1,6 +1,7 @@
 import PageHeader from "@/components/breadcrumb/PageHeader";
 import ListPostPopular from "@/components/module/discover/ListPostPopular";
 import GroupHeader from "@/components/module/group/GroupHeader";
+import useAuth from "@/hooks/useAuth";
 import BlogServices from "@/services/blog";
 import { doneCommentSuccess, pendingCommentSuccess } from "@/store/blogSlice";
 import {
@@ -35,13 +36,15 @@ const PageListPostPopular = () => {
     const listBlog = useSelector(
         (state: RootState) => state.discover.listPostPopular
     );
+    const { axiosJWT } = useAuth();
 
     const fetchData = useCallback(
         async (page: number) => {
             try {
                 setIsLoading(true);
                 const { body } = await BlogServices.getBlogPopular(
-                    page.toString()
+                    page.toString(),
+                    axiosJWT
                 );
                 if (body?.success) {
                     if (page === 1) {
@@ -74,7 +77,7 @@ const PageListPostPopular = () => {
         content: string;
     }) => {
         dispatch(pendingCommentSuccess());
-        const { body } = await BlogServices.addComment(data);
+        const { body } = await BlogServices.addComment(data, axiosJWT);
         try {
             if (body?.success) {
                 toast.success(body.message);

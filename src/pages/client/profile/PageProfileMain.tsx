@@ -1,5 +1,6 @@
 import ProfileDetails from "@/components/module/profile/ProfileDetail";
 import ProfileHeader from "@/components/module/profile/ProfileHeader";
+import useAuth from "@/hooks/useAuth";
 import BlogServices from "@/services/blog";
 import UserServices from "@/services/user";
 import { RootState } from "@/store/store";
@@ -37,10 +38,13 @@ const PageProfileMain = () => {
         (state: RootState) => state.wall.listUserFollowing
     );
 
+    const { axiosJWT } = useAuth();
+
     const fetchPostShare = useCallback(async () => {
         try {
             const { body } = await BlogServices.getBlogShare(
-                idUser.id ? idUser.id : user._id
+                idUser.id ? idUser.id : user._id,
+                axiosJWT
             );
             if (body?.success) {
                 setPostShare(body?.result);
@@ -53,7 +57,8 @@ const PageProfileMain = () => {
     const fetchData = useCallback(async () => {
         try {
             const { body } = await UserServices.getWallDetail(
-                idUser.id ? idUser.id : user._id
+                idUser.id ? idUser.id : user._id,
+                axiosJWT
             );
             if (body?.success) {
                 setUserDetail(body?.result);
@@ -66,7 +71,8 @@ const PageProfileMain = () => {
     const fetchFollower = useCallback(async () => {
         try {
             const { body } = await UserServices.getListUserFollower(
-                idUser.id ? idUser.id : user._id
+                idUser.id ? idUser.id : user._id,
+                axiosJWT
             );
             if (body?.success) {
                 dispatch(getListFollower(body?.result));
@@ -78,7 +84,8 @@ const PageProfileMain = () => {
     const fetchFollowing = useCallback(async () => {
         try {
             const { body } = await UserServices.getListUserFollowing(
-                idUser.id ? idUser.id : user._id
+                idUser.id ? idUser.id : user._id,
+                axiosJWT
             );
             if (body?.success) {
                 dispatch(getListFollowing(body?.result));
@@ -106,7 +113,7 @@ const PageProfileMain = () => {
     const handleFollower = async (id: string) => {
         if (id) {
             dispatch(pendingFollowingSuccess());
-            const { body } = await UserServices.followUser(id);
+            const { body } = await UserServices.followUser(id, axiosJWT);
             if (body?.success) {
                 dispatch(followUserFollower(id));
                 toast.success(body.message);
@@ -121,7 +128,7 @@ const PageProfileMain = () => {
     const handleFollowing = async (id: string) => {
         if (id) {
             dispatch(pendingFollowingSuccess());
-            const { body } = await UserServices.followUser(id);
+            const { body } = await UserServices.followUser(id, axiosJWT);
             if (body?.success) {
                 dispatch(followUserFollowing(id));
                 toast.success(body.message);

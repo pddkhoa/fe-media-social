@@ -1,3 +1,4 @@
+import useAuth from "@/hooks/useAuth";
 import { useModal } from "@/hooks/useModal";
 import UserServices from "@/services/user";
 import { Comment } from "@/type/comment";
@@ -24,11 +25,12 @@ const ModalReportComment: FC<ModalReportCommentProps> = ({ data }) => {
     const [valueReport, setValueReport] = useState<ReportType[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [pendingReport, setPendingReport] = useState(false);
+    const { axiosJWT } = useAuth();
 
     const fetchReport = useCallback(async () => {
         try {
             setIsLoading(true);
-            const { body } = await UserServices.getReportType();
+            const { body } = await UserServices.getReportType(axiosJWT);
             if (body?.success) {
                 setValueReport(body?.result);
                 setIsLoading(false);
@@ -66,7 +68,10 @@ const ModalReportComment: FC<ModalReportCommentProps> = ({ data }) => {
             };
             setPendingReport(true);
             try {
-                const { body } = await UserServices.reportComment(report);
+                const { body } = await UserServices.reportComment(
+                    report,
+                    axiosJWT
+                );
                 if (body?.success) {
                     toast.success(body.message);
                     setPendingReport(false);

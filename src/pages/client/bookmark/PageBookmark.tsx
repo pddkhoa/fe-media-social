@@ -1,6 +1,7 @@
 import PageHeader from "@/components/breadcrumb/PageHeader";
 import ListBookmark from "@/components/module/bookmark/ListBookmark";
 import GroupHeader from "@/components/module/group/GroupHeader";
+import useAuth from "@/hooks/useAuth";
 import BlogServices from "@/services/blog";
 import {
     doneCommentSuccess,
@@ -32,11 +33,12 @@ const PageBookmark = () => {
     const listBlog = useSelector(
         (state: RootState) => state.post.listPostBookmark
     );
+    const { axiosJWT } = useAuth();
 
     const fetchData = useCallback(async () => {
         try {
             setIsLoading(true);
-            const { body } = await BlogServices.getAllBlogBookmark();
+            const { body } = await BlogServices.getAllBlogBookmark(axiosJWT);
             if (body?.success) {
                 setIsLoading(false);
                 dispatch(getPostBookmark(body?.result));
@@ -57,7 +59,7 @@ const PageBookmark = () => {
         content: string;
     }) => {
         dispatch(pendingCommentSuccess());
-        const { body } = await BlogServices.addComment(data);
+        const { body } = await BlogServices.addComment(data, axiosJWT);
         try {
             if (body?.success) {
                 toast.success(body.message);

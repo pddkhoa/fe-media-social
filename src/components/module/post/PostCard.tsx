@@ -75,7 +75,7 @@ export default function PostCard({
                             ) : (
                                 <div className="bg-gradient-to-r h-12 w-12 rounded-lg from-[#F8E1AF] to-[#F6CFCF] bg-opacity-30 group-hover:brightness-95" />
                             )}
-                            <p className="font-semibold mt-1 group-hover:text-gray-800">
+                            <p className="font-semibold mt-1 group-hover:text-gray-800 truncate">
                                 {data?.category?.name}
                             </p>
                             <div className="absolute top-8 left-8 -translate-y-[25%]">

@@ -1,3 +1,4 @@
+import useAuth from "@/hooks/useAuth";
 import UserServices from "@/services/user";
 import { endLoadingPage, startLoadingPage } from "@/store/notiSlice";
 import { NotificationType } from "@/type/notification";
@@ -19,11 +20,12 @@ function NotificationsList({
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
     const dispatch = useDispatch();
+    const { axiosJWT } = useAuth();
 
     const fetchNoti = useCallback(async () => {
         try {
             setIsLoading(true);
-            const { body } = await UserServices.getNotification();
+            const { body } = await UserServices.getNotification(axiosJWT);
             if (body?.success) {
                 setDataNoti(body?.result);
                 setIsLoading(false);
@@ -42,7 +44,10 @@ function NotificationsList({
 
     const handleClickRead = async (noti: NotificationType) => {
         dispatch(startLoadingPage());
-        const { body } = await UserServices.readNotification(noti._id);
+        const { body } = await UserServices.readNotification(
+            noti._id,
+            axiosJWT
+        );
         if (body?.success) {
             switch (noti.type) {
                 case TYPE_NOTI.LIKE:

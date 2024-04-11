@@ -1,10 +1,9 @@
-import identity from "@/api/interceptor";
 import { Comment } from "@/type/comment";
 import { CategoryPost, Post } from "@/type/post";
 import { requestApiHelper } from "@/utils/apiRequest";
 
 class BlogServices {
-    static async getCateByUserNotPagi() {
+    static async getCateByUserNotPagi(axiosJWT: any) {
         type body = {
             success: string;
             statusCode: number;
@@ -12,10 +11,10 @@ class BlogServices {
             result: CategoryPost[];
         };
         return await requestApiHelper<body>(
-            identity.get("category/categoryByUserNotPaging")
+            axiosJWT.get("category/categoryByUserNotPaging")
         );
     }
-    static async uploadAvatarPost(form: FormData) {
+    static async uploadAvatarPost(form: FormData, axiosJWT: any) {
         type body = {
             success: string;
             statusCode: number;
@@ -23,14 +22,14 @@ class BlogServices {
             result: string;
         };
         return await requestApiHelper<body>(
-            identity.post("blog/uploadImage", form, {
+            axiosJWT.post("blog/uploadImage", form, {
                 headers: {
                     "Content-Type": "multipart/form-data",
                 },
             })
         );
     }
-    static uploadImagePost = async (file: File) => {
+    static uploadImagePost = async (file: File, axiosJWT: any) => {
         type body = {
             success: boolean;
             message: string;
@@ -40,7 +39,7 @@ class BlogServices {
         const formData = new FormData();
         formData.append("image", file);
         const res = await requestApiHelper<body>(
-            identity.post("blog/uploadImage", formData, {
+            axiosJWT.post("blog/uploadImage", formData, {
                 headers: {
                     "Content-Type": "multipart/form-data",
                 },
@@ -49,30 +48,36 @@ class BlogServices {
 
         return res;
     };
-    static async addPost(data: {
-        title: string;
-        description: string;
-        content: string;
-        avatar: string;
-        categoryIds: string;
-        tagIds: string[];
-    }) {
+    static async addPost(
+        data: {
+            title: string;
+            description: string;
+            content: string;
+            avatar: string;
+            categoryIds: string;
+            tagIds: string[];
+        },
+        axiosJWT: any
+    ) {
         type body = {
             success: string;
             statusCode: number;
             message: string;
             result: any;
         };
-        return await requestApiHelper<body>(identity.post("blog/create", data));
+        return await requestApiHelper<body>(axiosJWT.post("blog/create", data));
     }
-    static async addPostDraft(data: {
-        title: string;
-        description: string;
-        content: string;
-        avatar: string;
-        categoryIds: string;
-        tagIds: string[];
-    }) {
+    static async addPostDraft(
+        data: {
+            title: string;
+            description: string;
+            content: string;
+            avatar: string;
+            categoryIds: string;
+            tagIds: string[];
+        },
+        axiosJWT: any
+    ) {
         type body = {
             success: string;
             statusCode: number;
@@ -80,28 +85,28 @@ class BlogServices {
             result: any;
         };
         return await requestApiHelper<body>(
-            identity.post("blog/createDraft", data)
+            axiosJWT.post("blog/createDraft", data)
         );
     }
-    static async getAllBlogByUser() {
+    static async getAllBlogByUser(axiosJWT: any) {
         type body = {
             success: string;
             statusCode: number;
             message: string;
             result: Post[];
         };
-        return await requestApiHelper<body>(identity.get("blog/allBlog"));
+        return await requestApiHelper<body>(axiosJWT.get("blog/allBlog"));
     }
-    static async deletePost(idPost: string) {
+    static async deletePost(idPost: string, axiosJWT: any) {
         type body = {
             success: string;
             statusCode: number;
             message: string;
             result: any;
         };
-        return await requestApiHelper<body>(identity.delete(`blog/${idPost}`));
+        return await requestApiHelper<body>(axiosJWT.delete(`blog/${idPost}`));
     }
-    static async getAllBlogDraft() {
+    static async getAllBlogDraft(axiosJWT: any) {
         type body = {
             success: string;
             statusCode: number;
@@ -109,10 +114,10 @@ class BlogServices {
             result: Post[];
         };
         return await requestApiHelper<body>(
-            identity.get("blog/listBlogDraftByUser")
+            axiosJWT.get("blog/listBlogDraftByUser")
         );
     }
-    static async getAllBlogBookmark() {
+    static async getAllBlogBookmark(axiosJWT: any) {
         type body = {
             success: string;
             statusCode: number;
@@ -120,7 +125,7 @@ class BlogServices {
             result: Post[];
         };
         return await requestApiHelper<body>(
-            identity.get("/blog/listBlogSaveByUser")
+            axiosJWT.get("/blog/listBlogSaveByUser")
         );
     }
     static async editPost(
@@ -133,7 +138,8 @@ class BlogServices {
             tagIds: string[];
             status: string;
         },
-        idBlog: string
+        idBlog: string,
+        axiosJWT: any
     ) {
         type body = {
             success: string;
@@ -142,10 +148,10 @@ class BlogServices {
             result: Post;
         };
         return await requestApiHelper<body>(
-            identity.put(`blog/edit/${idBlog}`, data)
+            axiosJWT.put(`blog/edit/${idBlog}`, data)
         );
     }
-    static async getBlogByUserID(userId: string) {
+    static async getBlogByUserID(userId: string, axiosJWT: any) {
         type body = {
             success: string;
             statusCode: number;
@@ -153,15 +159,18 @@ class BlogServices {
             result: Post[];
         };
         return await requestApiHelper<body>(
-            identity.get(`/user/listBlog/${userId}`)
+            axiosJWT.get(`/user/listBlog/${userId}`)
         );
     }
 
-    static async addComment(data: {
-        blogId: string;
-        replyToCommentId: string | null;
-        content: string;
-    }) {
+    static async addComment(
+        data: {
+            blogId: string;
+            replyToCommentId: string | null;
+            content: string;
+        },
+        axiosJWT: any
+    ) {
         type body = {
             success: string;
             statusCode: number;
@@ -169,11 +178,17 @@ class BlogServices {
             result: Comment;
         };
         return await requestApiHelper<body>(
-            identity.post("user/comment", data)
+            axiosJWT.post("user/comment", data)
         );
     }
 
-    static async deleteComment(data: { blogId: string; commentId: string }) {
+    static async deleteComment(
+        data: {
+            blogId: string;
+            commentId: string;
+        },
+        axiosJWT: any
+    ) {
         type body = {
             success: string;
             statusCode: number;
@@ -181,10 +196,13 @@ class BlogServices {
             result: Comment;
         };
         return await requestApiHelper<body>(
-            identity.post("user/deleteComment", data)
+            axiosJWT.post("user/deleteComment", data)
         );
     }
-    static async editComment(data: { blogId: string; commentId: string }) {
+    static async editComment(
+        data: { blogId: string; commentId: string },
+        axiosJWT: any
+    ) {
         type body = {
             success: string;
             statusCode: number;
@@ -192,11 +210,11 @@ class BlogServices {
             result: Comment;
         };
         return await requestApiHelper<body>(
-            identity.patch("user/comment", data)
+            axiosJWT.patch("user/comment", data)
         );
     }
 
-    static async getBlogLastest(index: string) {
+    static async getBlogLastest(index: string, axiosJWT: any) {
         type body = {
             success: string;
             statusCode: number;
@@ -207,11 +225,11 @@ class BlogServices {
             };
         };
         return await requestApiHelper<body>(
-            identity.get(`blog/listBlogNew?index=${index}`)
+            axiosJWT.get(`blog/listBlogNew?index=${index}`)
         );
     }
 
-    static async getBlogPopular(index: string) {
+    static async getBlogPopular(index: string, axiosJWT: any) {
         type body = {
             success: string;
             statusCode: number;
@@ -222,10 +240,10 @@ class BlogServices {
             };
         };
         return await requestApiHelper<body>(
-            identity.get(`blog/listBlogPopularity?index=${index}`)
+            axiosJWT.get(`blog/listBlogPopularity?index=${index}`)
         );
     }
-    static async getBlogDiscuss(index: string) {
+    static async getBlogDiscuss(index: string, axiosJWT: any) {
         type body = {
             success: string;
             statusCode: number;
@@ -236,11 +254,11 @@ class BlogServices {
             };
         };
         return await requestApiHelper<body>(
-            identity.get(`blog/listBlogDiscussions?index=${index}`)
+            axiosJWT.get(`blog/listBlogDiscussions?index=${index}`)
         );
     }
 
-    static async getBlogInFeed(index: string) {
+    static async getBlogInFeed(index: string, axiosJWT: any) {
         type body = {
             success: string;
             statusCode: number;
@@ -251,10 +269,10 @@ class BlogServices {
             };
         };
         return await requestApiHelper<body>(
-            identity.get(`blog/${index}/listBlogInFeed`)
+            axiosJWT.get(`blog/${index}/listBlogInFeed`)
         );
     }
-    static async getBlogShare(userId: string) {
+    static async getBlogShare(userId: string, axiosJWT: any) {
         type body = {
             success: string;
             statusCode: number;
@@ -262,7 +280,7 @@ class BlogServices {
             result: Post[];
         };
         return await requestApiHelper<body>(
-            identity.get(`blog/${userId}/listBlogShareBy`)
+            axiosJWT.get(`blog/${userId}/listBlogShareBy`)
         );
     }
 }

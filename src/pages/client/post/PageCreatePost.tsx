@@ -18,6 +18,7 @@ import toast from "react-hot-toast";
 import { useLocation } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { countBlog } from "@/store/authSlice";
+import useAuth from "@/hooks/useAuth";
 
 export type FormDataType = {
     title: string;
@@ -36,7 +37,7 @@ const PageCreatePost = () => {
     const [isLoading, setIsLoading] = useState(false);
     const dispatch = useDispatch();
     const edjsParser = edjsHTML();
-
+    const { axiosJWT } = useAuth();
     const location = useLocation();
     const [formDataCreate, setFormDataCreate] = useState<FormDataType>();
 
@@ -68,7 +69,8 @@ const PageCreatePost = () => {
             try {
                 if (saveDraft) {
                     const { body } = await BlogServices.addPostDraft(
-                        form as any
+                        form as any,
+                        axiosJWT
                     );
                     if (body?.success) {
                         toast.success(body.message);
@@ -78,7 +80,10 @@ const PageCreatePost = () => {
                         setIsLoading(false);
                     }
                 } else {
-                    const { body } = await BlogServices.addPost(form as any);
+                    const { body } = await BlogServices.addPost(
+                        form as any,
+                        axiosJWT
+                    );
 
                     if (body?.success) {
                         toast.success(body.message);

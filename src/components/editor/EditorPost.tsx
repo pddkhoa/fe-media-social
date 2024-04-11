@@ -3,6 +3,7 @@ import { EDITOR_JS_TOOLS } from "./Tool";
 import "./editor.css";
 import EditorJS, { OutputData } from "@editorjs/editorjs";
 import BlogServices from "@/services/blog";
+import useAuth from "@/hooks/useAuth";
 
 type EditorPostProps = {
     setContent: React.Dispatch<React.SetStateAction<OutputData | undefined>>;
@@ -15,6 +16,7 @@ const EditorPost: FC<EditorPostProps> = ({
     content,
     setCheckContent,
 }) => {
+    const { axiosJWT } = useAuth();
     const ref = useRef<EditorJS>();
     let editor: EditorJS | undefined;
     const [isMounted, setIsMounted] = useState<boolean>(false);
@@ -55,7 +57,8 @@ const EditorPost: FC<EditorPostProps> = ({
                                 async uploadByFile(file: File) {
                                     const { body } =
                                         await BlogServices.uploadImagePost(
-                                            file
+                                            file,
+                                            axiosJWT
                                         );
 
                                     return {

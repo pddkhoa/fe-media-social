@@ -21,6 +21,7 @@ import ModalChangeStatus from "@/components/module/post/ModalChangeStatus";
 import BlogServices from "@/services/blog";
 import toast from "react-hot-toast";
 import { countBlog } from "@/store/authSlice";
+import useAuth from "@/hooks/useAuth";
 
 const PageEditPost = () => {
     const [currentStep, setCurrentStep] = React.useState(0);
@@ -31,6 +32,7 @@ const PageEditPost = () => {
     const edjsParser = edjsHTML();
     const { openModal, closeModal } = useModal();
     const location = useLocation();
+    const { axiosJWT } = useAuth();
 
     const [formDataCreate, setFormDataCreate] = useState<any>(() => {
         if (location?.state?.key?.category) {
@@ -96,7 +98,8 @@ const PageEditPost = () => {
             try {
                 const { body } = await BlogServices.editPost(
                     form,
-                    location?.state?.key?._id
+                    location?.state?.key?._id,
+                    axiosJWT
                 );
                 if (body?.success) {
                     toast.success(body?.message);

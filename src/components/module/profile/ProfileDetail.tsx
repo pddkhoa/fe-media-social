@@ -19,6 +19,7 @@ import toast from "react-hot-toast";
 import { UserWall } from "@/type/wall";
 import ModalListUser from "./ModalListUser";
 import { Post } from "@/type/post";
+import useAuth from "@/hooks/useAuth";
 
 type ProfileDetailsProps = {
     userDetail: UserWall;
@@ -54,12 +55,13 @@ export default function ProfileDetails({
 
     const tabs = [
         { id: "posts", count: userDetail?.totalBlog },
-        { id: "share", count: postShare?.length },
+        { id: "share", count: postShare?.length > 0 ? postShare.length : 0 },
 
         { id: "followers", count: userDetail?.totalFollower },
         { id: "following", count: userDetail?.totalFollowing },
     ];
     const [active, setActive] = useState(tabs[0].id);
+    const { axiosJWT } = useAuth();
 
     useEffect(() => {
         setIsDelete(false);
@@ -68,7 +70,8 @@ export default function ProfileDetails({
             try {
                 setIsLoading(true);
                 const { body } = await BlogServices.getBlogByUserID(
-                    userDetail._id
+                    userDetail._id,
+                    axiosJWT
                 );
                 if (body?.success) {
                     dispatch(getPostByUser(body?.result));
@@ -112,7 +115,7 @@ export default function ProfileDetails({
     }) => {
         dispatch(pendingCommentSuccess());
 
-        const { body } = await BlogServices.addComment(data);
+        const { body } = await BlogServices.addComment(data, axiosJWT);
         try {
             if (body?.success) {
                 toast.success(body.message);

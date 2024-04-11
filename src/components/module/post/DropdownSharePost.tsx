@@ -1,3 +1,4 @@
+import useAuth from "@/hooks/useAuth";
 import UserServices from "@/services/user";
 import { Post } from "@/type/post";
 import { FC, useState } from "react";
@@ -11,9 +12,11 @@ type DropdownSharePostProps = {
 
 const DropdownSharePost: FC<DropdownSharePostProps> = ({ data }) => {
     const [isShare, setIsShare] = useState(false);
+    const { axiosJWT } = useAuth();
+
     const handleShare = async (id: string) => {
         setIsShare(true);
-        const { body } = await UserServices.sharePost(id);
+        const { body } = await UserServices.sharePost(id, axiosJWT);
         if (body?.success) {
             toast.success(body.message);
             setIsShare(false);

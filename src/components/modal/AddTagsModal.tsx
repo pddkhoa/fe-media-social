@@ -12,8 +12,9 @@ import {
 } from "rizzui";
 import { Tag } from "@/type/tag";
 import { Link } from "react-router-dom";
-import ClientServices from "@/services/client";
 import toast from "react-hot-toast";
+import TagServices from "@/services/tag";
+import useAuth from "@/hooks/useAuth";
 
 type ModalAddTagsProps = {
     data?: Tag[];
@@ -34,14 +35,14 @@ export const ModalAddTags: FC<ModalAddTagsProps> = ({
     const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
     const [checkedTags, setCheckedTags] = useState<Tag[]>([]);
     const [isAdd, setIsAdd] = useState(false);
-
     const [dataTag, setDataTag] = useState<Tag[]>([]);
     const [isLoading, setIsLoading] = useState(false);
+    const { axiosJWT } = useAuth();
 
     const fetchDataTag = useCallback(async () => {
         try {
             setIsLoading(true);
-            const { body } = await ClientServices.getAllTags();
+            const { body } = await TagServices.getAllTags(axiosJWT);
             if (body?.success) {
                 setDataTag(body?.result);
                 setIsLoading(false);
@@ -126,10 +127,13 @@ export const ModalAddTags: FC<ModalAddTagsProps> = ({
         try {
             setIsAdd(true);
             if (isCate && setIsActive && arrayIdTag) {
-                const { body } = await ClientServices.addTagToCate({
-                    categoryId: isCate,
-                    tagIds: arrayIdTag,
-                });
+                const { body } = await TagServices.addTagToCate(
+                    {
+                        categoryId: isCate,
+                        tagIds: arrayIdTag,
+                    },
+                    axiosJWT
+                );
                 if (body?.success) {
                     setIsAdd(false);
 

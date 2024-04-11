@@ -1,3 +1,4 @@
+import useAuth from "@/hooks/useAuth";
 import UserServices from "@/services/user";
 import { startLoadingPage, endLoadingPage } from "@/store/notiSlice";
 import { RootState } from "@/store/store";
@@ -18,11 +19,15 @@ const DropdownOption: FC<DropdownOptionProps> = ({ data }) => {
         (state: RootState) => state.noti.loadingPage
     );
     const dispatch = useDispatch();
+    const { axiosJWT } = useAuth();
 
     const handleClickRead = async (noti: NotificationType) => {
         dispatch(startLoadingPage());
 
-        const { body } = await UserServices.readNotification(noti._id);
+        const { body } = await UserServices.readNotification(
+            noti._id,
+            axiosJWT
+        );
         if (body?.success) {
             switch (noti.type) {
                 case TYPE_NOTI.LIKE:

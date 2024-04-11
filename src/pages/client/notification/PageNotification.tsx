@@ -2,6 +2,7 @@ import PageHeader from "@/components/breadcrumb/PageHeader";
 import InboxTabs from "@/components/module/notification/NotificationDetail";
 import NotificationList from "@/components/module/notification/NotificationList";
 import { TabList } from "@/components/module/notification/TabList";
+import useAuth from "@/hooks/useAuth";
 import UserServices from "@/services/user";
 import { NotificationType } from "@/type/notification";
 import { useEffect, useState } from "react";
@@ -21,6 +22,7 @@ const PageNotification = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [valueTab, setValueTab] = useState<any>("All");
     const [dataNoti, setDataNoti] = useState<NotificationType[]>([]);
+    const { axiosJWT } = useAuth();
 
     useEffect(() => {
         const fetchNoti = async () => {
@@ -29,8 +31,11 @@ const PageNotification = () => {
 
                 const { body } =
                     valueTab !== "All"
-                        ? await UserServices.getNotificationByType(valueTab)
-                        : await UserServices.getNotification();
+                        ? await UserServices.getNotificationByType(
+                              valueTab,
+                              axiosJWT
+                          )
+                        : await UserServices.getNotification(axiosJWT);
                 if (body?.success) {
                     setDataNoti(body?.result);
                     setIsLoading(false);

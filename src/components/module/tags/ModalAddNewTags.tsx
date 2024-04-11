@@ -1,5 +1,6 @@
+import useAuth from "@/hooks/useAuth";
 import { useModal } from "@/hooks/useModal";
-import ClientServices from "@/services/client";
+import TagServices from "@/services/tag";
 import { useFormik } from "formik";
 import { FC, useState } from "react";
 import toast from "react-hot-toast";
@@ -14,6 +15,7 @@ type ModalAddNewTagsProps = {
 const ModalAddNewTags: FC<ModalAddNewTagsProps> = ({ setIsAdd }) => {
     const { closeModal } = useModal();
     const [isLoading, setIsLoading] = useState(false);
+    const { axiosJWT } = useAuth();
 
     const formik = useFormik({
         initialValues: {
@@ -27,9 +29,12 @@ const ModalAddNewTags: FC<ModalAddNewTagsProps> = ({ setIsAdd }) => {
         onSubmit: async (values) => {
             setIsLoading(true);
             try {
-                const { body } = await ClientServices.addTags({
-                    name: values.name,
-                });
+                const { body } = await TagServices.addTags(
+                    {
+                        name: values.name,
+                    },
+                    axiosJWT
+                );
                 if (body?.success) {
                     setIsLoading(false);
                     toast.success(body.message);

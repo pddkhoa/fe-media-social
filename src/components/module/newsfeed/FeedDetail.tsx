@@ -16,6 +16,7 @@ import PostCard from "../post/PostCard";
 import toast from "react-hot-toast";
 import { PiArrowsClockwiseFill, PiShareFat } from "react-icons/pi";
 import { Link } from "react-router-dom";
+import useAuth from "@/hooks/useAuth";
 
 const FeedDetail = () => {
     const dispatch = useDispatch();
@@ -23,14 +24,15 @@ const FeedDetail = () => {
     const [totalPage, setTotalPage] = useState<number>(0);
     const [currentPage, setCurrentPage] = useState<number>(1);
     const listBlog = useSelector((state: RootState) => state.post.listPostFeed);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { axiosJWT } = useAuth();
 
     const fetchBlog = useCallback(
         async (page: number) => {
             try {
                 setIsLoading(true);
                 const { body } = await BlogServices.getBlogInFeed(
-                    page.toString()
+                    page.toString(),
+                    axiosJWT
                 );
                 if (body?.success) {
                     if (page === 1) {
@@ -64,7 +66,7 @@ const FeedDetail = () => {
     }) => {
         dispatch(pendingCommentSuccess());
 
-        const { body } = await BlogServices.addComment(data);
+        const { body } = await BlogServices.addComment(data, axiosJWT);
         try {
             if (body?.success) {
                 toast.success(body.message);

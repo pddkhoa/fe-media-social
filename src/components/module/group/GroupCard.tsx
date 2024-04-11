@@ -1,6 +1,7 @@
 /* eslint-disable no-dupe-else-if */
 import FollowerModal from "@/components/module/group/FollowModal";
 import { getBadgeStatus } from "@/components/ui/BadgeStatus";
+import useAuth from "@/hooks/useAuth";
 import { useModal } from "@/hooks/useModal";
 import CategoriesServices from "@/services/categories";
 import {
@@ -33,11 +34,15 @@ const GroupCard: FC<GroupCardProps> = ({ data, setIsActive }) => {
     );
     const navigate = useNavigate();
     const dispatch = useDispatch();
+    const { axiosJWT } = useAuth();
 
     const handleJoinCate = async (id: string) => {
         try {
             setLoadingJoin(true);
-            const { body } = await CategoriesServices.joinCategories(id);
+            const { body } = await CategoriesServices.joinCategories(
+                id,
+                axiosJWT
+            );
             if (body?.success) {
                 toast.success(body?.message);
                 if (data.status === "Private") {
@@ -57,7 +62,10 @@ const GroupCard: FC<GroupCardProps> = ({ data, setIsActive }) => {
     const handleLeaveCate = async (id: string) => {
         try {
             setLoadingJoin(true);
-            const { body } = await CategoriesServices.leaveCategories(id);
+            const { body } = await CategoriesServices.leaveCategories(
+                id,
+                axiosJWT
+            );
             if (body?.success) {
                 toast.success(body.message);
                 if (data?.status === "Private") {

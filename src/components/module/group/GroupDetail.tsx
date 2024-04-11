@@ -20,7 +20,6 @@ import PostCard from "../post/PostCard";
 import { useNavigate, useParams } from "react-router-dom";
 import { useCallback, useEffect, useState } from "react";
 import { CategoryDetail } from "@/type/category";
-import ClientServices from "@/services/client";
 import { getBadgeStatus } from "@/components/ui/BadgeStatus";
 import { useModal } from "@/hooks/useModal";
 import FollowerModal from "@/components/module/group/FollowModal";
@@ -41,12 +40,14 @@ import {
 import BlogServices from "@/services/blog";
 import { doneCommentSuccess, pendingCommentSuccess } from "@/store/blogSlice";
 import { STATUS_USER_GROUP } from "@/utils/contants";
+import useAuth from "@/hooks/useAuth";
 
 const GroupDetail = () => {
     const categoriesId = useParams();
     const checkUser = useSelector(
         (state: RootState) => state.auth.userToken.user._id
     );
+    const { axiosJWT } = useAuth();
     const [dataCate, setDataCate] = useState<CategoryDetail>();
     const [dataUserReq, setDataUserReq] = useState<User[]>([]);
     const { openModal, closeModal } = useModal();
@@ -68,7 +69,8 @@ const GroupDetail = () => {
         try {
             setIsLoading(true);
             const { body } = await CategoriesServices.getCategoriesById(
-                categoriesId.id as string
+                categoriesId.id as string,
+                axiosJWT
             );
             if (body?.success) {
                 setDataCate(body?.result);
@@ -86,7 +88,8 @@ const GroupDetail = () => {
                 setIsLoading(true);
                 const { body } = await CategoriesServices.getBlogByCategories(
                     categoriesId.id as string,
-                    page
+                    page,
+                    axiosJWT
                 );
                 if (body?.success) {
                     setIsLoading(false);
@@ -110,7 +113,8 @@ const GroupDetail = () => {
         try {
             setIsLoading(true);
             const { body } = await CategoriesServices.getUserRequestCate(
-                categoriesId.id as string
+                categoriesId.id as string,
+                axiosJWT
             );
             if (body?.success) {
                 setIsLoading(false);
@@ -149,9 +153,10 @@ const GroupDetail = () => {
             dispatch(pendingUpload());
             const formData = new FormData();
             formData.append("image", files[0]);
-            const { body } = await ClientServices.uploadAvatarCate(
+            const { body } = await CategoriesServices.uploadAvatarCate(
                 formData,
-                dataCate._id
+                dataCate._id,
+                axiosJWT
             );
             if (body?.success) {
                 dispatch(uploadSuccess());
@@ -172,7 +177,7 @@ const GroupDetail = () => {
     }) => {
         dispatch(pendingCommentSuccess());
 
-        const { body } = await BlogServices.addComment(data);
+        const { body } = await BlogServices.addComment(data, axiosJWT);
         try {
             if (body?.success) {
                 toast.success(body.message);
@@ -198,7 +203,10 @@ const GroupDetail = () => {
     const handleJoinCate = async (id: string) => {
         try {
             setLoadingJoin(true);
-            const { body } = await CategoriesServices.joinCategories(id);
+            const { body } = await CategoriesServices.joinCategories(
+                id,
+                axiosJWT
+            );
             if (body?.success) {
                 toast.success(body?.message);
                 setLoadingJoin(false);
@@ -215,7 +223,10 @@ const GroupDetail = () => {
     const handleLeaveCate = async (id: string) => {
         try {
             setLoadingJoin(true);
-            const { body } = await CategoriesServices.leaveCategories(id);
+            const { body } = await CategoriesServices.leaveCategories(
+                id,
+                axiosJWT
+            );
             if (body?.success) {
                 toast.success(body.message);
                 setLoadingJoin(false);

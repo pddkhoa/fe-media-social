@@ -7,9 +7,10 @@ import { Input } from "rizzui";
 import { getColumnsTag } from "./ColumnTag";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
-import ClientServices from "@/services/client";
 import toast from "react-hot-toast";
 import { useModal } from "@/hooks/useModal";
+import TagServices from "@/services/tag";
+import useAuth from "@/hooks/useAuth";
 
 export default function TableListTag({
     className,
@@ -25,10 +26,11 @@ export default function TableListTag({
     );
     const { dataTable, setSearchTerm, searchTerm } = useTable(data);
     const { openModal, closeModal } = useModal();
+    const { axiosJWT } = useAuth();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const handleDelete = async (tagId: string) => {
-        const { body } = await ClientServices.deleteTags(tagId);
+        const { body } = await TagServices.deleteTags(tagId, axiosJWT);
         if (body?.success) {
             toast.success(body?.message);
             setIsDelete(true);

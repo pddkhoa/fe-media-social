@@ -1,6 +1,7 @@
 import PageHeader from "@/components/breadcrumb/PageHeader";
 import GroupHeader from "@/components/module/group/GroupHeader";
 import GroupList from "@/components/module/group/GroupList";
+import useAuth from "@/hooks/useAuth";
 import CategoriesServices from "@/services/categories";
 import {
     getCategoriesByUser,
@@ -27,6 +28,7 @@ const pageHeader = {
     ],
 };
 const PageMyGroup = () => {
+    const { axiosJWT } = useAuth();
     const [layout, setLayout] = useState<string>("grid");
     const [isLoading, setIsLoading] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
@@ -43,7 +45,8 @@ const PageMyGroup = () => {
             try {
                 setIsLoading(true);
                 const { body } = await CategoriesServices.getCategoriesByUser(
-                    page
+                    page,
+                    axiosJWT
                 );
                 if (body?.success) {
                     setIsLoading(false);

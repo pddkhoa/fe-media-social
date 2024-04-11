@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getAllCategories, getLoadmoreCategories } from "@/store/categorySlice";
 import CategoriesServices from "@/services/categories";
 import { RootState } from "@/store/store";
+import useAuth from "@/hooks/useAuth";
 
 const pageHeader = {
     title: "Groups",
@@ -18,6 +19,7 @@ const pageHeader = {
 };
 
 const PageGroup = () => {
+    const { axiosJWT } = useAuth();
     const [layout, setLayout] = useState<string>("grid");
     const [isLoading, setIsLoading] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
@@ -33,7 +35,8 @@ const PageGroup = () => {
             try {
                 setIsLoading(true);
                 const { body } = await CategoriesServices.getAllCategories(
-                    page
+                    page,
+                    axiosJWT
                 );
                 if (body?.success) {
                     if (page === 1) {

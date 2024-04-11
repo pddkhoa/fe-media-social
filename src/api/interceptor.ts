@@ -1,40 +1,40 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
 
 const UNAUTHEN = [
-  "/auth/register",
-  "auth/verify?token=${otp}",
-  "auth/forgot-password",
+    "/auth/register",
+    "auth/verify?token=${otp}",
+    "auth/forgot-password",
 ];
 const identity = axios.create({
-  baseURL: process.env.BASE_URL,
-  headers: {
-    "Content-Type": "application/json",
-    "ngrok-skip-browser-warning": "true",
-  },
+    baseURL: process.env.BASE_URL,
+    headers: {
+        "Content-Type": "application/json",
+        "ngrok-skip-browser-warning": "true",
+    },
 });
 
 const onRequest = (
-  config: InternalAxiosRequestConfig
+    config: InternalAxiosRequestConfig
 ): InternalAxiosRequestConfig => {
-  const { url } = config;
+    const { url } = config;
 
-  const unauthenticated = url && UNAUTHEN.includes(url);
+    const unauthenticated = url && UNAUTHEN.includes(url);
 
-  if (unauthenticated) {
+    if (unauthenticated) {
+        return config;
+    }
+
+    const token = localStorage.getItem("accessToken");
+
+    if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+    }
+
     return config;
-  }
-
-  const token = localStorage.getItem("accessToken");
-
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-
-  return config;
 };
 
 const onErrorResponse = (error: AxiosError | Error) => {
-  throw error;
+    throw error;
 };
 
 identity.interceptors.request.use(onRequest);

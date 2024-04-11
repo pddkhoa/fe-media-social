@@ -1,3 +1,4 @@
+import useAuth from "@/hooks/useAuth";
 import { useModal } from "@/hooks/useModal";
 import BlogServices from "@/services/blog";
 import { Post } from "@/type/post";
@@ -16,13 +17,14 @@ export const ModalDeletePost: FC<ModalDeletePostProps> = ({
     data,
     setDelete,
 }) => {
+    const { axiosJWT } = useAuth();
     const { closeModal } = useModal();
     const [isDelete, setIsDelete] = useState(false);
 
     const handleDeleteGroup = async (id: string) => {
         try {
             setIsDelete(true);
-            const { body } = await BlogServices.deletePost(id);
+            const { body } = await BlogServices.deletePost(id, axiosJWT);
             if (body?.success) {
                 setIsDelete(false);
                 setDelete(true);

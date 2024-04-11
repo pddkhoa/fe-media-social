@@ -12,6 +12,7 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { Title, Button, Avatar, Popover } from "rizzui";
 import DropdownOption from "./DropdownOption";
+import useAuth from "@/hooks/useAuth";
 
 type ProfileHeaderProps = {
     isView?: boolean;
@@ -28,11 +29,12 @@ export default function ProfileHeader({
         (state: RootState) => state.auth.userToken.user._id
     );
     const [loading, setLoading] = useState(false);
+    const { axiosJWT } = useAuth();
 
     const handleFollow = async (id: string | undefined) => {
         if (id) {
             setLoading(true);
-            const { body } = await UserServices.followUser(id);
+            const { body } = await UserServices.followUser(id, axiosJWT);
             if (body?.success) {
                 toast.success(body.message);
                 setFollow(!userDetail?.isfollow);

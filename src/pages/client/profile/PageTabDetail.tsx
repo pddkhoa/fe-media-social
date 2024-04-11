@@ -1,5 +1,6 @@
 import FormSettingProfile from "@/components/form/FormSettingProfile";
 import ProfileHeader from "@/components/module/profile/ProfileHeader";
+import useAuth from "@/hooks/useAuth";
 import UserServices from "@/services/user";
 import { RootState } from "@/store/store";
 import { UserWall } from "@/type/wall";
@@ -12,10 +13,12 @@ const PageTabDetail = () => {
     const idUser = useParams();
     const location = useLocation();
     const [userDetail, setUserDetail] = useState<UserWall>();
+    const { axiosJWT } = useAuth();
     const fetchData = useCallback(async () => {
         try {
             const { body } = await UserServices.getWallDetail(
-                idUser.id ? idUser.id : user._id
+                idUser.id ? idUser.id : user._id,
+                axiosJWT
             );
             if (body?.success) {
                 setUserDetail(body?.result);

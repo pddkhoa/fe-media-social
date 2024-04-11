@@ -8,6 +8,7 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import toast from "react-hot-toast";
 import { CategoryDetail } from "@/type/category";
+import useAuth from "@/hooks/useAuth";
 
 type ModalEditCategoryProps = {
     data: CategoryDetail;
@@ -18,6 +19,7 @@ const ModalEditCategory: FC<ModalEditCategoryProps> = ({ data, setActive }) => {
     const { closeModal } = useModal();
     const [selectPrivacy, setSelectPrivacy] = useState<string>(data?.status);
     const [isLoading, setLoading] = useState(false);
+    const { axiosJWT } = useAuth();
 
     const formik = useFormik({
         initialValues: {
@@ -39,7 +41,8 @@ const ModalEditCategory: FC<ModalEditCategoryProps> = ({ data, setActive }) => {
             setLoading(true);
             try {
                 const { body } = await CategoriesServices.editCategories(
-                    report
+                    report,
+                    axiosJWT
                 );
                 if (body?.success) {
                     toast.success(body?.message);
