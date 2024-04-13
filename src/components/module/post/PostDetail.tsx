@@ -16,25 +16,28 @@ import {
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
 import useAuth from "@/hooks/useAuth";
+import { Socket } from "socket.io-client";
+import { TYPE_NOTI } from "@/utils/contants";
 
 type PostDetailProps = {
-    data: Post;
+    dataBlog: Post;
+    socket: Socket | undefined;
 };
 
-const PostDetail: FC<PostDetailProps> = ({ data }) => {
+const PostDetail: FC<PostDetailProps> = ({ dataBlog, socket }) => {
     const [activeComment, setActiveComment] = useState<any>();
     const dispatch = useDispatch();
     const [isDelete, setIsDelete] = useState(false);
 
-    const { axiosJWT } = useAuth();
+    const { axiosJWT, user } = useAuth();
 
     //Root Comment
-    const rootComment = data?.comments?.filter(
+    const rootComment = dataBlog?.comments?.filter(
         (comment) => comment?.replyToCommentId === null
     );
     // Child Comment
     const childComment = (commentId: string) => {
-        return data.comments?.filter(
+        return dataBlog.comments?.filter(
             (comment: any) => comment?.replyToCommentId?._id === commentId
         );
     };
@@ -49,6 +52,12 @@ const PostDetail: FC<PostDetailProps> = ({ data }) => {
         try {
             if (body?.success) {
                 toast.success(body.message);
+                socket?.emit("interaction", {
+                    fromUser: user.user._id,
+                    toUser: dataBlog.user._id,
+                    type: TYPE_NOTI.COMMENT,
+                    data: user,
+                });
                 dispatch(
                     addCommentToPostDetail({
                         postId: data.blogId,
@@ -90,31 +99,31 @@ const PostDetail: FC<PostDetailProps> = ({ data }) => {
             <article className="space-y-8">
                 <div className="space-y-6">
                     <h1 className="text-4xl font-semibold md:tracki md:text-4xl">
-                        {data?.title}
+                        {dataBlog?.title}
                     </h1>
                     <div className="flex flex-col items-start justify-between w-full md:flex-row md:items-center ">
                         <div className="flex items-center md:space-x-2">
-                            {data?.user?.avatar ? (
+                            {dataBlog?.user?.avatar ? (
                                 <Avatar
-                                    initials={data?.user?.name}
-                                    src={data?.user?.avatar?.url}
-                                    name={data?.user?.name}
+                                    initials={dataBlog?.user?.name}
+                                    src={dataBlog?.user?.avatar?.url}
+                                    name={dataBlog?.user?.name}
                                 />
                             ) : null}
                             <p className="text-sm">
-                                {data?.user?.name} -{" "}
-                                {formatDate(data?.createdAt as any)}
+                                {dataBlog?.user?.name} -{" "}
+                                {formatDate(dataBlog?.createdAt as any)}
                             </p>
                         </div>
                         <p className="flex-shrink-0 mt-3 text-sm md:mt-0">
-                            4 min read • 1,570 views
+                            {dataBlog?.category?.name}
                         </p>
                     </div>
                 </div>
                 <div className="p-2">
-                    {data?.content && (
+                    {dataBlog?.content && (
                         <Output
-                            data={convertHTMLToEditorJS(data?.content)}
+                            data={convertHTMLToEditorJS(dataBlog?.content)}
                             config={{
                                 code: {
                                     className: "language-js py-4 text-white",
@@ -153,8 +162,8 @@ const PostDetail: FC<PostDetailProps> = ({ data }) => {
             </article>
             <div>
                 <div className="flex flex-wrap py-6 gap-2 border-t border-dashed dark:border-gray-400">
-                    {data?.tags && data?.tags?.length > 0 ? (
-                        data?.tags?.map((item) => (
+                    {dataBlog?.tags && dataBlog?.tags?.length > 0 ? (
+                        dataBlog?.tags?.map((item) => (
                             <Badge
                                 key={item._id}
                                 rounded="md"
@@ -185,7 +194,7 @@ const PostDetail: FC<PostDetailProps> = ({ data }) => {
                                 activeComment={activeComment}
                                 setActiveComment={setActiveComment}
                                 nestingLevel={0}
-                                idBlog={data._id}
+                                idBlog={dataBlog._id}
                                 handleCommentPost={handleCommentPost}
                                 handleDeleteComment={handleDeleteComment}
                                 isModal={false}
@@ -195,7 +204,7 @@ const PostDetail: FC<PostDetailProps> = ({ data }) => {
                         <Empty text="Not found comment" />
                     )}
                     <ModalCommentBox
-                        idBlog={data?._id}
+                        idBlog={dataBlog?._id}
                         parentId={null}
                         handleCommentPost={handleCommentPost}
                     />

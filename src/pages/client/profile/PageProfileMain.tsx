@@ -14,14 +14,19 @@ import {
 } from "@/store/wallSlice";
 import { Post } from "@/type/post";
 import { UserWall } from "@/type/wall";
-import { useCallback, useEffect, useState } from "react";
+import { TYPE_NOTI } from "@/utils/contants";
+import { FC, useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useParams } from "react-router-dom";
 import { Loader } from "rizzui";
+import { Socket } from "socket.io-client";
 
-const PageProfileMain = () => {
-    const user = useSelector((state: RootState) => state.auth.userToken.user);
+type PageProfileMainProps = {
+    socket: Socket | undefined;
+};
+
+const PageProfileMain: FC<PageProfileMainProps> = ({ socket }) => {
     const idUser = useParams();
     const [userDetail, setUserDetail] = useState<UserWall>();
     const [postShare, setPostShare] = useState<Post[]>([]);
@@ -38,12 +43,12 @@ const PageProfileMain = () => {
         (state: RootState) => state.wall.listUserFollowing
     );
 
-    const { axiosJWT } = useAuth();
+    const { axiosJWT, user } = useAuth();
 
     const fetchPostShare = useCallback(async () => {
         try {
             const { body } = await BlogServices.getBlogShare(
-                idUser.id ? idUser.id : user._id,
+                idUser.id ? idUser.id : user.user._id,
                 axiosJWT
             );
             if (body?.success) {
@@ -52,12 +57,12 @@ const PageProfileMain = () => {
         } catch (error) {
             console.error("Error fetching data:", error);
         }
-    }, [setPostShare, user._id, idUser.id]);
+    }, [setPostShare, user.user._id, idUser.id]);
 
     const fetchData = useCallback(async () => {
         try {
             const { body } = await UserServices.getWallDetail(
-                idUser.id ? idUser.id : user._id,
+                idUser.id ? idUser.id : user.user._id,
                 axiosJWT
             );
             if (body?.success) {
@@ -66,12 +71,12 @@ const PageProfileMain = () => {
         } catch (error) {
             console.error("Error fetching data:", error);
         }
-    }, [setUserDetail, user._id, idUser.id]);
+    }, [setUserDetail, user.user._id, idUser.id]);
 
     const fetchFollower = useCallback(async () => {
         try {
             const { body } = await UserServices.getListUserFollower(
-                idUser.id ? idUser.id : user._id,
+                idUser.id ? idUser.id : user.user._id,
                 axiosJWT
             );
             if (body?.success) {
@@ -80,11 +85,11 @@ const PageProfileMain = () => {
         } catch (error) {
             console.error("Error fetching data:", error);
         }
-    }, [dispatch, user._id, idUser.id]);
+    }, [dispatch, user.user._id, idUser.id]);
     const fetchFollowing = useCallback(async () => {
         try {
             const { body } = await UserServices.getListUserFollowing(
-                idUser.id ? idUser.id : user._id,
+                idUser.id ? idUser.id : user.user._id,
                 axiosJWT
             );
             if (body?.success) {
@@ -93,10 +98,9 @@ const PageProfileMain = () => {
         } catch (error) {
             console.error("Error fetching data:", error);
         }
-    }, [dispatch, user._id, idUser.id]);
+    }, [dispatch, user.user._id, idUser.id]);
 
     useEffect(() => {
-        setIsFollow(false);
         fetchData();
         fetchFollower();
         fetchFollowing();
@@ -115,6 +119,13 @@ const PageProfileMain = () => {
             dispatch(pendingFollowingSuccess());
             const { body } = await UserServices.followUser(id, axiosJWT);
             if (body?.success) {
+                if (userDetail?.isfollow === false)
+                    socket?.emit("interaction", {
+                        fromUser: user.user._id,
+                        toUser: idUser,
+                        type: TYPE_NOTI.FOLLOW,
+                        data: user,
+                    });
                 dispatch(followUserFollower(id));
                 toast.success(body.message);
                 setIsFollow(true);
@@ -130,6 +141,13 @@ const PageProfileMain = () => {
             dispatch(pendingFollowingSuccess());
             const { body } = await UserServices.followUser(id, axiosJWT);
             if (body?.success) {
+                if (userDetail?.isfollow === false)
+                    socket?.emit("interaction", {
+                        fromUser: user.user._id,
+                        toUser: idUser,
+                        type: TYPE_NOTI.FOLLOW,
+                        data: user,
+                    });
                 dispatch(followUserFollowing(id));
                 toast.success(body.message);
                 setIsFollow(true);
@@ -152,7 +170,11 @@ const PageProfileMain = () => {
         <>
             {userDetail && lisFollower && listFollowing && (
                 <>
-                    <ProfileHeader userDetail={userDetail} />
+                    <ProfileHeader
+                        userDetail={userDetail}
+                        socket={socket}
+                        setIsFollow={setIsFollow}
+                    />
                     <ProfileDetails
                         userDetail={userDetail}
                         lisFollower={lisFollower}

@@ -19,6 +19,7 @@ import ModalPrivate from "../../modal/ModalPrivate";
 import { formatDate } from "@/utils/format-date";
 import ModalDraft from "./ModalDraft";
 import { Link, useNavigate } from "react-router-dom";
+import { Socket } from "socket.io-client";
 
 type POST_TYPE = "image" | "gallery" | "video";
 
@@ -36,11 +37,15 @@ type PostCard = {
         type: any;
     };
 
-    handleCommentPost?: (data: {
-        blogId: string;
-        replyToCommentId: string | null;
-        content: string;
-    }) => Promise<void>;
+    handleCommentPost: (
+        data: {
+            blogId: string;
+            replyToCommentId: string | null;
+            content: string;
+        },
+        userID: any
+    ) => Promise<void>;
+    socket: Socket | undefined;
 };
 
 export default function PostCard({
@@ -49,6 +54,7 @@ export default function PostCard({
     actionDispatchLike,
     actionDispatchSave,
     handleCommentPost,
+    socket,
 }: PostCard) {
     const navigate = useNavigate();
     const [open, setOpen] = useState(false);
@@ -202,6 +208,7 @@ export default function PostCard({
                             onClose={() => setOpen(false)}
                             actionDispatchSave={actionDispatchSave}
                             handleCommentPost={handleCommentPost}
+                            socket={socket}
                         />
                     ) : data.status === "Draft" ? (
                         <ModalDraft onClose={() => setOpen(false)} />

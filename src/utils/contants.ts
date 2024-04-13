@@ -22,3 +22,5 @@ export const TYPE_NOTI = {
     INVITE: "Invite",
     ACCEPT: "Accept",
 };
+
+export const SOCKET_URL = process.env.SOCKET_IO_URL;

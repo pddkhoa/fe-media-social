@@ -6,16 +6,13 @@ import {
 import { ActionIcon, Badge, Button } from "rizzui";
 import SearchWidget from "../search/SearchWidget";
 import MessagesDropdown from "../dropdown/MessagesDropdown";
-import NotificationDropdown from "../dropdown/NotificationDropdown";
+import NotificationDropdown from "../module/notification/NotificationDropdown";
 import ProfileMenu from "../dropdown/ProfileMenuDropdown";
 import { Link } from "react-router-dom";
-import { toast } from "react-toastify";
 
 function HeaderMenuRight() {
-    const notify = () => toast("Wow so easy!");
     return (
         <div className="flex  ml-auto shrink-0  items-center gap-7  text-gray-700 ">
-            <button onClick={notify}>Notify!</button>
             <Link to={"/create-post"}>
                 <Button
                     variant="outline"

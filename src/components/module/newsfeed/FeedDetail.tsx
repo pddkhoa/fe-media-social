@@ -9,7 +9,7 @@ import {
     savePostFeedSuccess,
 } from "@/store/blogSlice";
 import { RootState } from "@/store/store";
-import { useCallback, useEffect, useState } from "react";
+import { FC, useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Avatar, Button, Empty, Loader } from "rizzui";
 import PostCard from "../post/PostCard";
@@ -17,14 +17,21 @@ import toast from "react-hot-toast";
 import { PiArrowsClockwiseFill, PiShareFat } from "react-icons/pi";
 import { Link } from "react-router-dom";
 import useAuth from "@/hooks/useAuth";
+import { Socket } from "socket.io-client";
 
-const FeedDetail = () => {
+import { TYPE_NOTI } from "@/utils/contants";
+
+type FeedDetailProps = {
+    socket: Socket | undefined;
+};
+
+const FeedDetail: FC<FeedDetailProps> = ({ socket }) => {
     const dispatch = useDispatch();
     const [isLoading, setIsLoading] = useState(false);
     const [totalPage, setTotalPage] = useState<number>(0);
     const [currentPage, setCurrentPage] = useState<number>(1);
     const listBlog = useSelector((state: RootState) => state.post.listPostFeed);
-    const { axiosJWT } = useAuth();
+    const { axiosJWT, user } = useAuth();
 
     const fetchBlog = useCallback(
         async (page: number) => {
@@ -59,11 +66,14 @@ const FeedDetail = () => {
         setCurrentPage((prevPage: number) => prevPage + 1);
     };
 
-    const handleCommentPost = async (data: {
-        blogId: string;
-        replyToCommentId: string | null;
-        content: string;
-    }) => {
+    const handleCommentPost = async (
+        data: {
+            blogId: string;
+            replyToCommentId: string | null;
+            content: string;
+        },
+        userID: any
+    ) => {
         dispatch(pendingCommentSuccess());
 
         const { body } = await BlogServices.addComment(data, axiosJWT);
@@ -77,6 +87,12 @@ const FeedDetail = () => {
                     })
                 );
                 dispatch(doneCommentSuccess());
+                socket?.emit("interaction", {
+                    fromUser: user.user._id,
+                    toUser: userID,
+                    type: TYPE_NOTI.COMMENT,
+                    data: user,
+                });
             } else {
                 dispatch(doneCommentSuccess());
 
@@ -96,7 +112,7 @@ const FeedDetail = () => {
                     <Loader variant="spinner" />
                 </div>
             ) : (
-                <div className=" flex flex-col gap-12 p-4 -mt-10 mx-auto">
+                <div className=" flex flex-col gap-12  -mt-10 mx-auto">
                     {listBlog && listBlog.length > 0 ? (
                         listBlog.map((item) => (
                             <>
@@ -135,6 +151,7 @@ const FeedDetail = () => {
                                             handleCommentPost={
                                                 handleCommentPost
                                             }
+                                            socket={socket}
                                         />
                                     </div>
                                 ) : (
@@ -148,6 +165,7 @@ const FeedDetail = () => {
                                             item._id
                                         )}
                                         handleCommentPost={handleCommentPost}
+                                        socket={socket}
                                     />
                                 )}
                             </>

@@ -1,7 +1,12 @@
+import ToastNotification from "@/components/module/notification/ToastNotification";
+import useAuth from "@/hooks/useAuth";
 import MainLayout from "@/layouts/MainLayout";
-import { Suspense, lazy } from "react";
+import { SOCKET_URL } from "@/utils/contants";
+import { Suspense, lazy, useEffect, useState } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import { Loader } from "rizzui";
+import { Socket, io } from "socket.io-client";
 const Profile = lazy(() => import("@/pages/client/profile/PageProfileMain"));
 const ProfileSetting = lazy(
     () => import("@/pages/client/profile/PageProfileSetting")
@@ -19,7 +24,6 @@ const NewsFeed = lazy(() => import("@/pages/client/newsfeed/PageNewsFeed"));
 const Notification = lazy(
     () => import("@/pages/client/notification/PageNotification")
 );
-
 const GroupMain = lazy(() => import("@/pages/client/group/PageGroup"));
 const CreateGroup = lazy(() => import("@/pages/client/group/PageCreateGroup"));
 const PageMyGroup = lazy(() => import("@/pages/client/group/PageMyGroup"));
@@ -41,6 +45,36 @@ const PageDiscusstion = lazy(
 );
 
 const ClientRoutes = () => {
+    const [socket, setSocket] = useState<Socket | undefined>();
+    const { user } = useAuth();
+    const [noti, setNoti] = useState<any>([]);
+    useEffect(() => {
+        socket?.emit("addUser", { userId: user.user._id });
+    }, [socket, user.user._id]);
+
+    useEffect(() => {
+        socket?.on("notification", (data: any) => {
+            setNoti((prev: any) => [...prev, data]);
+        });
+    }, [socket]);
+
+    useEffect(() => {
+        const newSocket = io(SOCKET_URL as any);
+        setSocket(newSocket);
+    }, []);
+
+    useEffect(() => {
+        if (noti.length > 0) {
+            const latestNotification = noti[noti.length - 1];
+            toast(
+                <ToastNotification
+                    type={latestNotification.type}
+                    user={latestNotification.data}
+                />
+            );
+        }
+    }, [noti]);
+
     return (
         <Suspense fallback={<div>Loading...</div>}>
             <Routes>
@@ -49,7 +83,7 @@ const ClientRoutes = () => {
                         path="/"
                         element={
                             <Suspense fallback={<div>Loading ...</div>}>
-                                <NewsFeed />
+                                <NewsFeed socket={socket} />
                             </Suspense>
                         }
                     />
@@ -57,15 +91,15 @@ const ClientRoutes = () => {
                         path="/profile/:id"
                         element={
                             <Suspense fallback={<Loader />}>
-                                <Profile />
+                                <Profile socket={socket} />
                             </Suspense>
                         }
                     />
                     <Route
                         path="/profile"
                         element={
-                            <Suspense fallback={<div>Loading ...</div>}>
-                                <Profile />
+                            <Suspense fallback={<Loader />}>
+                                <Profile socket={socket} />
                             </Suspense>
                         }
                     />
@@ -73,7 +107,7 @@ const ClientRoutes = () => {
                         path="/post"
                         element={
                             <Suspense fallback={<div>Loading ...</div>}>
-                                <DetailPost />
+                                <DetailPost socket={socket} />
                             </Suspense>
                         }
                     />

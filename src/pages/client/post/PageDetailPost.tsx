@@ -1,11 +1,16 @@
 import PostDetail from "@/components/module/post/PostDetail";
 import { getPostDetail } from "@/store/blogSlice";
 import { RootState } from "@/store/store";
-import { useEffect } from "react";
+import { FC, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
+import { Socket } from "socket.io-client";
 
-const PageDetailPost = () => {
+type PageDetailPostProps = {
+    socket: Socket | undefined;
+};
+
+const PageDetailPost: FC<PageDetailPostProps> = ({ socket }) => {
     const location = useLocation();
     const dispatch = useDispatch();
     const dataBlog = useSelector((state: RootState) => state.post.postDetail);
@@ -15,7 +20,11 @@ const PageDetailPost = () => {
         }
     }, [location.state, dispatch]);
 
-    return <div>{dataBlog && <PostDetail data={dataBlog} />}</div>;
+    return (
+        <div>
+            {dataBlog && <PostDetail dataBlog={dataBlog} socket={socket} />}
+        </div>
+    );
 };
 
 export default PageDetailPost;

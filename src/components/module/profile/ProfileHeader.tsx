@@ -13,15 +13,21 @@ import { useNavigate } from "react-router-dom";
 import { Title, Button, Avatar, Popover } from "rizzui";
 import DropdownOption from "./DropdownOption";
 import useAuth from "@/hooks/useAuth";
+import { Socket } from "socket.io-client";
+import { TYPE_NOTI } from "@/utils/contants";
 
 type ProfileHeaderProps = {
     isView?: boolean;
     userDetail?: UserWall | undefined;
+    socket: Socket | undefined;
+    setIsFollow?: React.Dispatch<React.SetStateAction<boolean>> | undefined;
 };
 
 export default function ProfileHeader({
     isView,
     userDetail,
+    socket,
+    setIsFollow,
 }: ProfileHeaderProps) {
     const [follow, setFollow] = useState(userDetail?.isfollow);
     const navigate = useNavigate();
@@ -29,15 +35,29 @@ export default function ProfileHeader({
         (state: RootState) => state.auth.userToken.user._id
     );
     const [loading, setLoading] = useState(false);
-    const { axiosJWT } = useAuth();
+    const { axiosJWT, user } = useAuth();
 
     const handleFollow = async (id: string | undefined) => {
-        if (id) {
+        if (id && setIsFollow) {
             setLoading(true);
             const { body } = await UserServices.followUser(id, axiosJWT);
             if (body?.success) {
+                if (userDetail?.isfollow === false) {
+                    socket?.emit("interaction", {
+                        fromUser: user.user._id,
+                        toUser: userDetail?._id,
+                        type: TYPE_NOTI.FOLLOW,
+                        data: user,
+                    });
+                    setIsFollow(true);
+                    setFollow(true);
+                } else {
+                    setIsFollow(false);
+                    setFollow(false);
+                }
+
                 toast.success(body.message);
-                setFollow(!userDetail?.isfollow);
+
                 setLoading(false);
             } else {
                 toast.error(body?.message || "Error");

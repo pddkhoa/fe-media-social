@@ -5,7 +5,7 @@ import { Toaster } from "react-hot-toast";
 import { PersistGate } from "redux-persist/integration/react";
 import { store, persistor } from "./store/store";
 import { Provider } from "react-redux";
-import { ToastContainer } from "react-toastify";
+import { Flip, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 function App() {
@@ -17,9 +17,9 @@ function App() {
                     <GlobalModal />
                     <Toaster position="top-right" reverseOrder={false} />
                     <ToastContainer
-                        position="bottom-right"
+                        position="top-right"
                         autoClose={5000}
-                        hideProgressBar={false}
+                        hideProgressBar
                         newestOnTop={false}
                         closeOnClick
                         rtl={false}
@@ -27,7 +27,9 @@ function App() {
                         draggable
                         pauseOnHover
                         theme="colored"
+                        transition={Flip}
                     />
+                    {/* <NotificationRealtime socket={socket} /> */}
                 </BrowserRouter>
             </PersistGate>
         </Provider>

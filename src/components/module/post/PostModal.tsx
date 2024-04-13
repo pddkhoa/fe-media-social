@@ -26,6 +26,8 @@ import SimpleBar from "simplebar-react";
 import DropdownSharePost from "./DropdownSharePost";
 import UserServices from "@/services/user";
 import useAuth from "@/hooks/useAuth";
+import { Socket } from "socket.io-client";
+import { TYPE_NOTI } from "@/utils/contants";
 
 type PostsModalProps = {
     data: Post;
@@ -38,15 +40,19 @@ type PostsModalProps = {
         payload: any;
         type: any;
     };
-    handleCommentPost?: (data: {
-        blogId: string;
-        replyToCommentId: string | null;
-        content: string;
-    }) => Promise<void>;
+    handleCommentPost?: (
+        data: {
+            blogId: string;
+            replyToCommentId: string | null;
+            content: string;
+        },
+        userID: any
+    ) => Promise<void>;
     handleDeleteComment?: (data: {
         blogId: string;
         commentId: string;
     }) => Promise<void>;
+    socket: Socket | undefined;
 };
 
 export default function PostsModal({
@@ -56,6 +62,7 @@ export default function PostsModal({
     actionDispatchSave,
     handleCommentPost,
     handleDeleteComment,
+    socket,
 }: PostsModalProps) {
     const [activeComment, setActiveComment] = useState<any>();
     //Root Comment
@@ -99,10 +106,11 @@ export default function PostsModal({
                     data={data}
                     actionDispatchLike={actionDispatchLike}
                     actionDispatchSave={actionDispatchSave}
+                    socket={socket}
                 />
                 {handleCommentPost && (
                     <>
-                        <SimpleBar className="h-72 p-2 py-3">
+                        <SimpleBar className="h-96 p-2 py-3">
                             {rootComment && rootComment.length > 0 ? (
                                 rootComment?.map((item: Comment) => (
                                     <ModalCardComment
@@ -124,12 +132,13 @@ export default function PostsModal({
                             ) : (
                                 <Empty text="Not found comment" />
                             )}
+                            <ModalCommentBox
+                                userId={data.user._id}
+                                idBlog={data?._id}
+                                parentId={null}
+                                handleCommentPost={handleCommentPost}
+                            />
                         </SimpleBar>
-                        <ModalCommentBox
-                            idBlog={data?._id}
-                            parentId={null}
-                            handleCommentPost={handleCommentPost}
-                        />
                     </>
                 )}
             </div>
@@ -147,16 +156,18 @@ type ModalCardTextProps = {
         payload: any;
         type: any;
     };
+    socket: Socket | undefined;
 };
 
 function ModalCardText({
     data,
     actionDispatchLike,
     actionDispatchSave,
+    socket,
 }: ModalCardTextProps) {
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const { axiosJWT } = useAuth();
+    const { axiosJWT, user } = useAuth();
 
     const handleSaveBlog = async (id: string) => {
         if (id) {
@@ -176,6 +187,13 @@ function ModalCardText({
             if (body?.success) {
                 toast.success(body.message);
                 dispatch(actionDispatchLike);
+                if (!data.isLiked)
+                    socket?.emit("interaction", {
+                        fromUser: user.user._id,
+                        toUser: data.user._id,
+                        type: TYPE_NOTI.LIKE,
+                        data: user,
+                    });
             } else {
                 toast.error(body?.message || "Error");
             }
@@ -348,11 +366,14 @@ type CommentPropsType = {
     activeComment: any;
     nestingLevel: number;
     idBlog: string;
-    handleCommentPost: (data: {
-        blogId: string;
-        replyToCommentId: string | null;
-        content: string;
-    }) => Promise<void>;
+    handleCommentPost: (
+        data: {
+            blogId: string;
+            replyToCommentId: string | null;
+            content: string;
+        },
+        userID: any
+    ) => Promise<void>;
     handleDeleteComment: (data: {
         blogId: string;
         commentId: string;
@@ -484,17 +505,22 @@ export function ModalCardComment({
 type ModalCommentBoxProps = {
     parentId: string | null;
     idBlog: string;
-    handleCommentPost: (data: {
-        blogId: string;
-        replyToCommentId: string | null;
-        content: string;
-    }) => Promise<void>;
+    userId?: string;
+    handleCommentPost: (
+        data: {
+            blogId: string;
+            replyToCommentId: string | null;
+            content: string;
+        },
+        userID: any
+    ) => Promise<void>;
 };
 
 export function ModalCommentBox({
     parentId,
     idBlog,
     handleCommentPost,
+    userId,
 }: ModalCommentBoxProps) {
     const isPending = useSelector(
         (state: RootState) => state.post.pendingComment
@@ -509,7 +535,7 @@ export function ModalCommentBox({
 
         validateOnChange: true,
         onSubmit: async (values, { resetForm }) => {
-            handleCommentPost(values);
+            handleCommentPost(values, userId);
             resetForm();
         },
     });
