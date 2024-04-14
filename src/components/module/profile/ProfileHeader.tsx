@@ -19,7 +19,7 @@ import { TYPE_NOTI } from "@/utils/contants";
 type ProfileHeaderProps = {
     isView?: boolean;
     userDetail?: UserWall | undefined;
-    socket: Socket | undefined;
+    socket?: Socket | undefined;
     setIsFollow?: React.Dispatch<React.SetStateAction<boolean>> | undefined;
 };
 

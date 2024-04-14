@@ -164,8 +164,8 @@ const ClientRoutes = () => {
                     <Route
                         path="/group/detail/:id"
                         element={
-                            <Suspense fallback={<div>Loading ...</div>}>
-                                <DetailGroup />
+                            <Suspense fallback={<Loader />}>
+                                <DetailGroup socket={socket} />
                             </Suspense>
                         }
                     />
@@ -198,7 +198,7 @@ const ClientRoutes = () => {
                         path="/bookmark"
                         element={
                             <Suspense fallback={<div>Loading ...</div>}>
-                                <PageBookmark />
+                                <PageBookmark socket={socket} />
                             </Suspense>
                         }
                     />
@@ -213,16 +213,16 @@ const ClientRoutes = () => {
                     <Route
                         path="/lastest"
                         element={
-                            <Suspense fallback={<div>Loading ...</div>}>
-                                <PageLastest />
+                            <Suspense fallback={<Loader />}>
+                                <PageLastest socket={socket} />
                             </Suspense>
                         }
                     />
                     <Route
                         path="/discusstion"
                         element={
-                            <Suspense fallback={<div>Loading ...</div>}>
-                                <PageDiscusstion />
+                            <Suspense fallback={<Loader />}>
+                                <PageDiscusstion socket={socket} />
                             </Suspense>
                         }
                     />
@@ -230,7 +230,7 @@ const ClientRoutes = () => {
                         path="/popular"
                         element={
                             <Suspense fallback={<div>Loading ...</div>}>
-                                <PagePopular />
+                                <PagePopular socket={socket} />
                             </Suspense>
                         }
                     />

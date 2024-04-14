@@ -40,6 +40,11 @@ const ToastNotification: FC<ToastNotificationProps> = ({ type, user }) => {
                                 invite you to join the group{" "}
                             </p>
                         )}
+                        {type === TYPE_NOTI.ACCEPT && (
+                            <p className="w-11/12 line-clamp-2 pe-7 text-xs text-gray-500">
+                                accept you to join the group{" "}
+                            </p>
+                        )}
                     </div>
                 </div>
             </div>

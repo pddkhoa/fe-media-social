@@ -7,17 +7,22 @@ import {
 import { Post } from "@/type/post";
 import { FC } from "react";
 import { Empty } from "rizzui";
+import { Socket } from "socket.io-client";
 
 type ListBookmarkProps = {
     data: Post[];
     layout: string;
     loader?: boolean;
     setIsDelete: React.Dispatch<React.SetStateAction<boolean>>;
-    handleCommentPost: (data: {
-        blogId: string;
-        replyToCommentId: string | null;
-        content: string;
-    }) => Promise<void>;
+    handleCommentPost: (
+        data: {
+            blogId: string;
+            replyToCommentId: string | null;
+            content: string;
+        },
+        userID: any
+    ) => Promise<void>;
+    socket: Socket | undefined;
 };
 
 const ListBookmark: FC<ListBookmarkProps> = ({
@@ -26,6 +31,7 @@ const ListBookmark: FC<ListBookmarkProps> = ({
     loader,
     setIsDelete,
     handleCommentPost,
+    socket,
 }) => {
     return (
         <div className="mx-auto mt-10  w-full max-w-[1294px] @2xl:mt-7 @6xl:mt-0">
@@ -76,6 +82,7 @@ const ListBookmark: FC<ListBookmarkProps> = ({
                                         )}
                                         setIsDelete={setIsDelete}
                                         handleCommentPost={handleCommentPost}
+                                        socket={socket}
                                     />
                                 </div>
                             ))

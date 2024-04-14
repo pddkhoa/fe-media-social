@@ -10,10 +10,12 @@ import {
     postCommentToPostBookmark,
 } from "@/store/blogSlice";
 import { RootState } from "@/store/store";
-import { useState, useCallback, useEffect } from "react";
+import { TYPE_NOTI } from "@/utils/contants";
+import { useState, useCallback, useEffect, FC } from "react";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 import { Empty, Loader } from "rizzui";
+import { Socket } from "socket.io-client";
 
 const pageHeader = {
     title: "My Bookmark",
@@ -25,7 +27,11 @@ const pageHeader = {
     ],
 };
 
-const PageBookmark = () => {
+type PageBookmarkProps = {
+    socket: Socket | undefined;
+};
+
+const PageBookmark: FC<PageBookmarkProps> = ({ socket }) => {
     const [layout, setLayout] = useState<string>("grid");
     const [isLoading, setIsLoading] = useState(false);
     const [isDelete, setIsDelete] = useState(false);
@@ -33,7 +39,7 @@ const PageBookmark = () => {
     const listBlog = useSelector(
         (state: RootState) => state.post.listPostBookmark
     );
-    const { axiosJWT } = useAuth();
+    const { axiosJWT, user } = useAuth();
 
     const fetchData = useCallback(async () => {
         try {
@@ -53,11 +59,14 @@ const PageBookmark = () => {
         fetchData();
     }, [fetchData, isDelete]);
 
-    const handleCommentPost = async (data: {
-        blogId: string;
-        replyToCommentId: string | null;
-        content: string;
-    }) => {
+    const handleCommentPost = async (
+        data: {
+            blogId: string;
+            replyToCommentId: string | null;
+            content: string;
+        },
+        userID: any
+    ) => {
         dispatch(pendingCommentSuccess());
         const { body } = await BlogServices.addComment(data, axiosJWT);
         try {
@@ -69,6 +78,12 @@ const PageBookmark = () => {
                         comment: body?.result,
                     })
                 );
+                socket?.emit("interaction", {
+                    fromUser: user.user._id,
+                    toUser: userID,
+                    type: TYPE_NOTI.COMMENT,
+                    data: user,
+                });
                 dispatch(doneCommentSuccess());
             } else {
                 dispatch(doneCommentSuccess());
@@ -103,6 +118,7 @@ const PageBookmark = () => {
                     loader={isLoading}
                     setIsDelete={setIsDelete}
                     handleCommentPost={handleCommentPost}
+                    socket={socket}
                 />
             ) : (
                 <div className="flex justify-center items-center mt-10">

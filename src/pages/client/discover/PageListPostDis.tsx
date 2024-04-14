@@ -10,10 +10,12 @@ import {
     postCommentToPostDis,
 } from "@/store/discoverSlice";
 import { RootState } from "@/store/store";
-import { useCallback, useEffect, useState } from "react";
+import { TYPE_NOTI } from "@/utils/contants";
+import { FC, useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 import { Empty, Loader } from "rizzui";
+import { Socket } from "socket.io-client";
 
 const pageHeader = {
     title: "Best Discusstion",
@@ -25,14 +27,18 @@ const pageHeader = {
     ],
 };
 
-const PageListPostDis = () => {
+type PageListPostDisProps = {
+    socket: Socket | undefined;
+};
+
+const PageListPostDis: FC<PageListPostDisProps> = ({ socket }) => {
     const [layout, setLayout] = useState<string>("grid");
     const [isLoading, setIsLoading] = useState(false);
     const dispatch = useDispatch();
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPage, setTotalPage] = useState<number>();
     const [isDelete, setIsDelete] = useState(false);
-    const { axiosJWT } = useAuth();
+    const { axiosJWT, user } = useAuth();
 
     const listBlog = useSelector(
         (state: RootState) => state.discover.listPostBestDis
@@ -71,11 +77,14 @@ const PageListPostDis = () => {
         setCurrentPage((prevPage) => prevPage + 1);
     };
 
-    const handleCommentPost = async (data: {
-        blogId: string;
-        replyToCommentId: string | null;
-        content: string;
-    }) => {
+    const handleCommentPost = async (
+        data: {
+            blogId: string;
+            replyToCommentId: string | null;
+            content: string;
+        },
+        userID: any
+    ) => {
         dispatch(pendingCommentSuccess());
         const { body } = await BlogServices.addComment(data, axiosJWT);
         try {
@@ -87,6 +96,12 @@ const PageListPostDis = () => {
                         comment: body?.result,
                     })
                 );
+                socket?.emit("interaction", {
+                    fromUser: user.user._id,
+                    toUser: userID,
+                    type: TYPE_NOTI.COMMENT,
+                    data: user,
+                });
                 dispatch(doneCommentSuccess());
             } else {
                 dispatch(doneCommentSuccess());
@@ -123,6 +138,7 @@ const PageListPostDis = () => {
                     handleLoadMore={handleLoadMore}
                     handleCommentPost={handleCommentPost}
                     setIsDelete={setIsDelete}
+                    socket={socket}
                 />
             ) : (
                 <div className="flex justify-center items-center mt-10">

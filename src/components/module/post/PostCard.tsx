@@ -37,7 +37,7 @@ type PostCard = {
         type: any;
     };
 
-    handleCommentPost: (
+    handleCommentPost?: (
         data: {
             blogId: string;
             replyToCommentId: string | null;
@@ -45,7 +45,7 @@ type PostCard = {
         },
         userID: any
     ) => Promise<void>;
-    socket: Socket | undefined;
+    socket?: Socket | undefined;
 };
 
 export default function PostCard({

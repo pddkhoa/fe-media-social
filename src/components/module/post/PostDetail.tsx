@@ -115,7 +115,7 @@ const PostDetail: FC<PostDetailProps> = ({ dataBlog, socket }) => {
                                 {formatDate(dataBlog?.createdAt as any)}
                             </p>
                         </div>
-                        <p className="flex-shrink-0 mt-3 text-sm md:mt-0">
+                        <p className="flex-shrink-0 text-black mt-3 text-sm md:mt-0">
                             {dataBlog?.category?.name}
                         </p>
                     </div>
@@ -126,7 +126,7 @@ const PostDetail: FC<PostDetailProps> = ({ dataBlog, socket }) => {
                             data={convertHTMLToEditorJS(dataBlog?.content)}
                             config={{
                                 code: {
-                                    className: "language-js py-4 text-white",
+                                    className: "language-js py-4",
                                 },
                                 delimiter: {
                                     className: "border border-2 w-16 mx-auto",
@@ -135,15 +135,14 @@ const PostDetail: FC<PostDetailProps> = ({ dataBlog, socket }) => {
                                     className: "border-0",
                                 },
                                 header: {
-                                    className:
-                                        "text-2xl font-semibold  text-transparent text-white my-6",
+                                    className: "text-2xl font-semibold  my-6",
                                 },
                                 image: {
                                     className:
                                         " flex flex-col h-[500px] w-full justify-center items-center   py-5 rounded-xl",
                                 },
                                 list: {
-                                    className: "text-title-foreground",
+                                    className: "",
                                 },
                                 paragraph: {
                                     className:

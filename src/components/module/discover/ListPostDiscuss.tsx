@@ -4,6 +4,7 @@ import { PiArrowsClockwiseFill } from "react-icons/pi";
 import { Empty, Button } from "rizzui";
 import PostCard from "../post/PostCard";
 import { likePostDiscuss, savePostDiscuss } from "@/store/discoverSlice";
+import { Socket } from "socket.io-client";
 
 type ListPostDiscussProps = {
     data: Post[];
@@ -12,12 +13,16 @@ type ListPostDiscussProps = {
     totalPage: number;
     currentPage: number;
     handleLoadMore: () => void;
-    handleCommentPost: (data: {
-        blogId: string;
-        replyToCommentId: string | null;
-        content: string;
-    }) => Promise<void>;
+    handleCommentPost: (
+        data: {
+            blogId: string;
+            replyToCommentId: string | null;
+            content: string;
+        },
+        userID: any
+    ) => Promise<void>;
     setIsDelete: React.Dispatch<React.SetStateAction<boolean>>;
+    socket: Socket | undefined;
 };
 
 const ListPostDiscuss: FC<ListPostDiscussProps> = ({
@@ -27,6 +32,7 @@ const ListPostDiscuss: FC<ListPostDiscussProps> = ({
     handleLoadMore,
     handleCommentPost,
     setIsDelete,
+    socket,
 }) => {
     return (
         <div className="px-2 mt-10  w-full  @2xl:mt-7 @6xl:mt-0">
@@ -40,6 +46,7 @@ const ListPostDiscuss: FC<ListPostDiscussProps> = ({
                             actionDispatchLike={likePostDiscuss(item._id)}
                             actionDispatchSave={savePostDiscuss(item._id)}
                             handleCommentPost={handleCommentPost}
+                            socket={socket}
                         />
                     ))
                 ) : (

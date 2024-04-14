@@ -156,6 +156,18 @@ function NotificationsList({
                                                         </span>
                                                     </p>
                                                 )}
+                                                {item.type ===
+                                                    TYPE_NOTI.ACCEPT && (
+                                                    <p className="w-11/12 line-clamp-2 pe-7 text-xs text-gray-500">
+                                                        accept to join the group{" "}
+                                                        <span className="font-semibold">
+                                                            {
+                                                                item.category
+                                                                    ?.name
+                                                            }
+                                                        </span>
+                                                    </p>
+                                                )}
                                                 {/* <span className="ms-auto whitespace-nowrap pe-8 text-xs text-gray-500">
                                             {dayjs(item.sendTime).fromNow(true)}
                                         </span> */}

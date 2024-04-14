@@ -17,16 +17,17 @@ export function NotificationItem({ data, onClick }: NotiItemProps) {
         <div
             ref={hoverRef}
             onClick={() => onClick(data)}
-            className={`grid cursor-pointer grid-cols-[24px_1fr] items-start gap-3 border-t  hover:border-primary  hover:shadow-md border-gray-200 p-5 `}
+            className={`grid cursor-pointer grid-cols-12 items-start  border-t  hover:border-primary  hover:shadow-md border-gray-200 p-5 `}
         >
             <Avatar
                 name={data.sender.name}
+                className="col-span-2"
                 src={data.sender.avatar.url}
-                size="sm"
+                size="md"
             />
 
-            <div>
-                <div className="flex items-center justify-between lg:flex-col lg:items-start 2xl:flex-row 2xl:items-center">
+            <div className="col-span-10">
+                <div className="flex items-center justify-between">
                     <Title as="h4" className="flex items-center">
                         <span className="text-sm font-semibold dark:text-gray-700">
                             {data?.sender?.name}
@@ -72,6 +73,14 @@ export function NotificationItem({ data, onClick }: NotiItemProps) {
                     {data.type === TYPE_NOTI.INVITE && (
                         <p className="w-11/12 line-clamp-2 pe-7 text-xs text-gray-500">
                             Invited you to join the group{" "}
+                            <span className="font-semibold">
+                                {data.category?.name}
+                            </span>
+                        </p>
+                    )}
+                    {data.type === TYPE_NOTI.ACCEPT && (
+                        <p className="w-11/12 line-clamp-2 pe-7 text-xs text-gray-500">
+                            Accept you to join the group{" "}
                             <span className="font-semibold">
                                 {data.category?.name}
                             </span>

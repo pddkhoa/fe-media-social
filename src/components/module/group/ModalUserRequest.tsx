@@ -2,27 +2,32 @@ import useAuth from "@/hooks/useAuth";
 import { useModal } from "@/hooks/useModal";
 import CategoriesServices from "@/services/categories";
 import { User } from "@/type/user";
+import { TYPE_NOTI } from "@/utils/contants";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { PiXBold } from "react-icons/pi";
 import { Avatar, Button, Title } from "rizzui";
+import { Socket } from "socket.io-client";
 
 type RowUserRequestProps = {
     row: User;
     setIsActive: React.Dispatch<React.SetStateAction<boolean>>;
     idCategory: string;
+    socket: Socket | undefined;
 };
 
 type ModalUserRequestProps = {
     data: User[];
     setIsActive: React.Dispatch<React.SetStateAction<boolean>>;
     idCategory: string;
+    socket: Socket | undefined;
 };
 
 export default function ModalUserRequest({
     data,
     setIsActive,
     idCategory,
+    socket,
 }: ModalUserRequestProps) {
     const { closeModal } = useModal();
     return (
@@ -49,6 +54,7 @@ export default function ModalUserRequest({
                         key={item._id}
                         setIsActive={setIsActive}
                         idCategory={idCategory}
+                        socket={socket}
                     />
                 ))}
             </div>
@@ -56,10 +62,15 @@ export default function ModalUserRequest({
     );
 }
 
-function UserRequestRow({ row, setIsActive, idCategory }: RowUserRequestProps) {
+function UserRequestRow({
+    row,
+    setIsActive,
+    idCategory,
+    socket,
+}: RowUserRequestProps) {
     const [isLoading, setIsLoading] = useState(false);
     const [stateActice, setStateActive] = useState(false);
-    const { axiosJWT } = useAuth();
+    const { axiosJWT, user } = useAuth();
 
     const handleEvalute = async (data: {
         categoryId: string;
@@ -76,6 +87,14 @@ function UserRequestRow({ row, setIsActive, idCategory }: RowUserRequestProps) {
             setIsActive(true);
             setIsLoading(false);
             setStateActive(true);
+            if (data.status === 1) {
+                socket?.emit("interaction", {
+                    fromUser: user.user._id,
+                    toUser: data.user_id,
+                    type: TYPE_NOTI.ACCEPT,
+                    data: user,
+                });
+            }
         } else {
             setIsLoading(false);
             toast.error(body?.message || "Error");

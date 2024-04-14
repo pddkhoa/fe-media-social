@@ -18,7 +18,7 @@ import {
 } from "rizzui";
 import PostCard from "../post/PostCard";
 import { useNavigate, useParams } from "react-router-dom";
-import { useCallback, useEffect, useState } from "react";
+import { FC, useCallback, useEffect, useState } from "react";
 import { CategoryDetail } from "@/type/category";
 import { getBadgeStatus } from "@/components/ui/BadgeStatus";
 import { useModal } from "@/hooks/useModal";
@@ -39,15 +39,20 @@ import {
 } from "@/store/categorySlice";
 import BlogServices from "@/services/blog";
 import { doneCommentSuccess, pendingCommentSuccess } from "@/store/blogSlice";
-import { STATUS_USER_GROUP } from "@/utils/contants";
+import { STATUS_USER_GROUP, TYPE_NOTI } from "@/utils/contants";
 import useAuth from "@/hooks/useAuth";
+import { Socket } from "socket.io-client";
 
-const GroupDetail = () => {
+type GroupDetailProps = {
+    socket: Socket | undefined;
+};
+
+const GroupDetail: FC<GroupDetailProps> = ({ socket }) => {
     const categoriesId = useParams();
     const checkUser = useSelector(
         (state: RootState) => state.auth.userToken.user._id
     );
-    const { axiosJWT } = useAuth();
+    const { axiosJWT, user } = useAuth();
     const [dataCate, setDataCate] = useState<CategoryDetail>();
     const [dataUserReq, setDataUserReq] = useState<User[]>([]);
     const { openModal, closeModal } = useModal();
@@ -170,11 +175,14 @@ const GroupDetail = () => {
             }
         }
     };
-    const handleCommentPost = async (data: {
-        blogId: string;
-        replyToCommentId: string | null;
-        content: string;
-    }) => {
+    const handleCommentPost = async (
+        data: {
+            blogId: string;
+            replyToCommentId: string | null;
+            content: string;
+        },
+        userID: any
+    ) => {
         dispatch(pendingCommentSuccess());
 
         const { body } = await BlogServices.addComment(data, axiosJWT);
@@ -187,6 +195,12 @@ const GroupDetail = () => {
                         comment: body?.result,
                     })
                 );
+                socket?.emit("interaction", {
+                    fromUser: user.user._id,
+                    toUser: userID,
+                    type: TYPE_NOTI.COMMENT,
+                    data: user,
+                });
                 dispatch(doneCommentSuccess());
             } else {
                 dispatch(doneCommentSuccess());
@@ -453,6 +467,7 @@ const GroupDetail = () => {
                                                                 dataUserReq={
                                                                     dataUserReq
                                                                 }
+                                                                socket={socket}
                                                             />
                                                         </Popover.Content>
                                                     </Popover>
@@ -479,6 +494,7 @@ const GroupDetail = () => {
                                             item._id
                                         )}
                                         handleCommentPost={handleCommentPost}
+                                        socket={socket}
                                     />
                                 ))
                             ) : (

@@ -10,10 +10,12 @@ import {
     postCommentToPostPopular,
 } from "@/store/discoverSlice";
 import { RootState } from "@/store/store";
-import { useCallback, useEffect, useState } from "react";
+import { TYPE_NOTI } from "@/utils/contants";
+import { FC, useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 import { Empty, Loader } from "rizzui";
+import { Socket } from "socket.io-client";
 
 const pageHeader = {
     title: "Popular",
@@ -25,7 +27,11 @@ const pageHeader = {
     ],
 };
 
-const PageListPostPopular = () => {
+type PageListPostPopularProps = {
+    socket: Socket | undefined;
+};
+
+const PageListPostPopular: FC<PageListPostPopularProps> = ({ socket }) => {
     const [layout, setLayout] = useState<string>("grid");
     const [isLoading, setIsLoading] = useState(false);
     const dispatch = useDispatch();
@@ -36,7 +42,7 @@ const PageListPostPopular = () => {
     const listBlog = useSelector(
         (state: RootState) => state.discover.listPostPopular
     );
-    const { axiosJWT } = useAuth();
+    const { axiosJWT, user } = useAuth();
 
     const fetchData = useCallback(
         async (page: number) => {
@@ -71,11 +77,14 @@ const PageListPostPopular = () => {
         setCurrentPage((prevPage) => prevPage + 1);
     };
 
-    const handleCommentPost = async (data: {
-        blogId: string;
-        replyToCommentId: string | null;
-        content: string;
-    }) => {
+    const handleCommentPost = async (
+        data: {
+            blogId: string;
+            replyToCommentId: string | null;
+            content: string;
+        },
+        userID: any
+    ) => {
         dispatch(pendingCommentSuccess());
         const { body } = await BlogServices.addComment(data, axiosJWT);
         try {
@@ -87,6 +96,12 @@ const PageListPostPopular = () => {
                         comment: body?.result,
                     })
                 );
+                socket?.emit("interaction", {
+                    fromUser: user.user._id,
+                    toUser: userID,
+                    type: TYPE_NOTI.COMMENT,
+                    data: user,
+                });
                 dispatch(doneCommentSuccess());
             } else {
                 dispatch(doneCommentSuccess());
@@ -123,6 +138,7 @@ const PageListPostPopular = () => {
                     handleLoadMore={handleLoadMore}
                     handleCommentPost={handleCommentPost}
                     setIsDelete={setIsDelete}
+                    socket={socket}
                 />
             ) : (
                 <div className="flex justify-center items-center mt-10">

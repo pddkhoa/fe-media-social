@@ -10,12 +10,14 @@ import ModalEditCategory from "./ModalEditCategory";
 import { User } from "@/type/user";
 import { Badge } from "rizzui";
 import ModalUserRequest from "./ModalUserRequest";
+import { Socket } from "socket.io-client";
 
 type DropdownOptionDetailProps = {
     data: CategoryDetail;
     setIsActive: React.Dispatch<React.SetStateAction<boolean>>;
     handleUploadAvatarCategories: (files: FileList) => Promise<void>;
     dataUserReq: User[];
+    socket: Socket | undefined;
 };
 
 const DropdownOptionDetail: FC<DropdownOptionDetailProps> = ({
@@ -23,6 +25,7 @@ const DropdownOptionDetail: FC<DropdownOptionDetailProps> = ({
     setIsActive,
     handleUploadAvatarCategories,
     dataUserReq,
+    socket,
 }) => {
     const { openModal } = useModal();
 
@@ -103,6 +106,7 @@ const DropdownOptionDetail: FC<DropdownOptionDetailProps> = ({
                                         data={dataUserReq}
                                         setIsActive={setIsActive}
                                         idCategory={data?._id}
+                                        socket={socket}
                                     />
                                 ),
                             });
