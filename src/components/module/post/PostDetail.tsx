@@ -105,7 +105,7 @@ const PostDetail: FC<PostDetailProps> = ({ dataBlog, socket }) => {
                         <div className="flex items-center md:space-x-2">
                             {dataBlog?.user?.avatar ? (
                                 <Avatar
-                                    initials={dataBlog?.user?.name}
+                                    // initials={dataBlog?.user?.name}
                                     src={dataBlog?.user?.avatar?.url}
                                     name={dataBlog?.user?.name}
                                 />

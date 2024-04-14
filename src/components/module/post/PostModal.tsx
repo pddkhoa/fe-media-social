@@ -187,13 +187,14 @@ function ModalCardText({
             if (body?.success) {
                 toast.success(body.message);
                 dispatch(actionDispatchLike);
-                if (!data.isLiked)
+                if (!data.isLiked) {
                     socket?.emit("interaction", {
                         fromUser: user.user._id,
                         toUser: data.user._id,
                         type: TYPE_NOTI.LIKE,
                         data: user,
                     });
+                }
             } else {
                 toast.error(body?.message || "Error");
             }

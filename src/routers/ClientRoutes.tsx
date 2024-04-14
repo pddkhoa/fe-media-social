@@ -78,7 +78,7 @@ const ClientRoutes = () => {
     return (
         <Suspense fallback={<div>Loading...</div>}>
             <Routes>
-                <Route element={<MainLayout />}>
+                <Route element={<MainLayout socket={socket} />}>
                     <Route
                         path="/"
                         element={

@@ -1,10 +1,15 @@
 import useAuth from "@/hooks/useAuth";
 import UserServices from "@/services/user";
-import { endLoadingPage, startLoadingPage } from "@/store/notiSlice";
+import {
+    endLoadingPage,
+    readNotification,
+    startLoadingPage,
+} from "@/store/notiSlice";
 import { NotificationType } from "@/type/notification";
 import { cn } from "@/utils/class-name";
 import { TYPE_NOTI } from "@/utils/contants";
-import { RefObject, useCallback, useEffect, useState } from "react";
+import { formatDistanceToNow } from "date-fns";
+import { RefObject, useState } from "react";
 import { PiCheck } from "react-icons/pi";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -13,32 +18,18 @@ import SimpleBar from "simplebar-react";
 
 function NotificationsList({
     setIsOpen,
+    dataNoti,
+    isLoading,
+    setIsRead,
 }: {
     setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+    dataNoti: NotificationType[];
+    isLoading: boolean;
+    setIsRead: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
-    const [dataNoti, setDataNoti] = useState<NotificationType[]>([]);
-    const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const { axiosJWT } = useAuth();
-
-    const fetchNoti = useCallback(async () => {
-        try {
-            setIsLoading(true);
-            const { body } = await UserServices.getNotification(axiosJWT);
-            if (body?.success) {
-                setDataNoti(body?.result);
-                setIsLoading(false);
-            }
-        } catch (error) {
-            console.error("Error fetching data:", error);
-            setIsLoading(false);
-        }
-    }, [setDataNoti]);
-
-    useEffect(() => {
-        fetchNoti();
-    }, [fetchNoti]);
 
     const displayNoti = dataNoti?.slice(0, 6);
 
@@ -70,6 +61,8 @@ function NotificationsList({
                 default:
                     break;
             }
+            dispatch(readNotification(noti._id));
+            setIsRead(true);
             dispatch(endLoadingPage());
         }
     };
@@ -168,9 +161,14 @@ function NotificationsList({
                                                         </span>
                                                     </p>
                                                 )}
-                                                {/* <span className="ms-auto whitespace-nowrap pe-8 text-xs text-gray-500">
-                                            {dayjs(item.sendTime).fromNow(true)}
-                                        </span> */}
+                                                <span className="ms-auto whitespace-nowrap pe-8 text-xs text-gray-500">
+                                                    {formatDistanceToNow(
+                                                        new Date(
+                                                            item.createdAt
+                                                        ),
+                                                        { addSuffix: true }
+                                                    )}
+                                                </span>
                                             </div>
                                         </div>
                                         <div className="ms-auto flex-shrink-0">
@@ -202,8 +200,14 @@ function NotificationsList({
 
 export default function NotificationDropdown({
     children,
+    dataNoti,
+    isLoading,
+    setIsRead,
 }: {
     children: JSX.Element & { ref?: RefObject<unknown> };
+    dataNoti: NotificationType[];
+    isLoading: boolean;
+    setIsRead: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [_isOpen, setIsOpen] = useState(false);
@@ -212,7 +216,12 @@ export default function NotificationDropdown({
         <Popover placement={"bottom-end"}>
             <Popover.Trigger>{children}</Popover.Trigger>
             <Popover.Content className="z-50 pb-6 pe-6 ps-0 pt-5 h-fit overflow-auto dark:bg-gray-100 [&>svg]:hidden [&>svg]:dark:fill-gray-100 sm:[&>svg]:inline-flex">
-                <NotificationsList setIsOpen={setIsOpen} />
+                <NotificationsList
+                    setIsOpen={setIsOpen}
+                    dataNoti={dataNoti}
+                    isLoading={isLoading}
+                    setIsRead={setIsRead}
+                />
             </Popover.Content>
         </Popover>
     );

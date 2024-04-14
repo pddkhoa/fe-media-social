@@ -1,6 +1,10 @@
 import useAuth from "@/hooks/useAuth";
 import UserServices from "@/services/user";
-import { startLoadingPage, endLoadingPage } from "@/store/notiSlice";
+import {
+    startLoadingPage,
+    endLoadingPage,
+    readNotification,
+} from "@/store/notiSlice";
 import { RootState } from "@/store/store";
 import { NotificationType } from "@/type/notification";
 import { TYPE_NOTI } from "@/utils/contants";
@@ -50,6 +54,7 @@ const DropdownOption: FC<DropdownOptionProps> = ({ data }) => {
                 default:
                     break;
             }
+            dispatch(readNotification(noti._id));
             dispatch(endLoadingPage());
         }
     };
