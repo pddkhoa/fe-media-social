@@ -176,6 +176,32 @@ class CategoriesServices {
             axiosJWT.post(`category/evaluateRequest`, data)
         );
     }
+    static async getUserFriend(axiosJWT: any) {
+        type body = {
+            success: string;
+            statusCode: number;
+            message: string;
+            result: User[];
+        };
+        return await requestApiHelper<body>(axiosJWT.get(`user/listFriend`));
+    }
+    static async addUserCategories(
+        data: {
+            categoryId: string;
+            userId: string;
+        },
+        axiosJWT: any
+    ) {
+        type body = {
+            success: string;
+            statusCode: number;
+            message: string;
+            result: any;
+        };
+        return await requestApiHelper<body>(
+            axiosJWT.put(`category/addUser`, data)
+        );
+    }
 }
 
 export default CategoriesServices;

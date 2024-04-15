@@ -42,6 +42,7 @@ import { doneCommentSuccess, pendingCommentSuccess } from "@/store/blogSlice";
 import { STATUS_USER_GROUP, TYPE_NOTI } from "@/utils/contants";
 import useAuth from "@/hooks/useAuth";
 import { Socket } from "socket.io-client";
+import { ModalInviteMember } from "./ModalInviteMember";
 
 type GroupDetailProps = {
     socket: Socket | undefined;
@@ -329,7 +330,7 @@ const GroupDetail: FC<GroupDetailProps> = ({ socket }) => {
                                                     STATUS_USER_GROUP.INVITED && (
                                                     <Button
                                                         size="sm"
-                                                        className="w-full flex gap-3"
+                                                        className=" flex gap-3"
                                                         variant="outline"
                                                         isLoading={loadingJoin}
                                                         onClick={() =>
@@ -346,7 +347,7 @@ const GroupDetail: FC<GroupDetailProps> = ({ socket }) => {
                                                     STATUS_USER_GROUP.UNJOIN && (
                                                     <Button
                                                         size="sm"
-                                                        className="w-full flex gap-3"
+                                                        className=" flex gap-3"
                                                         variant="outline"
                                                         isLoading={loadingJoin}
                                                         onClick={() =>
@@ -363,7 +364,7 @@ const GroupDetail: FC<GroupDetailProps> = ({ socket }) => {
                                                     STATUS_USER_GROUP.JOINED && (
                                                     <Button
                                                         size="sm"
-                                                        className="w-full flex gap-3"
+                                                        className=" flex gap-3"
                                                         variant="outline"
                                                         color="danger"
                                                         isLoading={loadingJoin}
@@ -381,7 +382,7 @@ const GroupDetail: FC<GroupDetailProps> = ({ socket }) => {
                                                     STATUS_USER_GROUP.PENDING && (
                                                     <Button
                                                         size="sm"
-                                                        className="w-full flex gap-3"
+                                                        className=" flex gap-3"
                                                         variant="flat"
                                                         color="danger"
                                                         isLoading={loadingJoin}
@@ -421,6 +422,20 @@ const GroupDetail: FC<GroupDetailProps> = ({ socket }) => {
                                                             variant="outline"
                                                             size="sm"
                                                             className="flex gap-3"
+                                                            onClick={() => {
+                                                                openModal({
+                                                                    view: (
+                                                                        <ModalInviteMember
+                                                                            isCate={
+                                                                                dataCate?._id
+                                                                            }
+                                                                            socket={
+                                                                                socket
+                                                                            }
+                                                                        />
+                                                                    ),
+                                                                });
+                                                            }}
                                                         >
                                                             Invite Members{" "}
                                                         </Button>
