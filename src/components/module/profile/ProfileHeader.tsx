@@ -8,13 +8,15 @@ import {
     PiDotsThreeOutlineFill,
     PiUsers,
 } from "react-icons/pi";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { Title, Button, Avatar, Popover } from "rizzui";
 import DropdownOption from "./DropdownOption";
 import useAuth from "@/hooks/useAuth";
 import { Socket } from "socket.io-client";
 import { TYPE_NOTI } from "@/utils/contants";
+import ChatServices from "@/services/chat";
+import { startChatMessagesSuccess } from "@/store/chatSlice";
 
 type ProfileHeaderProps = {
     isView?: boolean;
@@ -31,6 +33,7 @@ export default function ProfileHeader({
 }: ProfileHeaderProps) {
     const [follow, setFollow] = useState(userDetail?.isfollow);
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     const isAuth = useSelector(
         (state: RootState) => state.auth.userToken.user._id
     );
@@ -63,6 +66,19 @@ export default function ProfileHeader({
                 toast.error(body?.message || "Error");
                 setLoading(false);
             }
+        }
+    };
+
+    const handleSingleChat = async (userId: string) => {
+        const { body } = await ChatServices.singleChat(
+            { userId: userId },
+            axiosJWT
+        );
+        if (body?.success) {
+            dispatch(startChatMessagesSuccess(body.result));
+            navigate("/messenger");
+        } else {
+            toast.error(body?.message || "Error");
         }
     };
 
@@ -136,22 +152,25 @@ export default function ProfileHeader({
                         </Button>
                     ) : (
                         <>
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                className={`font-500 text-gray-900  ${
-                                    isAuth !== userDetail?._id
-                                        ? "col-span-2"
-                                        : "col-span-4"
-                                }`}
-                            >
-                                <PiChatCircleText className="h-auto w-[18px]" />
-                                <span className="ms-1.5 inline-block">
-                                    Message
-                                </span>
-                            </Button>
-                            {isAuth !== userDetail?._id && (
+                            {isAuth !== userDetail?._id && userDetail && (
                                 <>
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => {
+                                            handleSingleChat(userDetail?._id);
+                                        }}
+                                        className={`font-500 text-gray-900  ${
+                                            isAuth !== userDetail?._id
+                                                ? "col-span-2"
+                                                : "col-span-4"
+                                        }`}
+                                    >
+                                        <PiChatCircleText className="h-auto w-[18px]" />
+                                        <span className="ms-1.5 inline-block">
+                                            Message
+                                        </span>
+                                    </Button>
                                     <Button
                                         color="primary"
                                         size="sm"

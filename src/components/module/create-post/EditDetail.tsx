@@ -34,7 +34,7 @@ const EditDetail: FC<EditDetailProps> = ({
 }) => {
     const { openModal, closeModal } = useModal();
     const [stateDes, setStateDes] = useState("" || formDataCreate?.description);
-    const [cateData, setCateData] = useState<optionsCate[]>();
+    const [cateData, setCateData] = useState<optionsCate[]>([]);
     const [value, setValue] = useState(null || formDataCreate?.categoryIds);
     const [isLoadig, setIsLoading] = useState(false);
     const [selectedTags, setSelectedTags] = useState<Tag[]>(
@@ -59,12 +59,16 @@ const EditDetail: FC<EditDetailProps> = ({
                 if (body?.success) {
                     const mappedCategories = body?.result?.map(
                         (category: CategoryPost) => ({
-                            label: category.name,
-                            value: category._id,
-                            tags: category.tags,
+                            label: category?.name,
+                            value: category?._id,
+                            tags: category?.tags,
                         })
                     );
-                    setCateData(mappedCategories);
+                    setCateData(
+                        mappedCategories && mappedCategories.length > 0
+                            ? mappedCategories
+                            : []
+                    );
                     setIsLoading(false);
                 }
             } catch (error) {

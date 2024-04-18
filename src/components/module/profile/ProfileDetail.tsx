@@ -22,7 +22,7 @@ import { Post } from "@/type/post";
 import useAuth from "@/hooks/useAuth";
 
 type ProfileDetailsProps = {
-    userDetail: UserWall;
+    userDetail?: UserWall | undefined;
     lisFollower: UserWall[];
     listFollowing: UserWall[];
     handleFollower: (id: string) => Promise<void>;
@@ -68,14 +68,16 @@ export default function ProfileDetails({
 
         const fetchPostData = async () => {
             try {
-                setIsLoading(true);
-                const { body } = await BlogServices.getBlogByUserID(
-                    userDetail._id,
-                    axiosJWT
-                );
-                if (body?.success) {
-                    dispatch(getPostByUser(body?.result));
-                    setIsLoading(false);
+                if (userDetail?._id) {
+                    setIsLoading(true);
+                    const { body } = await BlogServices.getBlogByUserID(
+                        userDetail?._id,
+                        axiosJWT
+                    );
+                    if (body?.success) {
+                        dispatch(getPostByUser(body?.result));
+                        setIsLoading(false);
+                    }
                 }
             } catch (error) {
                 console.error("Error fetching data:", error);
@@ -83,7 +85,7 @@ export default function ProfileDetails({
             }
         };
         fetchPostData();
-    }, [isDelete, dispatch, userDetail._id]);
+    }, [isDelete, dispatch, userDetail?._id]);
 
     useEffect(() => {
         setOpen(() => false);

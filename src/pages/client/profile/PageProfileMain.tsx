@@ -168,23 +168,21 @@ const PageProfileMain: FC<PageProfileMainProps> = ({ socket }) => {
 
     return (
         <>
-            {userDetail && lisFollower && listFollowing && (
-                <>
-                    <ProfileHeader
-                        userDetail={userDetail}
-                        socket={socket}
-                        setIsFollow={setIsFollow}
-                    />
-                    <ProfileDetails
-                        userDetail={userDetail}
-                        lisFollower={lisFollower}
-                        listFollowing={listFollowing}
-                        handleFollower={handleFollower}
-                        handleFollowing={handleFollowing}
-                        postShare={postShare}
-                    />
-                </>
-            )}
+            <>
+                <ProfileHeader
+                    userDetail={userDetail}
+                    socket={socket}
+                    setIsFollow={setIsFollow}
+                />
+                <ProfileDetails
+                    userDetail={userDetail}
+                    lisFollower={lisFollower}
+                    listFollowing={listFollowing}
+                    handleFollower={handleFollower}
+                    handleFollowing={handleFollowing}
+                    postShare={postShare}
+                />
+            </>
         </>
     );
 };

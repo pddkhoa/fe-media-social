@@ -6,6 +6,7 @@ import postReducer from "./blogSlice";
 import discoverReducer from "./discoverSlice";
 import wallReducer from "./wallSlice";
 import notiReducer from "./notiSlice";
+import chatReducer from "./chatSlice";
 
 import {
     persistStore,
@@ -32,6 +33,7 @@ const rootReducer = combineReducers({
     discover: discoverReducer,
     wall: wallReducer,
     noti: notiReducer,
+    chat: chatReducer,
 });
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
