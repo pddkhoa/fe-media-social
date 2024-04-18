@@ -1,6 +1,6 @@
 import { cn } from "@/utils/class-name";
 import { PiEnvelopeSimple } from "react-icons/pi";
-import { Input, Select, Button, NumberInput, Textarea, Loader } from "rizzui";
+import { Input, Select, Button, NumberInput, Loader } from "rizzui";
 import AvatarUpload from "../ui/UploadAvatar";
 import { useEffect, useState } from "react";
 import * as Yup from "yup";
@@ -298,22 +298,7 @@ const FormSettingProfile = () => {
                         </div>
                     </div>
                 </div>
-                <div className={cn("grid gap-5 grid-cols-12 pt-7 ")}>
-                    <div className="col-span-4 ">
-                        <h4 className="text-base font-medium">Bio</h4>
-                    </div>
 
-                    <div className="grid grid-cols-1 col-span-8 gap-5 py-5">
-                        <Textarea
-                            id="Descriptions"
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
-                            value={formik.values.Descriptions}
-                            className="w-full h-36"
-                            labelClassName="font-medium text-gray-700 dark:text-gray-600 mb-5.5"
-                        />
-                    </div>
-                </div>
                 <div className={cn("grid gap-5 grid-cols-12 pt-7 ")}>
                     <div className="col-span-4">
                         <h4 className="text-base font-medium">Your Photo</h4>

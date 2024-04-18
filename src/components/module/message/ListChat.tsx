@@ -88,11 +88,7 @@ type RowUserListChatProps = {
     isActive: boolean;
 };
 
-const RowUserListChat: FC<RowUserListChatProps> = ({
-    data,
-    onClick,
-    isActive,
-}) => {
+const RowUserListChat: FC<RowUserListChatProps> = ({ onClick, isActive }) => {
     const handleButtonClick = () => {
         onClick();
     };

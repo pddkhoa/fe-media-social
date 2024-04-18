@@ -8,7 +8,7 @@ type ScreenChatProps = {
     userYou: User | undefined;
 };
 
-export const ScreenChat: FC<ScreenChatProps> = ({ chatId, userYou }) => {
+export const ScreenChat: FC<ScreenChatProps> = () => {
     return (
         <div className="absolute h-[calc(100%-150px)] mr-4">
             <div className="flex justify-between items-center  p-1">

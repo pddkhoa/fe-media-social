@@ -65,25 +65,29 @@ export default function PostCard({
     return (
         <>
             <div className="flex flex-col max-w-xl p-6 space-y-6 overflow-hidden rounded-md shadow bg-gray-100">
-                <div className="flex justify-between">
+                <div className="flex justify-between relative">
                     {data.category ? (
-                        <div
-                            onClick={() => {
-                                navigate(`/group/detail/${data.category._id}`);
-                            }}
-                            className="relative inline-flex gap-5 w-[80%] cursor-pointer group "
-                        >
-                            {data?.category?.avatar?.url ? (
-                                <img
-                                    src={data?.category?.avatar?.url}
-                                    className="object-cover h-12 w-12 rounded-lg group-hover:brightness-95"
-                                />
-                            ) : (
-                                <div className="bg-gradient-to-r h-12 w-12 rounded-lg from-[#F8E1AF] to-[#F6CFCF] bg-opacity-30 group-hover:brightness-95" />
-                            )}
-                            <p className="font-semibold mt-1 group-hover:text-gray-800 truncate">
-                                {data?.category?.name}
-                            </p>
+                        <>
+                            <div
+                                onClick={() => {
+                                    navigate(
+                                        `/group/detail/${data.category._id}`
+                                    );
+                                }}
+                                className=" inline-flex gap-5  cursor-pointer group "
+                            >
+                                {data?.category?.avatar?.url ? (
+                                    <img
+                                        src={data?.category?.avatar?.url}
+                                        className="object-cover h-12 w-12 rounded-lg group-hover:brightness-95"
+                                    />
+                                ) : (
+                                    <div className="bg-gradient-to-r h-12 w-12 rounded-lg from-[#F8E1AF] to-[#F6CFCF] bg-opacity-30 group-hover:brightness-95" />
+                                )}
+                                <p className="font-semibold mt-1 group-hover:text-gray-800 truncate w-64">
+                                    {data?.category?.name}
+                                </p>
+                            </div>
                             <div className="absolute top-8 left-8 -translate-y-[25%]">
                                 <Link
                                     className="flex gap-2 items-center"
@@ -105,7 +109,7 @@ export default function PostCard({
                                     </div>
                                 </Link>
                             </div>
-                        </div>
+                        </>
                     ) : (
                         <div className="relative inline-flex gap-5 w-[80%]">
                             <Link

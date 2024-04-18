@@ -36,7 +36,7 @@ const PageTabDetail = () => {
         <>
             {userDetail && (
                 <>
-                    <ProfileHeader isView={true} userDetail={userDetail} />
+                    <ProfileHeader isView={true} />
                     <FormSettingProfile />
                 </>
             )}

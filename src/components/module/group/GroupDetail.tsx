@@ -113,7 +113,7 @@ const GroupDetail: FC<GroupDetailProps> = ({ socket }) => {
                 setIsLoading(false);
             }
         },
-        [dispatch, isDelete]
+        [dispatch]
     );
     const fetchUserRequest = useCallback(async () => {
         try {
@@ -137,7 +137,14 @@ const GroupDetail: FC<GroupDetailProps> = ({ socket }) => {
         fetchCate();
         fetchBlog(currentPage);
         fetchUserRequest();
-    }, [fetchCate, fetchBlog, isActive, fetchUserRequest]);
+    }, [
+        fetchCate,
+        fetchBlog,
+        isActive,
+        fetchUserRequest,
+        currentPage,
+        isDelete,
+    ]);
 
     useEffect(() => {
         if (
@@ -285,7 +292,7 @@ const GroupDetail: FC<GroupDetailProps> = ({ socket }) => {
                                     <div>
                                         <Title
                                             as="h1"
-                                            className="text-lg flex justify-center gap-2 font-bold capitalize leading-normal text-gray-900 @3xl:!text-xl 3xl:text-2xl"
+                                            className="text-lg flex gap-2 font-bold capitalize leading-normal text-gray-900 @3xl:!text-xl 3xl:text-2xl"
                                         >
                                             {dataCate?.name}
                                             {getBadgeStatus(dataCate?.status)}
