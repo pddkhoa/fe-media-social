@@ -1,6 +1,9 @@
 import useAuth from "@/hooks/useAuth";
 import ChatServices from "@/services/chat";
-import { getListChatSuccess } from "@/store/chatSlice";
+import {
+    getListChatRequestSuccess,
+    getListChatSuccess,
+} from "@/store/chatSlice";
 import { RootState } from "@/store/store";
 import { ChatType } from "@/type/chat";
 import { User } from "@/type/user";
@@ -11,7 +14,7 @@ import {
 } from "react-icons/pi";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
-import { Avatar, Button, Empty, Input, Popover } from "rizzui";
+import { Avatar, Button, Empty, Input, Popover, Tab } from "rizzui";
 import DropdownOption from "./DropdownOptionChat";
 
 type ListChatProps = {
@@ -21,6 +24,10 @@ type ListChatProps = {
 
 const ListChat: FC<ListChatProps> = ({ setChatId, setUserYou }) => {
     const listChat = useSelector((state: RootState) => state.chat.getListChat);
+    const listChatRequest = useSelector(
+        (state: RootState) => state.chat.getListChatRequest
+    );
+
     const dispatch = useDispatch();
     const { axiosJWT } = useAuth();
     const [activeUserId, setActiveUserId] = useState<string | null>(null);
@@ -37,20 +44,32 @@ const ListChat: FC<ListChatProps> = ({ setChatId, setUserYou }) => {
             console.error("Error fetching data:", error);
         }
     }, [dispatch]);
+    const fetchChatRequest = useCallback(async () => {
+        try {
+            const { body } = await ChatServices.getListChatRequest(axiosJWT);
+            if (body?.success) {
+                dispatch(getListChatRequestSuccess(body.result));
+            } else {
+                toast.error(body?.message);
+            }
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    }, [dispatch]);
 
     useEffect(() => {
         fetchChat();
-    }, [fetchChat]);
+        fetchChatRequest();
+    }, [fetchChat, fetchChatRequest]);
 
     const handleUserClick = (userId: any) => {
         setActiveUserId((prevUserId) =>
             prevUserId === userId ? null : userId
         );
-        // Handle any other logic you need when a user is clicked
     };
 
     return (
-        <div className="absolute  h-[calc(100%-85px)] w-[20%] mx-2  border-r   overflow-auto flex flex-col gap-5 p-2">
+        <div className="absolute  h-[calc(100%-85px)] w-[20%] mx-2  border-r   overflow-auto flex flex-col gap-3 p-2">
             <Input
                 variant="flat"
                 placeholder="Search here"
@@ -60,24 +79,63 @@ const ListChat: FC<ListChatProps> = ({ setChatId, setUserYou }) => {
                 }
             />
 
-            {listChat && listChat.length > 0 ? (
-                listChat.map((item) => (
-                    <RowUserListChat
-                        key={item._id}
-                        data={item}
-                        onClick={() => {
-                            setChatId(item?._id.toString());
-                            setUserYou(item?.createBy);
-                            handleUserClick(item?.createBy._id?.toString());
-                        }}
-                        isActive={
-                            activeUserId === item?.createBy?._id?.toString()
-                        }
-                    />
-                ))
-            ) : (
-                <Empty />
-            )}
+            <Tab>
+                <Tab.List>
+                    <Tab.ListItem className={"text-sm"}>Mailbox</Tab.ListItem>
+                    <Tab.ListItem className={"text-sm"}>
+                        Message Request
+                    </Tab.ListItem>
+                </Tab.List>
+                <Tab.Panels>
+                    <Tab.Panel>
+                        {listChat && listChat.length > 0 ? (
+                            listChat.map((item) => (
+                                <RowUserListChat
+                                    key={item._id}
+                                    data={item}
+                                    onClick={() => {
+                                        setChatId(item?._id.toString());
+                                        setUserYou(item?.userReceived);
+                                        handleUserClick(
+                                            item?.userReceived?._id
+                                        );
+                                    }}
+                                    isActive={
+                                        activeUserId ===
+                                        item?.userReceived?._id?.toString()
+                                    }
+                                />
+                            ))
+                        ) : (
+                            <Empty />
+                        )}
+                    </Tab.Panel>
+                    <Tab.Panel>
+                        {" "}
+                        {listChatRequest && listChatRequest.length > 0 ? (
+                            listChatRequest.map((item) => (
+                                <RowUserListChat
+                                    key={item._id}
+                                    data={item}
+                                    onClick={() => {
+                                        setChatId(item?._id.toString());
+                                        setUserYou(item?.userReceived);
+                                        handleUserClick(
+                                            item?.userReceived._id?.toString()
+                                        );
+                                    }}
+                                    isActive={
+                                        activeUserId ===
+                                        item?.userReceived?._id?.toString()
+                                    }
+                                />
+                            ))
+                        ) : (
+                            <Empty />
+                        )}
+                    </Tab.Panel>
+                </Tab.Panels>
+            </Tab>
         </div>
     );
 };
@@ -88,7 +146,11 @@ type RowUserListChatProps = {
     isActive: boolean;
 };
 
-const RowUserListChat: FC<RowUserListChatProps> = ({ onClick, isActive }) => {
+const RowUserListChat: FC<RowUserListChatProps> = ({
+    onClick,
+    isActive,
+    data,
+}) => {
     const handleButtonClick = () => {
         onClick();
     };
@@ -103,25 +165,22 @@ const RowUserListChat: FC<RowUserListChatProps> = ({ onClick, isActive }) => {
         >
             <div className="flex gap-3">
                 <div className="relative inline-flex">
-                    <Avatar
-                        size="md"
-                        name="John Doe"
-                        src="https://randomuser.me/api/portraits/women/40.jpg"
-                    />
-                    {/* <Badge
-                    renderAsDot
-                    color="success"
-                    enableOutlineRing
-                    size="md"
-                    className="absolute right-0 bottom-0 -translate-y-[25%]"
-                /> */}
+                    {data?.userReceived?.avatar ? (
+                        <Avatar
+                            size="md"
+                            name={data?.userReceived?.name}
+                            src={data?.userReceived?.avatar?.url}
+                        />
+                    ) : (
+                        <Avatar size="md" name="No Name" />
+                    )}
                 </div>
                 <div className="flex flex-col">
-                    <span className="text-sm font-semibold">
-                        Bernard Langley
+                    <span className="text-sm font-semibold truncate">
+                        {data?.userReceived?.name}
                     </span>
                     <span className="text-[12px] text-gray-500">
-                        See you tomorrow
+                        Click to chat
                     </span>
                 </div>
             </div>

@@ -1,16 +1,21 @@
-import { ChatType } from "@/type/chat";
+import { ChatType, MessageType } from "@/type/chat";
 import { createSlice } from "@reduxjs/toolkit";
 
 const chatSlice = createSlice({
     name: "chat",
     initialState: {
         getListChat: [] as ChatType[],
-        getChatMessages: [] as ChatType[],
-        newMessages: {} as ChatType,
+        getListChatRequest: [] as ChatType[],
+
+        getChatMessages: [] as MessageType[],
+        newMessages: {} as MessageType,
     },
     reducers: {
         getListChatSuccess: (state, action) => {
             state.getListChat = action.payload;
+        },
+        getListChatRequestSuccess: (state, action) => {
+            state.getListChatRequest = action.payload;
         },
         getListChatMessagesSuccess: (state, action) => {
             state.getChatMessages = action.payload;
@@ -41,6 +46,7 @@ export const {
     sendMessagesSuccess,
     startChatMessagesSuccess,
     deleteListChatSuccess,
+    getListChatRequestSuccess,
 } = chatSlice.actions;
 
 export default chatSlice.reducer;

@@ -9,11 +9,11 @@ const PageMessage = () => {
 
     return (
         <>
-            <div className="grid grid-cols-12 border-t -mx-6 -mt-2 ">
-                <div className="col-span-3 ">
+            <div className=" w-full grid grid-cols-12 border-t -mx-6 -mt-2 ">
+                <div className="col-span-3">
                     <ListChat setChatId={setChatId} setUserYou={setUserYou} />
                 </div>
-                <div className="col-span-9 p-2 overflow-y-hidden">
+                <div className=" col-span-9 p-2">
                     <ScreenChat chatId={chatId} userYou={userYou} />
                 </div>
             </div>
