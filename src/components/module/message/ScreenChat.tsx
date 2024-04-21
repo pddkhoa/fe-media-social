@@ -7,14 +7,14 @@ import {
 import { RootState } from "@/store/store";
 import { MessageType } from "@/type/chat";
 import { User } from "@/type/user";
-import { FC, useCallback, useEffect, useRef, useState } from "react";
+import { FC, useEffect, useRef, useState } from "react";
 import {
     PiDotsThreeOutlineLight,
     PiDotsThreeOutlineVertical,
     PiImagesFill,
+    PiX,
 } from "react-icons/pi";
 import { useDispatch, useSelector } from "react-redux";
-import { toast } from "react-toastify";
 import {
     ActionIcon,
     Avatar,
@@ -27,6 +27,12 @@ import SimpleBar from "simplebar-react";
 import { Socket } from "socket.io-client";
 import EmojiPicker from "emoji-picker-react";
 import DropdownOptionMessage from "./DropdownOptionMessage";
+import DropdownEditMessage from "./DropdownEditMessage";
+import { useModal } from "@/hooks/useModal";
+import UploadModal from "@/components/modal/UploadModal";
+import { pendingUpload, uploadSuccess } from "@/store/imageSlice";
+import { TYPE_MESSAGE, TYPE_UPLOAD } from "@/utils/contants";
+import toast from "react-hot-toast";
 
 type ScreenChatProps = {
     chatId: string | undefined;
@@ -41,6 +47,7 @@ export const ScreenChat: FC<ScreenChatProps> = ({
 }) => {
     const dispatch = useDispatch();
     const { axiosJWT, user } = useAuth();
+    const { openModal, closeModal } = useModal();
     const listMessage = useSelector(
         (state: RootState) => state.chat.getChatMessages
     );
@@ -49,6 +56,8 @@ export const ScreenChat: FC<ScreenChatProps> = ({
     const messagesContainerRef = useRef<HTMLDivElement>(null);
     const [showEmoji, setShowEmoji] = useState(false);
     const [isDelete, setIsDelete] = useState(false);
+    const [isSend, setIsSend] = useState(false);
+    const [imageUrl, setImageUrl] = useState<string>("");
 
     useEffect(() => {
         if (messagesContainerRef.current) {
@@ -66,37 +75,38 @@ export const ScreenChat: FC<ScreenChatProps> = ({
                 socket.off("getMessage");
             };
         }
-    }, [socket, dispatch]);
-
-    const fetchChat = useCallback(async () => {
-        try {
-            if (chatId) {
-                const { body } = await ChatServices.getMessage(
-                    chatId?.toString(),
-                    axiosJWT
-                );
-                if (body?.success) {
-                    dispatch(getListChatMessagesSuccess(body.result));
-                } else {
-                    toast.error(body?.message);
-                }
-            }
-        } catch (error) {
-            console.error("Error fetching data:", error);
-        }
-    }, [dispatch, chatId]);
+    }, [socket, dispatch, messages]);
 
     useEffect(() => {
         setIsDelete(false);
+        setIsSend(false);
+        const fetchChat = async () => {
+            try {
+                if (chatId) {
+                    const { body } = await ChatServices.getMessage(
+                        chatId?.toString(),
+                        axiosJWT
+                    );
+                    if (body?.success) {
+                        dispatch(getListChatMessagesSuccess(body.result));
+                    } else {
+                        toast.error(body?.message || "Error");
+                    }
+                }
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        };
         fetchChat();
-    }, [fetchChat, messages, isDelete]);
+    }, [isDelete, dispatch, chatId, setMessages, isSend]);
 
     const handleSendMessage = async () => {
         if (chatId) {
             const { body } = await ChatServices.sendMessage(
                 {
                     chatId: chatId,
-                    message: contentMessage,
+                    message: imageUrl ? imageUrl : contentMessage,
+                    type: imageUrl ? "Image" : "Text",
                 },
                 axiosJWT
             );
@@ -107,8 +117,10 @@ export const ScreenChat: FC<ScreenChatProps> = ({
                     text: body?.result,
                 });
                 setContentMessage("");
+                setImageUrl("");
+                setIsSend(true);
             } else {
-                toast.error(body?.message);
+                toast.error(body?.message || "Error");
             }
         }
     };
@@ -116,6 +128,27 @@ export const ScreenChat: FC<ScreenChatProps> = ({
     useEffect(() => {
         if (chatId) setMessages(listMessage);
     }, [listMessage, chatId]);
+
+    const handleUploadIamgeMessage = async (files: FileList) => {
+        if (files) {
+            dispatch(pendingUpload());
+            const formData = new FormData();
+            formData.append("image", files[0]);
+            const { body } = await ChatServices.uploadImageMessage(
+                formData,
+                axiosJWT
+            );
+            if (body?.success) {
+                toast.success(body?.message);
+                setImageUrl(body?.result);
+                closeModal();
+                dispatch(uploadSuccess());
+            } else {
+                toast.error(body?.message || "Error");
+                dispatch(uploadSuccess());
+            }
+        }
+    };
 
     return userYou ? (
         <div className="pl-8 ">
@@ -134,9 +167,16 @@ export const ScreenChat: FC<ScreenChatProps> = ({
                         </span>
                     </div>
                 </div>
-                <ActionIcon size="sm" variant="flat">
-                    <PiDotsThreeOutlineLight />
-                </ActionIcon>
+                <Popover placement="bottom-start">
+                    <Popover.Trigger>
+                        <ActionIcon size="sm" variant="outline">
+                            <PiDotsThreeOutlineLight />
+                        </ActionIcon>
+                    </Popover.Trigger>
+                    <Popover.Content className="z-50 p-0 dark:bg-gray-50 [&>svg]:dark:fill-gray-50">
+                        <DropdownEditMessage idChat={chatId} />
+                    </Popover.Content>
+                </Popover>
             </div>
             <div className="flex flex-col justify-between ">
                 <SimpleBar
@@ -168,9 +208,24 @@ export const ScreenChat: FC<ScreenChatProps> = ({
                         )}
                     </div>
                 </SimpleBar>
-                <div className="flex flex-row items-center h-16 rounded-xl bg-white w-full px-4">
+                <div className="flex flex-row items-center h-16 rounded-xl bg-white w-full px-4 ">
                     <div>
-                        <Button variant="outline">
+                        <Button
+                            onClick={() => {
+                                openModal({
+                                    view: (
+                                        <UploadModal
+                                            handleUploadImage={
+                                                handleUploadIamgeMessage
+                                            }
+                                            type={TYPE_UPLOAD.MESSAGE}
+                                            isPost={true}
+                                        />
+                                    ),
+                                });
+                            }}
+                            variant="outline"
+                        >
                             <PiImagesFill className="h-6 w-6" />
                         </Button>
                     </div>
@@ -188,38 +243,73 @@ export const ScreenChat: FC<ScreenChatProps> = ({
                                     />
                                 </div>
                             )}
-                            <input
-                                type="text"
-                                value={contentMessage}
-                                onChange={(e) =>
-                                    setContentMessage(e.target.value)
-                                }
-                                className="flex w-full border rounded-xl focus:outline-none focus:border-indigo-300 pl-4 h-10"
-                            />
-                            <button
-                                onClick={() => setShowEmoji(!showEmoji)}
-                                className="absolute flex items-center justify-center h-full w-12 right-0 top-0 text-gray-400 hover:text-gray-600"
-                            >
-                                <svg
-                                    className="w-6 h-6"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                    xmlns="http://www.w3.org/2000/svg"
+
+                            <>
+                                <div
+                                    className={`flex w-full border rounded-xl focus:outline-none focus:border-indigo-300 ${
+                                        !imageUrl ? "h-10" : "h-18 mt-4"
+                                    }`}
                                 >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                                    />
-                                </svg>
-                            </button>
+                                    {imageUrl ? (
+                                        <div className="flex items-center">
+                                            <img
+                                                src={imageUrl}
+                                                className="h-16 w-20 p-1 object-cover rounded-xl"
+                                            />
+                                            <Button
+                                                onClick={() => {
+                                                    setImageUrl("");
+                                                }}
+                                                variant="outline"
+                                                size="sm"
+                                            >
+                                                Clear
+                                                <PiX className="h-4 w-4 ml-2" />
+                                            </Button>
+                                        </div>
+                                    ) : (
+                                        <input
+                                            type="text"
+                                            value={contentMessage}
+                                            onChange={(e) =>
+                                                setContentMessage(
+                                                    e.target.value
+                                                )
+                                            }
+                                            className="ring-0 w-full rounded-xl"
+                                        />
+                                    )}
+                                </div>
+
+                                <button
+                                    onClick={() => setShowEmoji(!showEmoji)}
+                                    className="absolute flex items-center justify-center h-full w-12 right-0 top-0 text-gray-400 hover:text-gray-600"
+                                >
+                                    <svg
+                                        className="w-6 h-6"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                    >
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                                        />
+                                    </svg>
+                                </button>
+                            </>
                         </div>
                     </div>
                     <div className="ml-4">
                         <Button
-                            disabled={contentMessage === "" ? true : false}
+                            disabled={
+                                contentMessage === "" && imageUrl === ""
+                                    ? true
+                                    : false
+                            }
                             onClick={() => {
                                 handleSendMessage();
                             }}
@@ -273,7 +363,18 @@ const MeChat: FC<ChatProps> = ({ data, setIsDelete }) => {
                     <Avatar size="md" name="Default" />
                 )}
                 <div className="relative mr-3 text-sm bg-indigo-100 py-2 px-4 shadow rounded-xl">
-                    <div>{data?.message}</div>
+                    {data?.message?.type === TYPE_MESSAGE.TEXT && (
+                        <div>{data?.message?.content}</div>
+                    )}
+
+                    {data?.message?.type === TYPE_MESSAGE.IMAGE && (
+                        <div className="h-40 w-56">
+                            <img
+                                className="h-full w-full object-cover"
+                                src={data?.message?.content}
+                            />
+                        </div>
+                    )}
                 </div>
                 <div className="relative mr-4">
                     <Popover placement="bottom-start">
@@ -308,8 +409,19 @@ const UserChat: FC<ChatProps> = ({ data }) => {
                 ) : (
                     <Avatar size="md" name="Default" />
                 )}
-                <div className="relative mr-3 text-sm bg-indigo-100 py-2 px-4 shadow rounded-xl">
-                    <div>{data?.message}</div>
+                <div className="relative ml-3 text-sm bg-indigo-100 py-2 px-4 shadow rounded-xl">
+                    {data?.message?.type === TYPE_MESSAGE.TEXT && (
+                        <div>{data?.message?.content}</div>
+                    )}
+
+                    {data?.message?.type === TYPE_MESSAGE.IMAGE && (
+                        <div className="h-40 w-56">
+                            <img
+                                className="h-full w-full object-cover"
+                                src={data?.message?.content}
+                            />
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

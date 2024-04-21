@@ -13,6 +13,7 @@ export const TYPE_UPLOAD = {
     CATEGORIES: "categories",
     POST: "post",
     PROFILE: "profile",
+    MESSAGE: "message",
 };
 
 export const TYPE_NOTI = {
@@ -21,6 +22,11 @@ export const TYPE_NOTI = {
     FOLLOW: "Follow",
     INVITE: "Invite",
     ACCEPT: "Accept",
+};
+
+export const TYPE_MESSAGE = {
+    TEXT: "Text",
+    IMAGE: "Image",
 };
 
 export const SOCKET_URL = process.env.SOCKET_IO_URL;

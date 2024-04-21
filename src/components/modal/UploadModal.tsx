@@ -8,7 +8,6 @@ import { Button, Loader } from "rizzui";
 type UploadModalProps = {
     data?: string;
     isPost?: boolean;
-
     setUrlImage?: React.Dispatch<React.SetStateAction<string>>;
     type: string;
     handleUploadImage: (files: FileList) => Promise<void>;

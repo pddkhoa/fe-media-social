@@ -19,7 +19,10 @@ export interface ChatType {
 export interface MessageType {
     _id: string;
     user: User;
-    message: string;
+    message: {
+        content: string;
+        type: string;
+    };
     chat: ChatType;
     userReceived: any;
     createdAt: string;

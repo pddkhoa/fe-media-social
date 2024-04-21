@@ -53,6 +53,7 @@ class ChatServices {
         data: {
             chatId: string;
             message: string;
+            type: string;
         },
         axiosJWT: any
     ) {
@@ -93,6 +94,32 @@ class ChatServices {
         };
         return await requestApiHelper<body>(
             axiosJWT.delete(`user/deleteMessage/${idMess}`)
+        );
+    }
+    static async deleteChat(idChat: string, axiosJWT: any) {
+        type body = {
+            success: string;
+            statusCode: number;
+            message: string;
+            result: ChatType;
+        };
+        return await requestApiHelper<body>(
+            axiosJWT.delete(`user/${idChat}/deleteChatByUser`)
+        );
+    }
+    static async uploadImageMessage(form: FormData, axiosJWT: any) {
+        type body = {
+            success: string;
+            statusCode: number;
+            message: string;
+            result: string;
+        };
+        return await requestApiHelper<body>(
+            axiosJWT.post("user/uploadImageMessage", form, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            })
         );
     }
 }

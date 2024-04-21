@@ -7,7 +7,6 @@ import {
     PiBracketsAngleFill,
     PiChartDonutFill,
     PiChatCenteredFill,
-    PiGlobeHemisphereWestFill,
     PiMessengerLogo,
     PiNewspaper,
 } from "react-icons/pi";
@@ -31,11 +30,11 @@ export const menuItems = [
         href: "/",
         icon: <PiNewspaper />,
     },
-    {
-        name: "Connection",
-        href: "/connection",
-        icon: <PiGlobeHemisphereWestFill />,
-    },
+    // {
+    //     name: "Connection",
+    //     href: "/connection",
+    //     icon: <PiGlobeHemisphereWestFill />,
+    // },
     {
         name: "Notification",
         href: "/notification",

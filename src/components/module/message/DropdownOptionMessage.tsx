@@ -32,7 +32,7 @@ const DropdownOptionMessage: FC<DropdownOptionMessageProps> = ({
             <div className="grid px-2 py-2 font-medium text-gray-700">
                 <div
                     onClick={() => {
-                        handleDelete(data._id);
+                        handleDelete(data?._id);
                     }}
                     className="group my-0.5 flex items-center rounded-md px-2.5 py-2 hover:bg-slate-200 cursor-pointer"
                 >
