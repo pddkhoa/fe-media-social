@@ -7,24 +7,66 @@ import {
 import { RootState } from "@/store/store";
 import { MessageType } from "@/type/chat";
 import { User } from "@/type/user";
-import { FC, useCallback, useEffect, useState } from "react";
-import { PiDotsThreeOutlineLight } from "react-icons/pi";
+import { FC, useCallback, useEffect, useRef, useState } from "react";
+import {
+    PiDotsThreeOutlineLight,
+    PiDotsThreeOutlineVertical,
+    PiImagesFill,
+} from "react-icons/pi";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
-import { ActionIcon, Avatar, Button, Empty, SearchNotFoundIcon } from "rizzui";
+import {
+    ActionIcon,
+    Avatar,
+    Button,
+    Empty,
+    Popover,
+    SearchNotFoundIcon,
+} from "rizzui";
+import SimpleBar from "simplebar-react";
+import { Socket } from "socket.io-client";
+import EmojiPicker from "emoji-picker-react";
+import DropdownOptionMessage from "./DropdownOptionMessage";
 
 type ScreenChatProps = {
     chatId: string | undefined;
     userYou: User | undefined;
+    socket: Socket | undefined;
 };
 
-export const ScreenChat: FC<ScreenChatProps> = ({ chatId, userYou }) => {
+export const ScreenChat: FC<ScreenChatProps> = ({
+    chatId,
+    userYou,
+    socket,
+}) => {
     const dispatch = useDispatch();
     const { axiosJWT, user } = useAuth();
     const listMessage = useSelector(
         (state: RootState) => state.chat.getChatMessages
     );
     const [contentMessage, setContentMessage] = useState("");
+    const [messages, setMessages] = useState<any>([]);
+    const messagesContainerRef = useRef<HTMLDivElement>(null);
+    const [showEmoji, setShowEmoji] = useState(false);
+    const [isDelete, setIsDelete] = useState(false);
+
+    useEffect(() => {
+        if (messagesContainerRef.current) {
+            messagesContainerRef.current.scrollTop =
+                messagesContainerRef.current.scrollHeight;
+        }
+    }, [messages]);
+
+    useEffect(() => {
+        if (socket) {
+            socket.on("getMessage", (message) => {
+                dispatch(sendMessagesSuccess(message.text));
+            });
+            return () => {
+                socket.off("getMessage");
+            };
+        }
+    }, [socket, dispatch]);
 
     const fetchChat = useCallback(async () => {
         try {
@@ -42,11 +84,12 @@ export const ScreenChat: FC<ScreenChatProps> = ({ chatId, userYou }) => {
         } catch (error) {
             console.error("Error fetching data:", error);
         }
-    }, [dispatch]);
+    }, [dispatch, chatId]);
 
     useEffect(() => {
+        setIsDelete(false);
         fetchChat();
-    }, [fetchChat, chatId]);
+    }, [fetchChat, messages, isDelete]);
 
     const handleSendMessage = async () => {
         if (chatId) {
@@ -58,13 +101,21 @@ export const ScreenChat: FC<ScreenChatProps> = ({ chatId, userYou }) => {
                 axiosJWT
             );
             if (body?.success) {
-                dispatch(sendMessagesSuccess(body.result));
+                socket?.emit("sendMessage", {
+                    fromUser: user.user._id,
+                    toUser: userYou?._id,
+                    text: body?.result,
+                });
                 setContentMessage("");
             } else {
                 toast.error(body?.message);
             }
         }
     };
+
+    useEffect(() => {
+        if (chatId) setMessages(listMessage);
+    }, [listMessage, chatId]);
 
     return userYou ? (
         <div className="pl-8 ">
@@ -88,13 +139,20 @@ export const ScreenChat: FC<ScreenChatProps> = ({ chatId, userYou }) => {
                 </ActionIcon>
             </div>
             <div className="flex flex-col justify-between ">
-                <div className="flex flex-col h-[30.5rem] rounded bg-gray-200 overflow-y-auto">
-                    <div className="grid grid-cols-12 gap-y-2 w-full h-fit rounded-md   ">
-                        {listMessage && listMessage.length > 0 ? (
-                            listMessage.map((item) => (
+                <SimpleBar
+                    scrollableNodeProps={{ ref: messagesContainerRef }}
+                    className="flex flex-col h-[30.5rem] rounded bg-gray-200 overflow-y-auto"
+                >
+                    <div className="grid grid-cols-12 gap-y-2 w-full h-fit rounded-md">
+                        {messages && messages?.length > 0 ? (
+                            messages.map((item: any) => (
                                 <>
                                     {item?.user?._id === user?.user?._id ? (
-                                        <MeChat data={item} key={item?._id} />
+                                        <MeChat
+                                            data={item}
+                                            key={item?._id}
+                                            setIsDelete={setIsDelete}
+                                        />
                                     ) : (
                                         <UserChat data={item} key={item?._id} />
                                     )}
@@ -109,28 +167,27 @@ export const ScreenChat: FC<ScreenChatProps> = ({ chatId, userYou }) => {
                             </div>
                         )}
                     </div>
-                </div>
+                </SimpleBar>
                 <div className="flex flex-row items-center h-16 rounded-xl bg-white w-full px-4">
                     <div>
-                        <button className="flex items-center justify-center text-gray-400 hover:text-gray-600">
-                            <svg
-                                className="w-5 h-5"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                                xmlns="http://www.w3.org/2000/svg"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"
-                                />
-                            </svg>
-                        </button>
+                        <Button variant="outline">
+                            <PiImagesFill className="h-6 w-6" />
+                        </Button>
                     </div>
                     <div className="flex-grow ml-4">
                         <div className="relative w-full">
+                            {showEmoji && (
+                                <div className="absolute -top-[30rem] right-0">
+                                    <EmojiPicker
+                                        onEmojiClick={(e) => {
+                                            setContentMessage(
+                                                (input) => input + e.emoji
+                                            );
+                                            setShowEmoji(false);
+                                        }}
+                                    />
+                                </div>
+                            )}
                             <input
                                 type="text"
                                 value={contentMessage}
@@ -139,7 +196,10 @@ export const ScreenChat: FC<ScreenChatProps> = ({ chatId, userYou }) => {
                                 }
                                 className="flex w-full border rounded-xl focus:outline-none focus:border-indigo-300 pl-4 h-10"
                             />
-                            <button className="absolute flex items-center justify-center h-full w-12 right-0 top-0 text-gray-400 hover:text-gray-600">
+                            <button
+                                onClick={() => setShowEmoji(!showEmoji)}
+                                className="absolute flex items-center justify-center h-full w-12 right-0 top-0 text-gray-400 hover:text-gray-600"
+                            >
                                 <svg
                                     className="w-6 h-6"
                                     fill="none"
@@ -196,19 +256,39 @@ export const ScreenChat: FC<ScreenChatProps> = ({ chatId, userYou }) => {
 
 type ChatProps = {
     data: MessageType;
+    setIsDelete?: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const MeChat: FC<ChatProps> = ({ data }) => {
+const MeChat: FC<ChatProps> = ({ data, setIsDelete }) => {
     return (
         <div className="col-start-6 col-end-13 h-fit p-3 rounded-lg">
             <div className="flex items-center justify-start flex-row-reverse">
-                <Avatar
-                    size="md"
-                    name={data?.user?.name}
-                    src={data?.user?.avatar?.url}
-                />
+                {data?.user?.avatar ? (
+                    <Avatar
+                        size="md"
+                        name={data?.user?.name}
+                        src={data?.user?.avatar?.url}
+                    />
+                ) : (
+                    <Avatar size="md" name="Default" />
+                )}
                 <div className="relative mr-3 text-sm bg-indigo-100 py-2 px-4 shadow rounded-xl">
                     <div>{data?.message}</div>
+                </div>
+                <div className="relative mr-4">
+                    <Popover placement="bottom-start">
+                        <Popover.Trigger>
+                            <Button variant="text" size="sm">
+                                <PiDotsThreeOutlineVertical />
+                            </Button>
+                        </Popover.Trigger>
+                        <Popover.Content className="z-50 p-0 dark:bg-gray-50 [&>svg]:dark:fill-gray-50">
+                            <DropdownOptionMessage
+                                setIsDelete={setIsDelete}
+                                data={data}
+                            />
+                        </Popover.Content>
+                    </Popover>
                 </div>
             </div>
         </div>
@@ -219,11 +299,15 @@ const UserChat: FC<ChatProps> = ({ data }) => {
     return (
         <div className="col-start-1 col-end-8 p-3 rounded-lg">
             <div className="flex flex-row items-center">
-                <Avatar
-                    size="md"
-                    name={data?.user?.name}
-                    src={data?.user?.avatar?.url}
-                />
+                {data?.user?.avatar ? (
+                    <Avatar
+                        size="md"
+                        name={data?.user?.name}
+                        src={data?.user?.avatar?.url}
+                    />
+                ) : (
+                    <Avatar size="md" name="Default" />
+                )}
                 <div className="relative mr-3 text-sm bg-indigo-100 py-2 px-4 shadow rounded-xl">
                     <div>{data?.message}</div>
                 </div>

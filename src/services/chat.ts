@@ -66,6 +66,35 @@ class ChatServices {
             axiosJWT.post("user/sendMessage", data)
         );
     }
+
+    static async evaluteMessageRequest(
+        data: {
+            chatId: string;
+            status: boolean;
+        },
+        axiosJWT: any
+    ) {
+        type body = {
+            success: string;
+            statusCode: number;
+            message: string;
+            result: MessageType;
+        };
+        return await requestApiHelper<body>(
+            axiosJWT.post("user/evaluateChat", data)
+        );
+    }
+    static async deleteMessage(idMess: string, axiosJWT: any) {
+        type body = {
+            success: string;
+            statusCode: number;
+            message: string;
+            result: MessageType;
+        };
+        return await requestApiHelper<body>(
+            axiosJWT.delete(`user/deleteMessage/${idMess}`)
+        );
+    }
 }
 
 export default ChatServices;

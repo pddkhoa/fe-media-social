@@ -1,9 +1,14 @@
 import ListChat from "@/components/module/message/ListChat";
 import { ScreenChat } from "@/components/module/message/ScreenChat";
 import { User } from "@/type/user";
-import { useState } from "react";
+import { FC, useState } from "react";
+import { Socket } from "socket.io-client";
 
-const PageMessage = () => {
+type PageMessageProps = {
+    socket: Socket | undefined;
+};
+
+const PageMessage: FC<PageMessageProps> = ({ socket }) => {
     const [chatId, setChatId] = useState<string>();
     const [userYou, setUserYou] = useState<User>();
 
@@ -14,7 +19,11 @@ const PageMessage = () => {
                     <ListChat setChatId={setChatId} setUserYou={setUserYou} />
                 </div>
                 <div className=" col-span-9 p-2">
-                    <ScreenChat chatId={chatId} userYou={userYou} />
+                    <ScreenChat
+                        chatId={chatId}
+                        userYou={userYou}
+                        socket={socket}
+                    />
                 </div>
             </div>
         </>

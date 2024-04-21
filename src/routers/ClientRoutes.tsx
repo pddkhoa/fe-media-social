@@ -180,8 +180,8 @@ const ClientRoutes = () => {
                     <Route
                         path="/messenger"
                         element={
-                            <Suspense fallback={<div>Loading ...</div>}>
-                                <Message />
+                            <Suspense fallback={<Loader />}>
+                                <Message socket={socket} />
                             </Suspense>
                         }
                     />

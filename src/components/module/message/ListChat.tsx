@@ -14,7 +14,7 @@ import {
 } from "react-icons/pi";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
-import { Avatar, Button, Empty, Input, Popover, Tab } from "rizzui";
+import { Avatar, Badge, Button, Empty, Input, Popover, Tab } from "rizzui";
 import DropdownOption from "./DropdownOptionChat";
 
 type ListChatProps = {
@@ -31,6 +31,7 @@ const ListChat: FC<ListChatProps> = ({ setChatId, setUserYou }) => {
     const dispatch = useDispatch();
     const { axiosJWT } = useAuth();
     const [activeUserId, setActiveUserId] = useState<string | null>(null);
+    const [isEvalute, setIsEvalute] = useState(false);
 
     const fetchChat = useCallback(async () => {
         try {
@@ -58,9 +59,10 @@ const ListChat: FC<ListChatProps> = ({ setChatId, setUserYou }) => {
     }, [dispatch]);
 
     useEffect(() => {
+        setIsEvalute(false);
         fetchChat();
         fetchChatRequest();
-    }, [fetchChat, fetchChatRequest]);
+    }, [fetchChat, fetchChatRequest, isEvalute]);
 
     const handleUserClick = (userId: any) => {
         setActiveUserId((prevUserId) =>
@@ -81,9 +83,12 @@ const ListChat: FC<ListChatProps> = ({ setChatId, setUserYou }) => {
 
             <Tab>
                 <Tab.List>
-                    <Tab.ListItem className={"text-sm"}>Mailbox</Tab.ListItem>
-                    <Tab.ListItem className={"text-sm"}>
+                    <Tab.ListItem className={"text-sm flex gap-2 items-center"}>
+                        Mailbox <Badge size="sm">{listChat?.length}</Badge>
+                    </Tab.ListItem>
+                    <Tab.ListItem className={"text-sm flex gap-2 items-center"}>
                         Message Request
+                        <Badge size="sm">{listChatRequest?.length}</Badge>
                     </Tab.ListItem>
                 </Tab.List>
                 <Tab.Panels>
@@ -128,6 +133,7 @@ const ListChat: FC<ListChatProps> = ({ setChatId, setUserYou }) => {
                                         activeUserId ===
                                         item?.userReceived?._id?.toString()
                                     }
+                                    setIsEvalute={setIsEvalute}
                                 />
                             ))
                         ) : (
@@ -144,12 +150,14 @@ type RowUserListChatProps = {
     data: ChatType;
     onClick: () => void;
     isActive: boolean;
+    setIsEvalute?: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const RowUserListChat: FC<RowUserListChatProps> = ({
     onClick,
     isActive,
     data,
+    setIsEvalute,
 }) => {
     const handleButtonClick = () => {
         onClick();
@@ -185,21 +193,25 @@ const RowUserListChat: FC<RowUserListChatProps> = ({
                 </div>
             </div>
             <div>
-                {" "}
-                <Popover placement="bottom-start">
-                    <Popover.Trigger>
-                        <Button
-                            variant="outline"
-                            className="col-span-2 mx-4"
-                            size="sm"
-                        >
-                            <PiDotsThreeOutlineVertical />
-                        </Button>
-                    </Popover.Trigger>
-                    <Popover.Content className="z-50 p-0 dark:bg-gray-50 [&>svg]:dark:fill-gray-50">
-                        <DropdownOption />
-                    </Popover.Content>
-                </Popover>
+                {data?.isWait ? (
+                    <Popover placement="bottom-start">
+                        <Popover.Trigger>
+                            <Button
+                                variant="outline"
+                                className="col-span-2 mx-4"
+                                size="sm"
+                            >
+                                <PiDotsThreeOutlineVertical />
+                            </Button>
+                        </Popover.Trigger>
+                        <Popover.Content className="z-50 p-0 dark:bg-gray-50 [&>svg]:dark:fill-gray-50">
+                            <DropdownOption
+                                chatId={data._id}
+                                setIsEvalute={setIsEvalute}
+                            />
+                        </Popover.Content>
+                    </Popover>
+                ) : null}
             </div>
         </div>
     );
