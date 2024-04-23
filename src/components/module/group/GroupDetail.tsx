@@ -43,6 +43,7 @@ import { STATUS_USER_GROUP, TYPE_NOTI } from "@/utils/contants";
 import useAuth from "@/hooks/useAuth";
 import { Socket } from "socket.io-client";
 import { ModalInviteMember } from "./ModalInviteMember";
+import { Post } from "@/type/post";
 
 type GroupDetailProps = {
     socket: Socket | undefined;
@@ -70,6 +71,7 @@ const GroupDetail: FC<GroupDetailProps> = ({ socket }) => {
     const dispatch = useDispatch();
     const [loadingJoin, setLoadingJoin] = useState(false);
     const [activeJoin, setActiveJoin] = useState(false);
+    const [blogRequest, setBlogRequest] = useState<Post[]>([]);
 
     const fetchCate = useCallback(async () => {
         try {
@@ -132,11 +134,29 @@ const GroupDetail: FC<GroupDetailProps> = ({ socket }) => {
         }
     }, [setDataUserReq]);
 
+    const fetchBlogRequest = useCallback(async () => {
+        try {
+            setIsLoading(true);
+            const { body } = await CategoriesServices.getBlogApproveByCate(
+                categoriesId.id as string,
+                axiosJWT
+            );
+            if (body?.success) {
+                setIsLoading(false);
+                setBlogRequest(body?.result);
+            }
+        } catch (error) {
+            console.error("Error fetching data:", error);
+            setIsLoading(false);
+        }
+    }, [setBlogRequest]);
+
     useEffect(() => {
         setIsActive(false);
         fetchCate();
         fetchBlog(currentPage);
         fetchUserRequest();
+        fetchBlogRequest();
     }, [
         fetchCate,
         fetchBlog,
@@ -144,6 +164,7 @@ const GroupDetail: FC<GroupDetailProps> = ({ socket }) => {
         fetchUserRequest,
         currentPage,
         isDelete,
+        fetchBlogRequest,
     ]);
 
     useEffect(() => {
@@ -490,6 +511,9 @@ const GroupDetail: FC<GroupDetailProps> = ({ socket }) => {
                                                                     dataUserReq
                                                                 }
                                                                 socket={socket}
+                                                                blogRequest={
+                                                                    blogRequest
+                                                                }
                                                             />
                                                         </Popover.Content>
                                                     </Popover>

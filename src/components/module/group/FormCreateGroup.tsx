@@ -1,7 +1,7 @@
 import { cn } from "@/utils/class-name";
 import { useEffect, useState } from "react";
-import { PiPlusBold, PiUserCirclePlus, PiXBold } from "react-icons/pi";
-import { Badge, Button, Input, Loader, Textarea } from "rizzui";
+import { PiPlusBold, PiXBold } from "react-icons/pi";
+import { Badge, Button, Checkbox, Input, Loader, Textarea } from "rizzui";
 import { useModal } from "@/hooks/useModal";
 import { ModalAddTags } from "../../modal/AddTagsModal";
 import { Tag } from "@/type/tag";
@@ -10,8 +10,9 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { PrivacyGroups } from "./FormPrivacy";
 import useAuth from "@/hooks/useAuth";
-import CategoriesServices from "@/services/categories";
 import TagServices from "@/services/tag";
+import CategoriesServices from "@/services/categories";
+import { useNavigate } from "react-router-dom";
 
 const FormCreateGroup = () => {
     const { openModal } = useModal();
@@ -19,6 +20,9 @@ const FormCreateGroup = () => {
     const [dataTag, setDataTag] = useState<Tag[]>([]);
     const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
     const [selectPrivacy, setSelectPrivacy] = useState<string>("Publish");
+    const [selectRule, setSelectRule] = useState(false);
+    const navigate = useNavigate();
+
     const [isLoadingAdd, setIsLoadingAdd] = useState(false);
     const { axiosJWT } = useAuth();
 
@@ -67,6 +71,7 @@ const FormCreateGroup = () => {
             tagIds: [],
             status: "",
             userIds: [],
+            isApproved: false,
         },
         validationSchema: Yup.object().shape({
             name: Yup.string().required("Name is required."),
@@ -78,6 +83,7 @@ const FormCreateGroup = () => {
                 ...values,
                 status: selectPrivacy,
                 tagIds: selectedTags?.map((item) => item._id),
+                isApproved: selectRule,
             };
             setIsLoadingAdd(true);
             try {
@@ -88,6 +94,7 @@ const FormCreateGroup = () => {
                 if (body?.success) {
                     toast.success(body?.message);
                     setIsLoadingAdd(false);
+                    navigate("/group/my");
                 } else {
                     toast.error(body?.message || "Error");
                     setIsLoadingAdd(false);
@@ -215,7 +222,7 @@ const FormCreateGroup = () => {
                         </div>
                     </div>
                 </div>
-                <div className={cn("grid gap-5 grid-cols-12 pt-4 ")}>
+                {/* <div className={cn("grid gap-5 grid-cols-12 pt-4 ")}>
                     <div className="col-span-4 ">
                         <h4 className="text-base font-medium"> Members</h4>
                     </div>
@@ -235,8 +242,22 @@ const FormCreateGroup = () => {
                             Not required
                         </div>
                     </div>
+                </div> */}
+                <div className={cn("grid gap-5 grid-cols-12 pt-4 ")}>
+                    <div className="col-span-4 ">
+                        <h4 className="text-base font-medium">Rule Group</h4>
+                    </div>
+                    <div className="col-span-8">
+                        <Checkbox
+                            onBlur={formik.handleBlur}
+                            onChange={() => setSelectRule(!selectRule)}
+                            label="Posts will be approved before posting"
+                            checked={selectRule}
+                        />
+                    </div>
                 </div>
             </div>
+
             <div className="mt-6 flex w-auto items-center justify-end gap-3">
                 <Button type="button" variant="outline">
                     Cancel

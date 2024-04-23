@@ -31,7 +31,6 @@ export default function ProfileHeader({
     socket,
     setIsFollow,
 }: ProfileHeaderProps) {
-    const [follow, setFollow] = useState(userDetail?.isfollow);
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const isAuth = useSelector(
@@ -52,15 +51,9 @@ export default function ProfileHeader({
                         type: TYPE_NOTI.FOLLOW,
                         data: user,
                     });
-                    setIsFollow(true);
-                    setFollow(true);
-                } else {
-                    setIsFollow(false);
-                    setFollow(false);
                 }
-
+                setIsFollow(true);
                 toast.success(body.message);
-
                 setLoading(false);
             } else {
                 toast.error(body?.message || "Error");
@@ -182,9 +175,9 @@ export default function ProfileHeader({
                                         }
                                     >
                                         <PiUsers className="h-auto w-[18px]" />
-                                        {follow ? (
+                                        {userDetail.isfollow ? (
                                             <span className="ms-1.5 inline-block">
-                                                Following
+                                                Unfollow
                                             </span>
                                         ) : (
                                             <span className="ms-1.5 inline-block">

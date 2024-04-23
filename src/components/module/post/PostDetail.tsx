@@ -1,5 +1,5 @@
 import { formatDate } from "@/utils/format-date";
-import { Avatar, Badge, Empty, Loader } from "rizzui";
+import { Avatar, Badge, Button, Empty, Loader } from "rizzui";
 import Output from "editorjs-blocks-react-renderer";
 import { Post } from "@/type/post";
 import { FC, useState } from "react";
@@ -18,6 +18,8 @@ import { useDispatch } from "react-redux";
 import useAuth from "@/hooks/useAuth";
 import { Socket } from "socket.io-client";
 import { TYPE_NOTI } from "@/utils/contants";
+import CategoriesServices from "@/services/categories";
+import { useNavigate } from "react-router-dom";
 
 type PostDetailProps = {
     dataBlog: Post;
@@ -28,7 +30,7 @@ const PostDetail: FC<PostDetailProps> = ({ dataBlog, socket }) => {
     const [activeComment, setActiveComment] = useState<any>();
     const dispatch = useDispatch();
     const [isDelete, setIsDelete] = useState(false);
-
+    const navigate = useNavigate();
     const { axiosJWT, user } = useAuth();
 
     //Root Comment
@@ -94,6 +96,19 @@ const PostDetail: FC<PostDetailProps> = ({ dataBlog, socket }) => {
         }
     };
 
+    const handleApproveBlog = async (status: boolean) => {
+        const { body } = await CategoriesServices.approvedBlog(
+            { blogId: dataBlog?._id, status: status },
+            axiosJWT
+        );
+        if (body?.success) {
+            toast.success(body.message);
+            navigate("/group/my-created");
+        } else {
+            toast.error(body?.message || "Error");
+        }
+    };
+
     return (
         <div className="max-w-5xl py-8 mx-auto space-y-12">
             <article className="space-y-8">
@@ -115,9 +130,31 @@ const PostDetail: FC<PostDetailProps> = ({ dataBlog, socket }) => {
                                 {formatDate(dataBlog?.createdAt as any)}
                             </p>
                         </div>
-                        <p className="flex-shrink-0 text-black mt-3 text-sm md:mt-0">
-                            {dataBlog?.category?.name}
-                        </p>
+                        {dataBlog?.category?.name && (
+                            <p className="flex-shrink-0 text-black mt-3 text-sm md:mt-0">
+                                {dataBlog?.category?.name}
+                            </p>
+                        )}
+                        {dataBlog.isApproved && (
+                            <div className="flex gap-5">
+                                <Button
+                                    onClick={() => {
+                                        handleApproveBlog(true);
+                                    }}
+                                    variant="flat"
+                                >
+                                    Accept
+                                </Button>
+                                <Button
+                                    onClick={() => {
+                                        handleApproveBlog(false);
+                                    }}
+                                    variant="solid"
+                                >
+                                    Deny
+                                </Button>
+                            </div>
+                        )}
                     </div>
                 </div>
                 <div className="p-2">

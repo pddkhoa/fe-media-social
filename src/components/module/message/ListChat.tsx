@@ -6,23 +6,35 @@ import {
 } from "@/store/chatSlice";
 import { RootState } from "@/store/store";
 import { ChatType } from "@/type/chat";
-import { User } from "@/type/user";
 import { FC, useCallback, useEffect, useState } from "react";
 import {
     PiDotsThreeOutlineVertical,
     PiMagnifyingGlassBold,
+    PiNotePencilFill,
 } from "react-icons/pi";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
-import { Avatar, Badge, Button, Empty, Input, Popover, Tab } from "rizzui";
+import {
+    Avatar,
+    Badge,
+    Button,
+    Empty,
+    Input,
+    Popover,
+    Tab,
+    Title,
+    Tooltip,
+} from "rizzui";
 import DropdownOption from "./DropdownOptionChat";
+import { useModal } from "@/hooks/useModal";
+import ModalCreateGroupChat from "./ModalCreateGroupChat";
 
 type ListChatProps = {
     setChatId: React.Dispatch<React.SetStateAction<string | undefined>>;
-    setUserYou: React.Dispatch<React.SetStateAction<User | undefined>>;
+    setDataChat: React.Dispatch<React.SetStateAction<ChatType | undefined>>;
 };
 
-const ListChat: FC<ListChatProps> = ({ setChatId, setUserYou }) => {
+const ListChat: FC<ListChatProps> = ({ setChatId, setDataChat }) => {
     const listChat = useSelector((state: RootState) => state.chat.getListChat);
     const listChatRequest = useSelector(
         (state: RootState) => state.chat.getListChatRequest
@@ -32,6 +44,9 @@ const ListChat: FC<ListChatProps> = ({ setChatId, setUserYou }) => {
     const { axiosJWT } = useAuth();
     const [activeUserId, setActiveUserId] = useState<string | null>(null);
     const [isEvalute, setIsEvalute] = useState(false);
+    const [isAddgroup, setIsAddGroup] = useState(false);
+
+    const { openModal } = useModal();
 
     const fetchChat = useCallback(async () => {
         try {
@@ -59,10 +74,11 @@ const ListChat: FC<ListChatProps> = ({ setChatId, setUserYou }) => {
     }, [dispatch]);
 
     useEffect(() => {
+        setIsAddGroup(false);
         setIsEvalute(false);
         fetchChat();
         fetchChatRequest();
-    }, [fetchChat, fetchChatRequest, isEvalute]);
+    }, [fetchChat, fetchChatRequest, isEvalute, isAddgroup]);
 
     const handleUserClick = (userId: any) => {
         setActiveUserId((prevUserId) =>
@@ -71,78 +87,102 @@ const ListChat: FC<ListChatProps> = ({ setChatId, setUserYou }) => {
     };
 
     return (
-        <div className="absolute  h-[calc(100%-85px)] w-[20%] mx-2  border-r   overflow-auto flex flex-col gap-3 p-2">
-            <Input
-                variant="flat"
-                placeholder="Search here"
-                className=""
-                prefix={
-                    <PiMagnifyingGlassBold className="h-[18px] w-[18px] text-gray-600" />
-                }
-            />
+        <>
+            <div className="absolute  h-[calc(100%-85px)] w-[20%] mx-2  border-r   overflow-auto flex flex-col gap-3 p-2">
+                <div className="flex justify-between items-center">
+                    <Title className="text-xl">Chat</Title>
+                    <Tooltip content={"Create Group Chat"}>
+                        <Button
+                            onClick={() => {
+                                openModal({
+                                    view: (
+                                        <ModalCreateGroupChat
+                                            setIsAddGroup={setIsAddGroup}
+                                        />
+                                    ),
+                                });
+                            }}
+                            variant="text"
+                            size="sm"
+                        >
+                            <PiNotePencilFill className="h-6 w-6" />
+                        </Button>
+                    </Tooltip>
+                </div>
+                <Input
+                    variant="flat"
+                    placeholder="Search here"
+                    className=""
+                    prefix={
+                        <PiMagnifyingGlassBold className="h-[18px] w-[18px] text-gray-600" />
+                    }
+                />
 
-            <Tab>
-                <Tab.List>
-                    <Tab.ListItem className={"text-sm flex gap-2 items-center"}>
-                        Mailbox <Badge size="sm">{listChat?.length}</Badge>
-                    </Tab.ListItem>
-                    <Tab.ListItem className={"text-sm flex gap-2 items-center"}>
-                        Message Request
-                        <Badge size="sm">{listChatRequest?.length}</Badge>
-                    </Tab.ListItem>
-                </Tab.List>
-                <Tab.Panels>
-                    <Tab.Panel>
-                        {listChat && listChat.length > 0 ? (
-                            listChat.map((item) => (
-                                <RowUserListChat
-                                    key={item._id}
-                                    data={item}
-                                    onClick={() => {
-                                        setChatId(item?._id.toString());
-                                        setUserYou(item?.userReceived);
-                                        handleUserClick(
-                                            item?.userReceived?._id
-                                        );
-                                    }}
-                                    isActive={
-                                        activeUserId ===
-                                        item?.userReceived?._id?.toString()
-                                    }
-                                />
-                            ))
-                        ) : (
-                            <Empty />
-                        )}
-                    </Tab.Panel>
-                    <Tab.Panel>
-                        {" "}
-                        {listChatRequest && listChatRequest.length > 0 ? (
-                            listChatRequest.map((item) => (
-                                <RowUserListChat
-                                    key={item._id}
-                                    data={item}
-                                    onClick={() => {
-                                        setChatId(item?._id.toString());
-                                        setUserYou(item?.userReceived);
-                                        handleUserClick(
-                                            item?.userReceived._id?.toString()
-                                        );
-                                    }}
-                                    isActive={
-                                        activeUserId ===
-                                        item?.userReceived?._id?.toString()
-                                    }
-                                    setIsEvalute={setIsEvalute}
-                                />
-                            ))
-                        ) : (
-                            <Empty />
-                        )}
-                    </Tab.Panel>
-                </Tab.Panels>
-            </Tab>
-        </div>
+                <Tab>
+                    <Tab.List>
+                        <Tab.ListItem
+                            className={"text-sm flex gap-2 items-center"}
+                        >
+                            Mailbox <Badge size="sm">{listChat?.length}</Badge>
+                        </Tab.ListItem>
+                        <Tab.ListItem
+                            className={"text-sm flex gap-2 items-center"}
+                        >
+                            Message Request
+                            <Badge size="sm">{listChatRequest?.length}</Badge>
+                        </Tab.ListItem>
+                    </Tab.List>
+                    <Tab.Panels>
+                        <Tab.Panel>
+                            {listChat && listChat.length > 0 ? (
+                                listChat.map((item) => (
+                                    <RowUserListChat
+                                        key={item._id}
+                                        data={item}
+                                        onClick={() => {
+                                            setChatId(item?._id.toString());
+                                            setDataChat(item);
+                                            handleUserClick(item?._id);
+                                        }}
+                                        isActive={
+                                            activeUserId ===
+                                            item?._id?.toString()
+                                        }
+                                    />
+                                ))
+                            ) : (
+                                <Empty />
+                            )}
+                        </Tab.Panel>
+                        <Tab.Panel>
+                            {" "}
+                            {listChatRequest && listChatRequest.length > 0 ? (
+                                listChatRequest.map((item) => (
+                                    <RowUserListChat
+                                        key={item._id}
+                                        data={item}
+                                        onClick={() => {
+                                            setChatId(item?._id.toString());
+                                            setDataChat(item);
+                                            handleUserClick(
+                                                item?.userReceived._id?.toString()
+                                            );
+                                        }}
+                                        isActive={
+                                            activeUserId ===
+                                            item?.userReceived?._id?.toString()
+                                        }
+                                        setIsEvalute={setIsEvalute}
+                                    />
+                                ))
+                            ) : (
+                                <Empty />
+                            )}
+                        </Tab.Panel>
+                    </Tab.Panels>
+                </Tab>
+            </div>
+        </>
     );
 };
 
@@ -171,48 +211,77 @@ const RowUserListChat: FC<RowUserListChatProps> = ({
                 isActive ? "bg-gray-200" : null
             }`}
         >
-            <div className="flex gap-3">
-                <div className="relative inline-flex">
-                    {data?.userReceived?.avatar ? (
-                        <Avatar
-                            size="md"
-                            name={data?.userReceived?.name}
-                            src={data?.userReceived?.avatar?.url}
-                        />
-                    ) : (
-                        <Avatar size="md" name="No Name" />
-                    )}
-                </div>
-                <div className="flex flex-col">
-                    <span className="text-sm font-semibold truncate">
-                        {data?.userReceived?.name}
-                    </span>
-                    <span className="text-[12px] text-gray-500">
-                        Click to chat
-                    </span>
-                </div>
-            </div>
-            <div>
-                {data?.isWait ? (
-                    <Popover placement="bottom-start">
-                        <Popover.Trigger>
-                            <Button
-                                variant="outline"
-                                className="col-span-2 mx-4"
-                                size="sm"
-                            >
-                                <PiDotsThreeOutlineVertical />
-                            </Button>
-                        </Popover.Trigger>
-                        <Popover.Content className="z-50 p-0 dark:bg-gray-50 [&>svg]:dark:fill-gray-50">
-                            <DropdownOption
-                                chatId={data._id}
-                                setIsEvalute={setIsEvalute}
-                            />
-                        </Popover.Content>
-                    </Popover>
-                ) : null}
-            </div>
+            {data.isGroup ? (
+                <>
+                    <div className="flex gap-3">
+                        <div className="relative inline-flex">
+                            {data?.avatar ? (
+                                <Avatar
+                                    size="md"
+                                    name={data?.chatName as any}
+                                    src={data?.avatar?.url}
+                                />
+                            ) : (
+                                <Avatar size="md" name="Default" />
+                            )}
+                        </div>
+                        <div className="flex flex-col">
+                            <span className="text-sm font-semibold truncate">
+                                {data?.chatName}
+                            </span>
+                            <span className="text-[12px] text-gray-500">
+                                Click to chat
+                            </span>
+                        </div>
+                    </div>
+                    <div></div>
+                </>
+            ) : (
+                <>
+                    <div className="flex gap-3">
+                        <div className="relative inline-flex">
+                            {data?.userReceived?.avatar ? (
+                                <Avatar
+                                    size="md"
+                                    name={data?.userReceived?.name}
+                                    src={data?.userReceived?.avatar?.url}
+                                />
+                            ) : (
+                                <Avatar size="md" name="No Name" />
+                            )}
+                        </div>
+                        <div className="flex flex-col">
+                            <span className="text-sm font-semibold truncate">
+                                {data?.userReceived?.name}
+                            </span>
+                            <span className="text-[12px] text-gray-500">
+                                Click to chat
+                            </span>
+                        </div>
+                    </div>
+                    <div>
+                        {data?.isWait ? (
+                            <Popover placement="bottom-start">
+                                <Popover.Trigger>
+                                    <Button
+                                        variant="outline"
+                                        className="col-span-2 mx-4"
+                                        size="sm"
+                                    >
+                                        <PiDotsThreeOutlineVertical />
+                                    </Button>
+                                </Popover.Trigger>
+                                <Popover.Content className="z-50 p-0 dark:bg-gray-50 [&>svg]:dark:fill-gray-50">
+                                    <DropdownOption
+                                        chatId={data._id}
+                                        setIsEvalute={setIsEvalute}
+                                    />
+                                </Popover.Content>
+                            </Popover>
+                        ) : null}
+                    </div>
+                </>
+            )}
         </div>
     );
 };

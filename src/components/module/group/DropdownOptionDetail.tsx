@@ -11,6 +11,8 @@ import { User } from "@/type/user";
 import { Badge } from "rizzui";
 import ModalUserRequest from "./ModalUserRequest";
 import { Socket } from "socket.io-client";
+import { Post } from "@/type/post";
+import ModalBlogRequest from "./ModalBlogRequest";
 
 type DropdownOptionDetailProps = {
     data: CategoryDetail;
@@ -18,6 +20,7 @@ type DropdownOptionDetailProps = {
     handleUploadAvatarCategories: (files: FileList) => Promise<void>;
     dataUserReq: User[];
     socket: Socket | undefined;
+    blogRequest: Post[];
 };
 
 const DropdownOptionDetail: FC<DropdownOptionDetailProps> = ({
@@ -26,6 +29,7 @@ const DropdownOptionDetail: FC<DropdownOptionDetailProps> = ({
     handleUploadAvatarCategories,
     dataUserReq,
     socket,
+    blogRequest,
 }) => {
     const { openModal } = useModal();
 
@@ -129,6 +133,23 @@ const DropdownOptionDetail: FC<DropdownOptionDetailProps> = ({
                     className="group my-0.5 flex items-center rounded-md px-2.5 py-2 hover:bg-slate-200 cursor-pointer"
                 >
                     Delete Group
+                </div>
+                <div
+                    onClick={() => {
+                        openModal({
+                            view: <ModalBlogRequest data={blogRequest} />,
+                        });
+                    }}
+                    className="group my-0.5 flex items-center justify-between rounded-md px-2.5 py-2 hover:bg-slate-200 cursor-pointer"
+                >
+                    <span>List Blog Request</span>
+                    {blogRequest && blogRequest.length > 0 && (
+                        <span>
+                            <Badge size="sm" rounded="pill">
+                                {blogRequest.length}
+                            </Badge>
+                        </span>
+                    )}
                 </div>
             </div>
         </div>

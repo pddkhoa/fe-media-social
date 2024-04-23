@@ -4,7 +4,7 @@ import { User } from "@/type/user";
 import { requestApiHelper } from "@/utils/apiRequest";
 
 class CategoriesServices {
-    static async getCategoriesByUser(index: number, axiosJWT: any) {
+    static async getCategoriesByUserJoin(index: number, axiosJWT: any) {
         type body = {
             success: string;
             statusCode: number;
@@ -16,6 +16,18 @@ class CategoriesServices {
         );
     }
 
+    static async getCategoriesByCreate(index: number, axiosJWT: any) {
+        type body = {
+            success: string;
+            statusCode: number;
+            message: string;
+            result: { categories: Category[]; size: number };
+        };
+        return await requestApiHelper<body>(
+            axiosJWT.get(`category/userCategoriesIsAdmin/${index}`)
+        );
+    }
+
     static async addCategories(
         data: {
             name: string;
@@ -23,6 +35,7 @@ class CategoriesServices {
             tagIds: string[];
             status: string;
             userIds: string[];
+            isApproved: boolean;
         },
         axiosJWT: any
     ) {
@@ -200,6 +213,32 @@ class CategoriesServices {
         };
         return await requestApiHelper<body>(
             axiosJWT.put(`category/addUser`, data)
+        );
+    }
+
+    static async getBlogApproveByCate(categoryId: string, axiosJWT: any) {
+        type body = {
+            success: string;
+            statusCode: number;
+            message: string;
+            result: Post[];
+        };
+        return await requestApiHelper<body>(
+            axiosJWT.get(`category/${categoryId}/listBlogIsApproved`)
+        );
+    }
+    static async approvedBlog(
+        data: { blogId: string; status: boolean },
+        axiosJWT: any
+    ) {
+        type body = {
+            success: string;
+            statusCode: number;
+            message: string;
+            result: Post[];
+        };
+        return await requestApiHelper<body>(
+            axiosJWT.post(`category/approveBlog`, data)
         );
     }
 }

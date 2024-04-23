@@ -27,6 +27,10 @@ const Notification = lazy(
 const GroupMain = lazy(() => import("@/pages/client/group/PageGroup"));
 const CreateGroup = lazy(() => import("@/pages/client/group/PageCreateGroup"));
 const PageMyGroup = lazy(() => import("@/pages/client/group/PageMyGroup"));
+const PageMyGroupCreate = lazy(
+    () => import("@/pages/client/group/PageMyGroupCreate")
+);
+
 const DetailGroup = lazy(() => import("@/pages/client/group/PageGroupDetail"));
 const TagMain = lazy(() => import("@/pages/client/tags/PageTags"));
 const Message = lazy(() => import("@/pages/client/message/PageMessage"));
@@ -150,6 +154,14 @@ const ClientRoutes = () => {
                         element={
                             <Suspense fallback={<div>Loading ...</div>}>
                                 <PageMyGroup />
+                            </Suspense>
+                        }
+                    />
+                    <Route
+                        path="/group/my-created"
+                        element={
+                            <Suspense fallback={<div>Loading ...</div>}>
+                                <PageMyGroupCreate />
                             </Suspense>
                         }
                     />

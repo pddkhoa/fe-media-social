@@ -197,6 +197,18 @@ class UserServices {
             axiosJWT.post(`/user/saveBlog/${idBlog}`)
         );
     }
+
+    static async searchBox(data: { key: string; type: string }, axiosJWT: any) {
+        type body = {
+            success: string;
+            statusCode: number;
+            message: string;
+            result: any;
+        };
+        return await requestApiHelper<body>(
+            axiosJWT.post(`/user/search`, data)
+        );
+    }
 }
 
 export default UserServices;

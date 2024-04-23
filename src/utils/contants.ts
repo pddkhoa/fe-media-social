@@ -29,4 +29,10 @@ export const TYPE_MESSAGE = {
     IMAGE: "Image",
 };
 
+export const TYPE_SEARCH = {
+    BLOG: "Blog",
+    CATEGORY: "Category",
+    User: "User",
+};
+
 export const SOCKET_URL = process.env.SOCKET_IO_URL;

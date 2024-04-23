@@ -84,7 +84,7 @@ const GroupCard: FC<GroupCardProps> = ({ data, setIsActive }) => {
     };
 
     return (
-        <div className="max-w-lg p-2 rounded-md shadow-md bg-gray-100">
+        <div className="max-w-lg max-h-[30rem] p-2 rounded-md shadow-md bg-gray-100">
             <div className="space-y-2">
                 <div className="flex justify-between w-full p-1 mb-2">
                     <div className="">{getBadgeStatus(data?.status)}</div>
@@ -115,7 +115,7 @@ const GroupCard: FC<GroupCardProps> = ({ data, setIsActive }) => {
                         )}
                     </div>
                     <div className="space-y-2 p-1 my-2">
-                        <div className="block">
+                        <div className="block h-20 line-clamp-2">
                             <h3 className="text-lg font-medium group-hover:text-gray-600">
                                 {data?.name}
                             </h3>

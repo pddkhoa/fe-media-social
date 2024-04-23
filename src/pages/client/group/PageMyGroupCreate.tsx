@@ -4,30 +4,31 @@ import GroupList from "@/components/module/group/GroupList";
 import useAuth from "@/hooks/useAuth";
 import CategoriesServices from "@/services/categories";
 import {
-    getCategoriesByUser,
-    getLoadmoreCategoriesByUser,
+    getCategoriesCreated,
+    getLoadmoreCategoriesByCreate,
 } from "@/store/categorySlice";
 import { RootState } from "@/store/store";
-import { useCallback, useEffect, useState } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { PiFireFill } from "react-icons/pi";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { Button } from "rizzui";
 
 const pageHeader = {
-    title: "Groups",
+    title: "Groups Created",
     breadcrumb: [
         {
             href: "/group",
             name: "Groups",
         },
         {
-            href: "/group/my",
-            name: "My Groups",
+            href: "/group/my-created",
+            name: "Groups Created",
         },
     ],
 };
-const PageMyGroup = () => {
+
+const PageMyGroupCreate = () => {
     const { axiosJWT } = useAuth();
     const [layout, setLayout] = useState<string>("grid");
     const [isLoading, setIsLoading] = useState(false);
@@ -37,25 +38,26 @@ const PageMyGroup = () => {
 
     const dispatch = useDispatch();
     const listCate = useSelector(
-        (state: RootState) => state.category.myCategories
+        (state: RootState) => state.category.listCategoriesCreate
     );
 
     const fetchData = useCallback(
         async (page: number) => {
             try {
                 setIsLoading(true);
-                const { body } =
-                    await CategoriesServices.getCategoriesByUserJoin(
-                        page,
-                        axiosJWT
-                    );
+                const { body } = await CategoriesServices.getCategoriesByCreate(
+                    page,
+                    axiosJWT
+                );
                 if (body?.success) {
                     setIsLoading(false);
                     if (page === 1) {
-                        dispatch(getCategoriesByUser(body?.result?.categories));
+                        dispatch(
+                            getCategoriesCreated(body?.result?.categories)
+                        );
                     } else {
                         dispatch(
-                            getLoadmoreCategoriesByUser(
+                            getLoadmoreCategoriesByCreate(
                                 body?.result?.categories
                             )
                         );
@@ -92,7 +94,7 @@ const PageMyGroup = () => {
                 </Link>
             </PageHeader>
             <GroupHeader
-                title="My Groups"
+                title="Groups Created"
                 layout={layout}
                 setLayout={setLayout}
             />
@@ -109,4 +111,4 @@ const PageMyGroup = () => {
     );
 };
 
-export default PageMyGroup;
+export default PageMyGroupCreate;

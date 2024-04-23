@@ -1,7 +1,16 @@
 import { useModal } from "@/hooks/useModal";
 import { FC, useState } from "react";
 import { PiXBold } from "react-icons/pi";
-import { Title, ActionIcon, Input, Button, Textarea, Loader } from "rizzui";
+import {
+    Title,
+    ActionIcon,
+    Input,
+    Button,
+    Textarea,
+    Loader,
+    Checkbox,
+    cn,
+} from "rizzui";
 import { PrivacyGroups } from "./FormPrivacy";
 import CategoriesServices from "@/services/categories";
 import * as Yup from "yup";
@@ -18,6 +27,8 @@ type ModalEditCategoryProps = {
 const ModalEditCategory: FC<ModalEditCategoryProps> = ({ data, setActive }) => {
     const { closeModal } = useModal();
     const [selectPrivacy, setSelectPrivacy] = useState<string>(data?.status);
+    const [selectRules, setSelectRules] = useState(data?.isApproved);
+
     const [isLoading, setLoading] = useState(false);
     const { axiosJWT } = useAuth();
 
@@ -27,6 +38,7 @@ const ModalEditCategory: FC<ModalEditCategoryProps> = ({ data, setActive }) => {
             description: data?.description || "",
             status: selectPrivacy,
             categoryId: data?._id,
+            isApproved: selectRules,
         },
         validationSchema: Yup.object().shape({
             name: Yup.string().required("Name is required."),
@@ -37,6 +49,7 @@ const ModalEditCategory: FC<ModalEditCategoryProps> = ({ data, setActive }) => {
             const report = {
                 ...values,
                 status: selectPrivacy,
+                isApproved: selectRules,
             };
             setLoading(true);
             try {
@@ -96,6 +109,16 @@ const ModalEditCategory: FC<ModalEditCategoryProps> = ({ data, setActive }) => {
                 setSelectPrivacy={setSelectPrivacy}
                 selectPrivacy={selectPrivacy}
             />
+            <div className={cn("grid gap-5 grid-cols-12 pt-4 ")}>
+                <div className="col-span-8">
+                    <Checkbox
+                        onBlur={formik.handleBlur}
+                        onChange={() => setSelectRules(!selectRules)}
+                        label="Posts will be approved before posting"
+                        checked={selectRules}
+                    />
+                </div>
+            </div>
 
             <div className="flex items-center justify-between gap-4">
                 <Button

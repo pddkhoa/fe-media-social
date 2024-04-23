@@ -9,6 +9,7 @@ const categorySlice = createSlice({
         categories: [] as Category[],
         myCategories: [] as Category[],
         blogOfCategories: [] as Post[],
+        listCategoriesCreate: [] as Category[],
     },
     reducers: {
         getAllCategories: (state, action) => {
@@ -22,6 +23,13 @@ const categorySlice = createSlice({
         },
         getLoadmoreCategoriesByUser: (state, action) => {
             state.myCategories.push(...action.payload);
+        },
+
+        getCategoriesCreated: (state, action) => {
+            state.listCategoriesCreate = action.payload;
+        },
+        getLoadmoreCategoriesByCreate: (state, action) => {
+            state.listCategoriesCreate.push(...action.payload);
         },
         joinCategories: (state, action) => {
             const cate = state.categories.find(
@@ -120,6 +128,8 @@ export const {
     likeBlogSuccess,
     saveBlogSuccess,
     postCommentSuccess,
+    getCategoriesCreated,
+    getLoadmoreCategoriesByCreate,
 } = categorySlice.actions;
 
 export default categorySlice.reducer;

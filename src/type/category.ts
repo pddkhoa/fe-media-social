@@ -32,6 +32,7 @@ export type CategoryDetail = {
     sumUser: number;
     createdAt: string;
     updatedAt: string;
+    isApproved: boolean;
     invitationCode: string;
     __v: number;
     statusUser: string;

@@ -86,6 +86,10 @@ export const menuItems = [
                 name: "My Group",
                 href: "/group/my",
             },
+            {
+                name: "Group Created",
+                href: "/group/my-created",
+            },
         ],
     },
 

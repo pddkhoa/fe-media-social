@@ -46,6 +46,7 @@ export type Post = {
     updatedAt: string;
     __v: number;
     isPermission: boolean;
+    isApproved: boolean;
     isShare: boolean;
     shareBy: User;
 };

@@ -71,7 +71,7 @@ const PageProfileMain: FC<PageProfileMainProps> = ({ socket }) => {
         } catch (error) {
             console.error("Error fetching data:", error);
         }
-    }, [setUserDetail, user.user._id, idUser.id]);
+    }, [setUserDetail, user.user._id, idUser.id, isFollow]);
 
     const fetchFollower = useCallback(async () => {
         try {
@@ -101,6 +101,7 @@ const PageProfileMain: FC<PageProfileMainProps> = ({ socket }) => {
     }, [dispatch, user.user._id, idUser.id]);
 
     useEffect(() => {
+        setIsFollow(false);
         fetchData();
         fetchFollower();
         fetchFollowing();

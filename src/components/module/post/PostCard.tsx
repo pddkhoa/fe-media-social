@@ -84,7 +84,7 @@ export default function PostCard({
                                 ) : (
                                     <div className="bg-gradient-to-r h-12 w-12 rounded-lg from-[#F8E1AF] to-[#F6CFCF] bg-opacity-30 group-hover:brightness-95" />
                                 )}
-                                <p className="font-semibold mt-1 group-hover:text-gray-800 truncate w-64">
+                                <p className="font-semibold mt-1 group-hover:text-gray-800 truncate w-60">
                                     {data?.category?.name}
                                 </p>
                             </div>
@@ -157,7 +157,7 @@ export default function PostCard({
                     onClick={() => {
                         setOpen(true);
                     }}
-                    className="group  relative aspect-square h-full w-full cursor-pointer overflow-hidden bg-gray-100"
+                    className="group  relative aspect-square h-72 w-full cursor-pointer overflow-hidden bg-gray-100"
                 >
                     {!data?.avatar ? (
                         <div className=" h-full bg-gradient-to-r rounded-md from-[#F8E1AF] to-[#F6CFCF] "></div>
@@ -169,6 +169,7 @@ export default function PostCard({
                         />
                     )}
                 </div>
+                <div className="line-clamp-2 font-semibold">{data?.title}</div>
                 <div className="flex flex-wrap justify-between">
                     <div className="space-x-2 flex gap-2 items-center">
                         <PiShareNetwork className="w-5 h-5" />

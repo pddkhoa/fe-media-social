@@ -122,6 +122,23 @@ class ChatServices {
             })
         );
     }
+    static async createGroupChat(
+        data: {
+            userIds: string[];
+            chatName: string;
+        },
+        axiosJWT: any
+    ) {
+        type body = {
+            success: string;
+            statusCode: number;
+            message: string;
+            result: ChatType;
+        };
+        return await requestApiHelper<body>(
+            axiosJWT.post("user/groupChat", data)
+        );
+    }
 }
 
 export default ChatServices;
