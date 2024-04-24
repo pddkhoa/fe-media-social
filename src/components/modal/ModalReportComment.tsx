@@ -101,6 +101,7 @@ const ModalReportComment: FC<ModalReportCommentProps> = ({ data }) => {
                 <Title className="text-lg">Report Comment</Title>
                 <button
                     onClick={closeModal}
+                    type="button"
                     className="hover:bg-gray-200 rounded-md p-1.5"
                 >
                     <PiXBold />

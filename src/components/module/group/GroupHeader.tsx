@@ -4,8 +4,8 @@ import { Input, Title } from "rizzui";
 import { PiMagnifyingGlassBold } from "react-icons/pi";
 
 type GroupHeaderProps = {
-    layout: string;
-    setLayout: React.Dispatch<React.SetStateAction<string>>;
+    layout?: string;
+    setLayout?: React.Dispatch<React.SetStateAction<string>>;
     title?: string;
     setSearchText?: React.Dispatch<React.SetStateAction<string>>;
     searchText?: string;
@@ -37,7 +37,9 @@ const GroupHeader: FC<GroupHeaderProps> = ({
                     />
                 )}
 
-                <ViewSwitcher setLayout={setLayout} layout={layout} />
+                {layout && setLayout && (
+                    <ViewSwitcher setLayout={setLayout} layout={layout} />
+                )}
             </div>
         </div>
     );

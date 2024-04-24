@@ -24,9 +24,10 @@ import { useNavigate } from "react-router-dom";
 type PostDetailProps = {
     dataBlog: Post;
     socket: Socket | undefined;
+    isLoading: boolean;
 };
 
-const PostDetail: FC<PostDetailProps> = ({ dataBlog, socket }) => {
+const PostDetail: FC<PostDetailProps> = ({ dataBlog, socket, isLoading }) => {
     const [activeComment, setActiveComment] = useState<any>();
     const dispatch = useDispatch();
     const [isDelete, setIsDelete] = useState(false);
@@ -110,143 +111,157 @@ const PostDetail: FC<PostDetailProps> = ({ dataBlog, socket }) => {
     };
 
     return (
-        <div className="max-w-5xl py-8 mx-auto space-y-12">
-            <article className="space-y-8">
-                <div className="space-y-6">
-                    <h1 className="text-4xl font-semibold md:tracki md:text-4xl">
-                        {dataBlog?.title}
-                    </h1>
-                    <div className="flex flex-col items-start justify-between w-full md:flex-row md:items-center ">
-                        <div className="flex items-center md:space-x-2">
-                            {dataBlog?.user?.avatar ? (
-                                <Avatar
-                                    // initials={dataBlog?.user?.name}
-                                    src={dataBlog?.user?.avatar?.url}
-                                    name={dataBlog?.user?.name}
-                                />
-                            ) : null}
-                            <p className="text-sm">
-                                {dataBlog?.user?.name} -{" "}
-                                {formatDate(dataBlog?.createdAt as any)}
-                            </p>
-                        </div>
-                        {dataBlog?.category?.name && (
-                            <p className="flex-shrink-0 text-black mt-3 text-sm md:mt-0">
-                                {dataBlog?.category?.name}
-                            </p>
-                        )}
-                        {dataBlog.isApproved && (
-                            <div className="flex gap-5">
-                                <Button
-                                    onClick={() => {
-                                        handleApproveBlog(true);
-                                    }}
-                                    variant="flat"
-                                >
-                                    Accept
-                                </Button>
-                                <Button
-                                    onClick={() => {
-                                        handleApproveBlog(false);
-                                    }}
-                                    variant="solid"
-                                >
-                                    Deny
-                                </Button>
+        <>
+            {isLoading ? (
+                <div className="flex justify-center mt-16">
+                    <Loader />
+                </div>
+            ) : (
+                <div className="max-w-5xl py-8 mx-auto space-y-12">
+                    <article className="space-y-8">
+                        <div className="space-y-6">
+                            <h1 className="text-4xl font-semibold md:tracki md:text-4xl">
+                                {dataBlog?.title}
+                            </h1>
+                            <div className="flex flex-col items-start justify-between w-full md:flex-row md:items-center ">
+                                <div className="flex items-center md:space-x-2">
+                                    {dataBlog?.user?.avatar ? (
+                                        <Avatar
+                                            // initials={dataBlog?.user?.name}
+                                            src={dataBlog?.user?.avatar?.url}
+                                            name={dataBlog?.user?.name}
+                                        />
+                                    ) : null}
+                                    <p className="text-sm">
+                                        {dataBlog?.user?.name} -{" "}
+                                        {formatDate(dataBlog?.createdAt as any)}
+                                    </p>
+                                </div>
+                                {dataBlog?.category?.name && (
+                                    <p className="flex-shrink-0 text-black mt-3 text-sm md:mt-0">
+                                        {dataBlog?.category?.name}
+                                    </p>
+                                )}
+                                {dataBlog.isApproved && (
+                                    <div className="flex gap-5">
+                                        <Button
+                                            onClick={() => {
+                                                handleApproveBlog(true);
+                                            }}
+                                            variant="flat"
+                                        >
+                                            Accept
+                                        </Button>
+                                        <Button
+                                            onClick={() => {
+                                                handleApproveBlog(false);
+                                            }}
+                                            variant="solid"
+                                        >
+                                            Deny
+                                        </Button>
+                                    </div>
+                                )}
                             </div>
-                        )}
+                        </div>
+                        <div className="p-2">
+                            {dataBlog?.content && (
+                                <Output
+                                    data={convertHTMLToEditorJS(
+                                        dataBlog?.content
+                                    )}
+                                    config={{
+                                        code: {
+                                            className: "language-js py-4",
+                                        },
+                                        delimiter: {
+                                            className:
+                                                "border border-2 w-16 mx-auto",
+                                        },
+                                        embed: {
+                                            className: "border-0",
+                                        },
+                                        header: {
+                                            className:
+                                                "text-2xl font-semibold  my-6",
+                                        },
+                                        image: {
+                                            className:
+                                                " flex flex-col h-[500px] w-full justify-center items-center   py-5 rounded-xl",
+                                        },
+                                        list: {
+                                            className: "",
+                                        },
+                                        paragraph: {
+                                            className:
+                                                "text-lg text-opacity-90 text-title para ",
+                                            actionsClassNames: {
+                                                alignment: "text-{alignment}",
+                                            },
+                                        },
+                                        quote: {
+                                            className: "py-3 px-5 italic",
+                                        },
+                                    }}
+                                />
+                            )}
+                        </div>
+                    </article>
+                    <div>
+                        <div className="flex flex-wrap py-6 gap-2 border-t border-dashed dark:border-gray-400">
+                            {dataBlog?.tags && dataBlog?.tags?.length > 0 ? (
+                                dataBlog?.tags?.map((item) => (
+                                    <Badge
+                                        key={item._id}
+                                        rounded="md"
+                                        className="flex gap-3"
+                                    >
+                                        <span>#{item.name}</span>
+                                    </Badge>
+                                ))
+                            ) : (
+                                <div>Not tags now</div>
+                            )}
+                        </div>
+                    </div>
+
+                    <div className="pt-8 border-t border-dashed dark:border-gray-400">
+                        <div className="flex flex-col space-y-4 ">
+                            {isDelete ? (
+                                <div className="flex items-center justify-center">
+                                    <Loader />
+                                </div>
+                            ) : rootComment && rootComment.length > 0 ? (
+                                rootComment?.map((item: any) => (
+                                    <ModalCardComment
+                                        key={item._id}
+                                        commentData={item}
+                                        child={childComment(item._id) as any}
+                                        childComment={childComment}
+                                        activeComment={activeComment}
+                                        setActiveComment={setActiveComment}
+                                        nestingLevel={0}
+                                        idBlog={dataBlog._id}
+                                        handleCommentPost={handleCommentPost}
+                                        handleDeleteComment={
+                                            handleDeleteComment
+                                        }
+                                        isModal={false}
+                                    />
+                                ))
+                            ) : (
+                                <Empty text="Not found comment" />
+                            )}
+                            <ModalCommentBox
+                                idBlog={dataBlog?._id}
+                                parentId={null}
+                                handleCommentPost={handleCommentPost}
+                            />
+                        </div>
                     </div>
                 </div>
-                <div className="p-2">
-                    {dataBlog?.content && (
-                        <Output
-                            data={convertHTMLToEditorJS(dataBlog?.content)}
-                            config={{
-                                code: {
-                                    className: "language-js py-4",
-                                },
-                                delimiter: {
-                                    className: "border border-2 w-16 mx-auto",
-                                },
-                                embed: {
-                                    className: "border-0",
-                                },
-                                header: {
-                                    className: "text-2xl font-semibold  my-6",
-                                },
-                                image: {
-                                    className:
-                                        " flex flex-col h-[500px] w-full justify-center items-center   py-5 rounded-xl",
-                                },
-                                list: {
-                                    className: "",
-                                },
-                                paragraph: {
-                                    className:
-                                        "text-lg text-opacity-90 text-title para ",
-                                    actionsClassNames: {
-                                        alignment: "text-{alignment}",
-                                    },
-                                },
-                                quote: {
-                                    className: "py-3 px-5 italic",
-                                },
-                            }}
-                        />
-                    )}
-                </div>
-            </article>
-            <div>
-                <div className="flex flex-wrap py-6 gap-2 border-t border-dashed dark:border-gray-400">
-                    {dataBlog?.tags && dataBlog?.tags?.length > 0 ? (
-                        dataBlog?.tags?.map((item) => (
-                            <Badge
-                                key={item._id}
-                                rounded="md"
-                                className="flex gap-3"
-                            >
-                                <span>#{item.name}</span>
-                            </Badge>
-                        ))
-                    ) : (
-                        <div>Not tags now</div>
-                    )}
-                </div>
-            </div>
-
-            <div className="pt-8 border-t border-dashed dark:border-gray-400">
-                <div className="flex flex-col space-y-4 ">
-                    {isDelete ? (
-                        <div className="flex items-center justify-center">
-                            <Loader />
-                        </div>
-                    ) : rootComment && rootComment.length > 0 ? (
-                        rootComment?.map((item: any) => (
-                            <ModalCardComment
-                                key={item._id}
-                                commentData={item}
-                                child={childComment(item._id) as any}
-                                childComment={childComment}
-                                activeComment={activeComment}
-                                setActiveComment={setActiveComment}
-                                nestingLevel={0}
-                                idBlog={dataBlog._id}
-                                handleCommentPost={handleCommentPost}
-                                handleDeleteComment={handleDeleteComment}
-                                isModal={false}
-                            />
-                        ))
-                    ) : (
-                        <Empty text="Not found comment" />
-                    )}
-                    <ModalCommentBox
-                        idBlog={dataBlog?._id}
-                        parentId={null}
-                        handleCommentPost={handleCommentPost}
-                    />
-                </div>
-            </div>
-        </div>
+            )}
+        </>
     );
 };
 

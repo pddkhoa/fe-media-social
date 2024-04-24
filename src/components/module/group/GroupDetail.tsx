@@ -354,76 +354,89 @@ const GroupDetail: FC<GroupDetailProps> = ({ socket }) => {
                                     <div className="flex items-center justify-between gap-2">
                                         <div className="flex-grow">
                                             <div className="flex gap-3 justify-end items-center">
-                                                {dataCate?.statusUser ===
-                                                    STATUS_USER_GROUP.INVITED && (
-                                                    <Button
-                                                        size="sm"
-                                                        className=" flex gap-3"
-                                                        variant="outline"
-                                                        isLoading={loadingJoin}
-                                                        onClick={() =>
-                                                            handleJoinCate(
-                                                                dataCate?._id
-                                                            )
-                                                        }
-                                                    >
-                                                        Join Group{" "}
-                                                        <PiHandTap className="h-4 w-4" />
-                                                    </Button>
-                                                )}
-                                                {dataCate?.statusUser ===
-                                                    STATUS_USER_GROUP.UNJOIN && (
-                                                    <Button
-                                                        size="sm"
-                                                        className=" flex gap-3"
-                                                        variant="outline"
-                                                        isLoading={loadingJoin}
-                                                        onClick={() =>
-                                                            handleJoinCate(
-                                                                dataCate?._id
-                                                            )
-                                                        }
-                                                    >
-                                                        Join Group{" "}
-                                                        <PiHandTap className="h-4 w-4" />
-                                                    </Button>
-                                                )}
-                                                {dataCate?.statusUser ===
-                                                    STATUS_USER_GROUP.JOINED && (
-                                                    <Button
-                                                        size="sm"
-                                                        className=" flex gap-3"
-                                                        variant="outline"
-                                                        color="danger"
-                                                        isLoading={loadingJoin}
-                                                        onClick={() =>
-                                                            handleLeaveCate(
-                                                                dataCate?._id
-                                                            )
-                                                        }
-                                                    >
-                                                        Leave Group{" "}
-                                                        <PiSignIn className="h-4 w-4" />
-                                                    </Button>
-                                                )}
-                                                {dataCate?.statusUser ===
-                                                    STATUS_USER_GROUP.PENDING && (
-                                                    <Button
-                                                        size="sm"
-                                                        className=" flex gap-3"
-                                                        variant="flat"
-                                                        color="danger"
-                                                        isLoading={loadingJoin}
-                                                        onClick={() => {
-                                                            handleLeaveCate(
-                                                                dataCate?._id
-                                                            );
-                                                        }}
-                                                    >
-                                                        Resquesting{" "}
-                                                        <PiDotsThreeOutline className="h-4 w-4" />
-                                                    </Button>
-                                                )}
+                                                {dataCate?.isAdmin?._id !==
+                                                user?.user?._id ? (
+                                                    <>
+                                                        {dataCate?.statusUser ===
+                                                            STATUS_USER_GROUP.INVITED && (
+                                                            <Button
+                                                                size="sm"
+                                                                className=" flex gap-3"
+                                                                variant="outline"
+                                                                isLoading={
+                                                                    loadingJoin
+                                                                }
+                                                                onClick={() =>
+                                                                    handleJoinCate(
+                                                                        dataCate?._id
+                                                                    )
+                                                                }
+                                                            >
+                                                                Join Group{" "}
+                                                                <PiHandTap className="h-4 w-4" />
+                                                            </Button>
+                                                        )}
+                                                        {dataCate?.statusUser ===
+                                                            STATUS_USER_GROUP.UNJOIN && (
+                                                            <Button
+                                                                size="sm"
+                                                                className=" flex gap-3"
+                                                                variant="outline"
+                                                                isLoading={
+                                                                    loadingJoin
+                                                                }
+                                                                onClick={() =>
+                                                                    handleJoinCate(
+                                                                        dataCate?._id
+                                                                    )
+                                                                }
+                                                            >
+                                                                Join Group{" "}
+                                                                <PiHandTap className="h-4 w-4" />
+                                                            </Button>
+                                                        )}
+                                                        {dataCate?.statusUser ===
+                                                            STATUS_USER_GROUP.JOINED && (
+                                                            <Button
+                                                                size="sm"
+                                                                className=" flex gap-3"
+                                                                variant="outline"
+                                                                color="danger"
+                                                                isLoading={
+                                                                    loadingJoin
+                                                                }
+                                                                onClick={() =>
+                                                                    handleLeaveCate(
+                                                                        dataCate?._id
+                                                                    )
+                                                                }
+                                                            >
+                                                                Leave Group{" "}
+                                                                <PiSignIn className="h-4 w-4" />
+                                                            </Button>
+                                                        )}
+                                                        {dataCate?.statusUser ===
+                                                            STATUS_USER_GROUP.PENDING && (
+                                                            <Button
+                                                                size="sm"
+                                                                className=" flex gap-3"
+                                                                variant="flat"
+                                                                color="danger"
+                                                                isLoading={
+                                                                    loadingJoin
+                                                                }
+                                                                onClick={() => {
+                                                                    handleLeaveCate(
+                                                                        dataCate?._id
+                                                                    );
+                                                                }}
+                                                            >
+                                                                Resquesting{" "}
+                                                                <PiDotsThreeOutline className="h-4 w-4" />
+                                                            </Button>
+                                                        )}
+                                                    </>
+                                                ) : null}
                                                 <Button
                                                     variant="outline"
                                                     size="sm"

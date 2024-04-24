@@ -2,7 +2,7 @@ import { cn } from "@/utils/class-name";
 import { PiEnvelopeSimple } from "react-icons/pi";
 import { Input, Select, Button, NumberInput, Loader } from "rizzui";
 import AvatarUpload from "../ui/UploadAvatar";
-import { useEffect, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { RULES } from "@/utils/rules";
@@ -25,7 +25,11 @@ const options = [
     { label: "Female", value: "female" },
 ];
 
-const FormSettingProfile = () => {
+type FormSettingProfileProps = {
+    setIsUpdate: React.Dispatch<React.SetStateAction<boolean>>;
+};
+
+const FormSettingProfile: FC<FormSettingProfileProps> = ({ setIsUpdate }) => {
     const userData = useSelector(
         (state: RootState) => state.auth.userToken.user
     );
@@ -138,6 +142,7 @@ const FormSettingProfile = () => {
                     setIsLoading(false);
                     toast.success(body.message);
                     dispatch(updateInfoSuccess(body.result));
+                    setIsUpdate(true);
                 } else {
                     setIsLoading(false);
                     toast.error(body?.message || "Error");

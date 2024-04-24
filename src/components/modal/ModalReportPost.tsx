@@ -95,6 +95,7 @@ const ModalReportPost: FC<ModalReportPostProps> = ({ data }) => {
             <div className="flex justify-between items-center">
                 <Title className="text-lg">Report Post</Title>
                 <button
+                    type="button"
                     onClick={closeModal}
                     className="hover:bg-gray-200 rounded-md p-1.5"
                 >

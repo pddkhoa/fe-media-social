@@ -402,6 +402,7 @@ export function ModalCardComment({
     const [hideChildComment, setHideChildComment] = useState(false);
     const replies: Comment[] = childComment(commentData._id);
     const sumChildComment = replies.length;
+    const { user } = useAuth();
 
     return (
         <>
@@ -457,8 +458,8 @@ export function ModalCardComment({
                         ) : null}
                     </div>
                 </div>
-                {!isModal && (
-                    <div className="ml-auto flex items-center ">
+                {!isModal && user?.user?._id === commentData?.user?._id && (
+                    <div className="ml-auto flex items-center opacity-70">
                         <DropdownOption
                             parentId={commentData._id}
                             idBlog={idBlog}

@@ -283,6 +283,18 @@ class BlogServices {
             axiosJWT.get(`blog/${userId}/listBlogShareBy`)
         );
     }
+
+    static async getBlogById(blogId: string, axiosJWT: any) {
+        type body = {
+            success: string;
+            statusCode: number;
+            message: string;
+            result: Post;
+        };
+        return await requestApiHelper<body>(
+            axiosJWT.get(`/blog/getBlogById/${blogId}`)
+        );
+    }
 }
 
 export default BlogServices;

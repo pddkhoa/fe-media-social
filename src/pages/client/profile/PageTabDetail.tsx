@@ -14,6 +14,7 @@ const PageTabDetail = () => {
     const location = useLocation();
     const [userDetail, setUserDetail] = useState<UserWall>();
     const { axiosJWT } = useAuth();
+    const [isUpdate, setIsUpdate] = useState(false);
     const fetchData = useCallback(async () => {
         try {
             const { body } = await UserServices.getWallDetail(
@@ -29,15 +30,16 @@ const PageTabDetail = () => {
     }, [setUserDetail, user._id, idUser.id]);
 
     useEffect(() => {
+        setIsUpdate(false);
         fetchData();
-    }, [fetchData, location.pathname]);
+    }, [fetchData, location.pathname, isUpdate]);
 
     return (
         <>
             {userDetail && (
                 <>
-                    <ProfileHeader isView={true} />
-                    <FormSettingProfile />
+                    <ProfileHeader isView={true} userDetail={userDetail} />
+                    <FormSettingProfile setIsUpdate={setIsUpdate} />
                 </>
             )}
         </>

@@ -10,6 +10,7 @@ import {
     postCommentToPostLastest,
 } from "@/store/discoverSlice";
 import { RootState } from "@/store/store";
+import { Post } from "@/type/post";
 import { TYPE_NOTI } from "@/utils/contants";
 import { FC, useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
@@ -32,7 +33,6 @@ type PageListPostLastestProps = {
 };
 
 const PageListPostLastest: FC<PageListPostLastestProps> = ({ socket }) => {
-    const [layout, setLayout] = useState<string>("grid");
     const [isLoading, setIsLoading] = useState(false);
     const dispatch = useDispatch();
     const [currentPage, setCurrentPage] = useState(1);
@@ -42,6 +42,7 @@ const PageListPostLastest: FC<PageListPostLastestProps> = ({ socket }) => {
         (state: RootState) => state.discover.listPostLastest
     );
     const { axiosJWT, user } = useAuth();
+    const [searchText, setSearchText] = useState("");
 
     const fetchData = useCallback(
         async (page: number) => {
@@ -112,25 +113,31 @@ const PageListPostLastest: FC<PageListPostLastestProps> = ({ socket }) => {
         }
     };
 
+    let menuItemsFiltered = listBlog;
+    if (searchText.length > 0) {
+        menuItemsFiltered = listBlog?.filter((item: Post) => {
+            const label = item?.title;
+            return (
+                label?.toLowerCase().match(searchText.toLowerCase()) && label
+            );
+        });
+    }
+
     return (
         <>
             <PageHeader
                 breadcrumb={pageHeader.breadcrumb}
                 title={pageHeader.title}
             ></PageHeader>
-            <GroupHeader
-                title="Lastest"
-                layout={layout}
-                setLayout={setLayout}
-            />
+            <GroupHeader title="Lastest" setSearchText={setSearchText} />
             {isLoading ? (
                 <div className="flex justify-center items-center mt-10">
                     <Loader />
                 </div>
             ) : listBlog && totalPage && listBlog?.length > 0 ? (
                 <ListPostLastest
-                    data={listBlog}
-                    layout={layout}
+                    data={menuItemsFiltered}
+                    layout={"grid"}
                     loader={isLoading}
                     totalPage={totalPage}
                     currentPage={currentPage}

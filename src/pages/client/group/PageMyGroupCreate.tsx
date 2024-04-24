@@ -8,6 +8,7 @@ import {
     getLoadmoreCategoriesByCreate,
 } from "@/store/categorySlice";
 import { RootState } from "@/store/store";
+import { Category } from "@/type/category";
 import { useState, useCallback, useEffect } from "react";
 import { PiFireFill } from "react-icons/pi";
 import { useDispatch, useSelector } from "react-redux";
@@ -35,6 +36,7 @@ const PageMyGroupCreate = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPage, setTotalPage] = useState<number>();
     const [isActive, setIsActive] = useState(false);
+    const [searchText, setSearchText] = useState("");
 
     const dispatch = useDispatch();
     const listCate = useSelector(
@@ -81,6 +83,16 @@ const PageMyGroupCreate = () => {
         setCurrentPage((prevPage) => prevPage + 1);
     };
 
+    let menuItemsFiltered = listCate;
+    if (searchText.length > 0) {
+        menuItemsFiltered = listCate?.filter((item: Category) => {
+            const label = item?.name;
+            return (
+                label?.toLowerCase().match(searchText.toLowerCase()) && label
+            );
+        });
+    }
+
     return (
         <>
             <PageHeader
@@ -97,10 +109,11 @@ const PageMyGroupCreate = () => {
                 title="Groups Created"
                 layout={layout}
                 setLayout={setLayout}
+                setSearchText={setSearchText}
             />
             <GroupList
                 layout={layout}
-                listCate={listCate}
+                listCate={menuItemsFiltered}
                 loader={isLoading}
                 totalPage={totalPage}
                 currentPage={currentPage}

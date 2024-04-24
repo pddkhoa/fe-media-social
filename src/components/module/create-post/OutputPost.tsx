@@ -32,9 +32,6 @@ const OutputPost: FC<OutputPostProps> = ({ content, formDataCreate }) => {
                                 {auth?.name} - {formatDate(date)}
                             </p>
                         </div>
-                        <p className="flex-shrink-0 mt-3 text-sm md:mt-0">
-                            4 min read • 1,570 views
-                        </p>
                     </div>
                 </div>
                 <div className="p-2">
@@ -53,7 +50,7 @@ const OutputPost: FC<OutputPostProps> = ({ content, formDataCreate }) => {
                                 },
                                 header: {
                                     className:
-                                        "text-2xl font-semibold  text-transparent text-white my-6",
+                                        "text-2xl font-semibold   text-primary my-6",
                                 },
                                 image: {
                                     className:

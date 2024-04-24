@@ -8,11 +8,9 @@ import {
     getLoadmoreCategoriesByUser,
 } from "@/store/categorySlice";
 import { RootState } from "@/store/store";
+import { Category } from "@/type/category";
 import { useCallback, useEffect, useState } from "react";
-import { PiFireFill } from "react-icons/pi";
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
-import { Button } from "rizzui";
 
 const pageHeader = {
     title: "Groups",
@@ -34,6 +32,7 @@ const PageMyGroup = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPage, setTotalPage] = useState<number>();
     const [isActive, setIsActive] = useState(false);
+    const [searchText, setSearchText] = useState("");
 
     const dispatch = useDispatch();
     const listCate = useSelector(
@@ -79,26 +78,31 @@ const PageMyGroup = () => {
         setCurrentPage((prevPage) => prevPage + 1);
     };
 
+    let menuItemsFiltered = listCate;
+    if (searchText.length > 0) {
+        menuItemsFiltered = listCate?.filter((item: Category) => {
+            const label = item?.name;
+            return (
+                label?.toLowerCase().match(searchText.toLowerCase()) && label
+            );
+        });
+    }
+
     return (
         <>
             <PageHeader
                 breadcrumb={pageHeader.breadcrumb}
                 title={pageHeader.title}
-            >
-                <Link to={"/group/create"}>
-                    <Button variant="outline" size="sm" className="flex gap-3">
-                        Add Group <PiFireFill className="h-4 w-4" />
-                    </Button>
-                </Link>
-            </PageHeader>
+            ></PageHeader>
             <GroupHeader
                 title="My Groups"
                 layout={layout}
                 setLayout={setLayout}
+                setSearchText={setSearchText}
             />
             <GroupList
                 layout={layout}
-                listCate={listCate}
+                listCate={menuItemsFiltered}
                 loader={isLoading}
                 totalPage={totalPage}
                 currentPage={currentPage}

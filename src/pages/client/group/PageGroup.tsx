@@ -7,6 +7,7 @@ import { getAllCategories, getLoadmoreCategories } from "@/store/categorySlice";
 import CategoriesServices from "@/services/categories";
 import { RootState } from "@/store/store";
 import useAuth from "@/hooks/useAuth";
+import { Category } from "@/type/category";
 
 const pageHeader = {
     title: "Groups",
@@ -65,6 +66,16 @@ const PageGroup = () => {
         setCurrentPage((prevPage) => prevPage + 1);
     };
 
+    let menuItemsFiltered = listCate;
+    if (searchText.length > 0) {
+        menuItemsFiltered = listCate?.filter((item: Category) => {
+            const label = item?.name;
+            return (
+                label?.toLowerCase().match(searchText.toLowerCase()) && label
+            );
+        });
+    }
+
     return (
         <div>
             <PageHeader
@@ -80,7 +91,7 @@ const PageGroup = () => {
             />
             <GroupDetails
                 layout={layout}
-                listCate={listCate}
+                listCate={menuItemsFiltered}
                 totalPage={totalPage}
                 currentPage={currentPage}
                 loader={isLoading}

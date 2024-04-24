@@ -18,11 +18,11 @@ const pageHeader = {
 };
 
 const PageDraft = () => {
-    const [layout, setLayout] = useState<string>("grid");
     const [blog, setBlog] = useState<Post[]>();
     const [isLoading, setIsLoading] = useState(false);
     const [isDelete, setIsDelete] = useState(false);
     const { axiosJWT } = useAuth();
+    const [searchText, setSearchText] = useState("");
 
     const fetchData = useCallback(async () => {
         try {
@@ -42,6 +42,16 @@ const PageDraft = () => {
         fetchData();
     }, [fetchData, isDelete]);
 
+    let menuItemsFiltered = blog;
+    if (searchText.length > 0) {
+        menuItemsFiltered = blog?.filter((item: Post) => {
+            const label = item?.title;
+            return (
+                label?.toLowerCase().match(searchText.toLowerCase()) && label
+            );
+        });
+    }
+
     return (
         <div>
             {" "}
@@ -49,19 +59,15 @@ const PageDraft = () => {
                 breadcrumb={pageHeader.breadcrumb}
                 title={pageHeader.title}
             ></PageHeader>
-            <GroupHeader
-                title="All Draft"
-                layout={layout}
-                setLayout={setLayout}
-            />
+            <GroupHeader title="All Draft" setSearchText={setSearchText} />
             {isLoading ? (
                 <div className="flex justify-center items-center mt-10">
                     <Loader />
                 </div>
-            ) : blog && blog?.length > 0 ? (
+            ) : menuItemsFiltered && menuItemsFiltered?.length > 0 ? (
                 <ListDraft
-                    data={blog}
-                    layout={layout}
+                    data={menuItemsFiltered}
+                    layout={"grid"}
                     loader={isLoading}
                     setIsDelete={setIsDelete}
                 />

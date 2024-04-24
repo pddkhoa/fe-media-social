@@ -42,7 +42,10 @@ const GroupList: FC<GroupListProps> = ({
                             listCate.map((item) => (
                                 <>
                                     <div key={item._id}>
-                                        <GroupGrid data={item} />
+                                        <GroupGrid
+                                            data={item}
+                                            setIsActive={setIsActive}
+                                        />
                                     </div>
                                 </>
                             ))

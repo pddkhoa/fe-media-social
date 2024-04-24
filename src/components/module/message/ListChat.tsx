@@ -6,7 +6,7 @@ import {
 } from "@/store/chatSlice";
 import { RootState } from "@/store/store";
 import { ChatType } from "@/type/chat";
-import { FC, useCallback, useEffect, useState } from "react";
+import { FC, useCallback, useEffect, useRef, useState } from "react";
 import {
     PiDotsThreeOutlineVertical,
     PiMagnifyingGlassBold,
@@ -45,6 +45,8 @@ const ListChat: FC<ListChatProps> = ({ setChatId, setDataChat }) => {
     const [activeUserId, setActiveUserId] = useState<string | null>(null);
     const [isEvalute, setIsEvalute] = useState(false);
     const [isAddgroup, setIsAddGroup] = useState(false);
+    const inputRef = useRef(null);
+    const [searchText, setSearchText] = useState("");
 
     const { openModal } = useModal();
 
@@ -86,6 +88,27 @@ const ListChat: FC<ListChatProps> = ({ setChatId, setDataChat }) => {
         );
     };
 
+    let menuItemsFiltered = listChat;
+    if (searchText.length > 0) {
+        menuItemsFiltered = listChat?.filter((item: ChatType) => {
+            const label = item?.userReceived?.name;
+            return (
+                label?.toLowerCase().match(searchText.toLowerCase()) && label
+            );
+        });
+    }
+
+    useEffect(() => {
+        if (inputRef?.current) {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-expect-error
+            inputRef.current.focus();
+        }
+        return () => {
+            inputRef.current = null;
+        };
+    }, []);
+
     return (
         <>
             <div className="absolute  h-[calc(100%-85px)] w-[20%] mx-2  border-r   overflow-auto flex flex-col gap-3 p-2">
@@ -111,10 +134,28 @@ const ListChat: FC<ListChatProps> = ({ setChatId, setDataChat }) => {
                 </div>
                 <Input
                     variant="flat"
+                    value={searchText}
+                    ref={inputRef}
+                    onChange={(e) => setSearchText(() => e.target.value)}
                     placeholder="Search here"
-                    className=""
+                    className="w-full"
                     prefix={
                         <PiMagnifyingGlassBold className="h-[18px] w-[18px] text-gray-600" />
+                    }
+                    suffix={
+                        searchText && (
+                            <Button
+                                size="sm"
+                                variant="text"
+                                className="h-auto w-auto px-0"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    setSearchText(() => "");
+                                }}
+                            >
+                                Clear
+                            </Button>
+                        )
                     }
                 />
 
@@ -134,8 +175,9 @@ const ListChat: FC<ListChatProps> = ({ setChatId, setDataChat }) => {
                     </Tab.List>
                     <Tab.Panels>
                         <Tab.Panel>
-                            {listChat && listChat.length > 0 ? (
-                                listChat.map((item) => (
+                            {menuItemsFiltered &&
+                            menuItemsFiltered.length > 0 ? (
+                                menuItemsFiltered.map((item) => (
                                     <RowUserListChat
                                         key={item._id}
                                         data={item}

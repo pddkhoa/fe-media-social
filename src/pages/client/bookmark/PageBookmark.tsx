@@ -10,6 +10,7 @@ import {
     postCommentToPostBookmark,
 } from "@/store/blogSlice";
 import { RootState } from "@/store/store";
+import { Post } from "@/type/post";
 import { TYPE_NOTI } from "@/utils/contants";
 import { useState, useCallback, useEffect, FC } from "react";
 import toast from "react-hot-toast";
@@ -32,7 +33,6 @@ type PageBookmarkProps = {
 };
 
 const PageBookmark: FC<PageBookmarkProps> = ({ socket }) => {
-    const [layout, setLayout] = useState<string>("grid");
     const [isLoading, setIsLoading] = useState(false);
     const [isDelete, setIsDelete] = useState(false);
     const dispatch = useDispatch();
@@ -40,6 +40,7 @@ const PageBookmark: FC<PageBookmarkProps> = ({ socket }) => {
         (state: RootState) => state.post.listPostBookmark
     );
     const { axiosJWT, user } = useAuth();
+    const [searchText, setSearchText] = useState("");
 
     const fetchData = useCallback(async () => {
         try {
@@ -95,6 +96,16 @@ const PageBookmark: FC<PageBookmarkProps> = ({ socket }) => {
         }
     };
 
+    let menuItemsFiltered = listBlog;
+    if (searchText.length > 0) {
+        menuItemsFiltered = listBlog?.filter((item: Post) => {
+            const label = item?.title;
+            return (
+                label?.toLowerCase().match(searchText.toLowerCase()) && label
+            );
+        });
+    }
+
     return (
         <div>
             {" "}
@@ -102,19 +113,15 @@ const PageBookmark: FC<PageBookmarkProps> = ({ socket }) => {
                 breadcrumb={pageHeader.breadcrumb}
                 title={pageHeader.title}
             ></PageHeader>
-            <GroupHeader
-                title="All Bookmark"
-                layout={layout}
-                setLayout={setLayout}
-            />
+            <GroupHeader title="All Bookmark" setSearchText={setSearchText} />
             {isLoading ? (
                 <div className="flex justify-center items-center mt-10">
                     <Loader />
                 </div>
             ) : listBlog && listBlog?.length > 0 ? (
                 <ListBookmark
-                    data={listBlog}
-                    layout={layout}
+                    data={menuItemsFiltered}
+                    layout={"grid"}
                     loader={isLoading}
                     setIsDelete={setIsDelete}
                     handleCommentPost={handleCommentPost}
