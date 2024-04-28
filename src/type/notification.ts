@@ -1,4 +1,5 @@
 import { Category } from "./category";
+import { ChatType } from "./chat";
 import { Post } from "./post";
 import { User } from "./user";
 
@@ -14,3 +15,15 @@ export type NotificationType = {
     updatedAt: string;
     __v: number;
 };
+
+export interface ChatNoti {
+    _id: string;
+    sender: User;
+    recipient: User;
+    type: string;
+    isRead: boolean;
+    message: ChatType;
+    createdAt: string;
+    updatedAt: string;
+    __v: number;
+}

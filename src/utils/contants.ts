@@ -22,6 +22,9 @@ export const TYPE_NOTI = {
     FOLLOW: "Follow",
     INVITE: "Invite",
     ACCEPT: "Accept",
+    CHAT: "Chat",
+    ACCEPT_BLOG: "AcceptBlog",
+    DECLINE_BLOG: "DeclineBlog",
 };
 
 export const TYPE_MESSAGE = {

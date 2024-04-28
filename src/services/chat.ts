@@ -139,6 +139,22 @@ class ChatServices {
             axiosJWT.post("user/groupChat", data)
         );
     }
+    static async readChat(
+        data: {
+            chatId: string;
+        },
+        axiosJWT: any
+    ) {
+        type body = {
+            success: string;
+            statusCode: number;
+            message: string;
+            result: any;
+        };
+        return await requestApiHelper<body>(
+            axiosJWT.post("user/checkIsReadChat", data)
+        );
+    }
 }
 
 export default ChatServices;

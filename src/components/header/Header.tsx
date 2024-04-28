@@ -5,7 +5,7 @@ import {
 } from "react-icons/pi";
 import { ActionIcon, Badge, Button } from "rizzui";
 import SearchWidget from "../search/SearchWidget";
-import MessagesDropdown from "../dropdown/MessagesDropdown";
+import MessagesDropdown from "../module/message/MessagesDropdown";
 import NotificationDropdown from "../module/notification/NotificationDropdown";
 import ProfileMenu from "../dropdown/ProfileMenuDropdown";
 import { Link } from "react-router-dom";
@@ -14,14 +14,21 @@ import UserServices from "@/services/user";
 import { useState, useCallback, useEffect, FC } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/store/store";
-import { getListNotification } from "@/store/notiSlice";
+import {
+    getListNotification,
+    getListNotificationMess,
+} from "@/store/notiSlice";
 import { Socket } from "socket.io-client";
+import { TYPE_NOTI } from "@/utils/contants";
 
 function HeaderMenuRight(socket: HeaderProps) {
     const [isLoading, setIsLoading] = useState(false);
     const dispatch = useDispatch();
     const dataNoti = useSelector(
         (state: RootState) => state.noti.listNotification
+    );
+    const dataNotiMess = useSelector(
+        (state: RootState) => state.noti.listNotificationMess
     );
     const [isRead, setIsRead] = useState(false);
 
@@ -41,11 +48,33 @@ function HeaderMenuRight(socket: HeaderProps) {
         }
     }, [dispatch]);
 
+    const fetchNotiMess = useCallback(async () => {
+        try {
+            setIsLoading(true);
+            const { body } = await UserServices.getNotificationByType(
+                TYPE_NOTI.CHAT,
+                axiosJWT
+            );
+            if (body?.success) {
+                dispatch(getListNotificationMess(body?.result));
+                setIsLoading(false);
+            }
+        } catch (error) {
+            console.error("Error fetching data:", error);
+            setIsLoading(false);
+        }
+    }, [dispatch]);
+
     useEffect(() => {
         setIsRead(false);
         fetchNoti();
-    }, [fetchNoti, isRead, socket]);
+        fetchNotiMess();
+    }, [fetchNotiMess, fetchNoti, isRead, socket]);
     const hasUnreadNotification = dataNoti?.some(
+        (notification) => !notification.isRead
+    );
+
+    const hasUnreadNotificationMess = dataNotiMess?.some(
         (notification) => !notification.isRead
     );
 
@@ -61,19 +90,25 @@ function HeaderMenuRight(socket: HeaderProps) {
                     <PiPlusBold />
                 </Button>
             </Link>
-            <MessagesDropdown>
+            <MessagesDropdown
+                dataNotiMess={dataNotiMess}
+                isLoading={isLoading}
+                setIsRead={setIsRead}
+            >
                 <ActionIcon
                     aria-label="Messages"
                     variant="text"
                     className="relative h-[34px] w-[34px] shadow backdrop-blur-md dark:bg-gray-100 md:h-9 md:w-9"
                 >
                     <PiChatCircleDotsFill className="h-[18px] w-auto" />
-                    <Badge
-                        renderAsDot
-                        color="success"
-                        enableOutlineRing
-                        className="absolute right-2.5 top-2.5 -translate-y-1/3 translate-x-1/2"
-                    />
+                    {hasUnreadNotificationMess && (
+                        <Badge
+                            renderAsDot
+                            color="success"
+                            enableOutlineRing
+                            className="absolute right-2.5 top-2.5 -translate-y-1/3 translate-x-1/2"
+                        />
+                    )}
                 </ActionIcon>
             </MessagesDropdown>
             <NotificationDropdown

@@ -86,6 +86,22 @@ export function NotificationItem({ data, onClick }: NotiItemProps) {
                             </span>
                         </p>
                     )}
+                    {data.type === TYPE_NOTI.ACCEPT_BLOG && (
+                        <p className="w-11/12 line-clamp-2 pe-7 text-xs text-gray-500">
+                            approve your post in the group{" "}
+                            <span className="font-semibold">
+                                {data.category?.name}
+                            </span>
+                        </p>
+                    )}
+                    {data.type === TYPE_NOTI.DECLINE_BLOG && (
+                        <p className="w-11/12 line-clamp-2 pe-7 text-xs text-gray-500">
+                            not approve your post in the group{" "}
+                            <span className="font-semibold">
+                                {data.category?.name}
+                            </span>
+                        </p>
+                    )}
                 </p>
             </div>
         </div>

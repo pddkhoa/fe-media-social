@@ -37,6 +37,15 @@ const chatSlice = createSlice({
                 (chat) => chat._id !== chatIdToDelete
             );
         },
+        readMessage: (state, action) => {
+            const chat: any = state.getListChat.find(
+                (chat) => chat._id === action.payload
+            );
+
+            if (chat && chat.isRead === false) {
+                chat.isRead = true;
+            }
+        },
     },
 });
 
@@ -47,6 +56,7 @@ export const {
     startChatMessagesSuccess,
     deleteListChatSuccess,
     getListChatRequestSuccess,
+    readMessage,
 } = chatSlice.actions;
 
 export default chatSlice.reducer;

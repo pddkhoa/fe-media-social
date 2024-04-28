@@ -15,27 +15,27 @@ export function TabList({ setValueTab, dataTotal }: TabListProps) {
             label: "All Notification",
             count: dataTotal,
         },
-        {
-            value: "Like",
-            label: "Like",
-        },
-        {
-            value: "Comment",
-            label: "Comment",
-        },
+        // {
+        //     value: "Like",
+        //     label: "Like",
+        // },
+        // {
+        //     value: "Comment",
+        //     label: "Comment",
+        // },
 
-        {
-            value: "Follow",
-            label: "Follow",
-        },
-        {
-            value: "Invite",
-            label: "Invite",
-        },
-        {
-            value: "Accept",
-            label: "Accept",
-        },
+        // {
+        //     value: "Follow",
+        //     label: "Follow",
+        // },
+        // {
+        //     value: "Invite",
+        //     label: "Invite",
+        // },
+        // {
+        //     value: "Accept",
+        //     label: "Accept",
+        // },
     ];
     const [tab, setTab] = useState(supportNavItems[0].value);
     const [isPending, startTransition] = useTransition();

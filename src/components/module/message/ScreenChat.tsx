@@ -2,6 +2,7 @@ import useAuth from "@/hooks/useAuth";
 import ChatServices from "@/services/chat";
 import {
     getListChatMessagesSuccess,
+    readMessage,
     sendMessagesSuccess,
 } from "@/store/chatSlice";
 import { RootState } from "@/store/store";
@@ -31,12 +32,11 @@ import DropdownEditMessage from "./DropdownEditMessage";
 import { useModal } from "@/hooks/useModal";
 import UploadModal from "@/components/modal/UploadModal";
 import { pendingUpload, uploadSuccess } from "@/store/imageSlice";
-import { TYPE_MESSAGE, TYPE_UPLOAD } from "@/utils/contants";
+import { TYPE_MESSAGE, TYPE_NOTI, TYPE_UPLOAD } from "@/utils/contants";
 import toast from "react-hot-toast";
 
 type ScreenChatProps = {
     chatId: string | undefined;
-
     socket: Socket | undefined;
     dataChat: ChatType | undefined;
 };
@@ -117,6 +117,13 @@ export const ScreenChat: FC<ScreenChatProps> = ({
                     toUser: dataChat?.userReceived?._id,
                     text: body?.result,
                 });
+
+                socket?.emit("interactionMessage", {
+                    fromUser: user.user._id,
+                    toUser: dataChat?.userReceived?._id,
+                    type: TYPE_NOTI.CHAT,
+                    data: user,
+                });
                 setContentMessage("");
                 setImageUrl("");
                 setIsSend(true);
@@ -130,6 +137,18 @@ export const ScreenChat: FC<ScreenChatProps> = ({
         if (event.key === "Enter") {
             event.preventDefault();
             handleSendMessage();
+        }
+    };
+
+    const readMess = async () => {
+        if (chatId && !dataChat?.isRead) {
+            const { body } = await ChatServices.readChat(
+                { chatId: chatId },
+                axiosJWT
+            );
+            if (body?.success) {
+                dispatch(readMessage(chatId));
+            }
         }
     };
 
@@ -288,6 +307,7 @@ export const ScreenChat: FC<ScreenChatProps> = ({
                                                         e.target.value
                                                     )
                                                 }
+                                                onFocus={() => readMess()}
                                                 onKeyPress={handleKeyPress}
                                                 className="ring-0 w-full rounded-xl"
                                             />
@@ -480,6 +500,7 @@ export const ScreenChat: FC<ScreenChatProps> = ({
                                                         e.target.value
                                                     )
                                                 }
+                                                onFocus={() => readMess()}
                                                 className="ring-0 w-full rounded-xl"
                                             />
                                         )}

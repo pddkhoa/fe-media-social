@@ -1,4 +1,4 @@
-import { NotificationType } from "@/type/notification";
+import { ChatNoti, NotificationType } from "@/type/notification";
 import { createSlice } from "@reduxjs/toolkit";
 
 const notiSlice = createSlice({
@@ -6,6 +6,7 @@ const notiSlice = createSlice({
     initialState: {
         loadingPage: false,
         listNotification: [] as NotificationType[],
+        listNotificationMess: [] as ChatNoti[],
         addNoti: false,
     },
     reducers: {
@@ -38,6 +39,20 @@ const notiSlice = createSlice({
         endAddNoti: (state) => {
             state.addNoti = false;
         },
+
+        getListNotificationMess: (state, action) => {
+            state.listNotificationMess = action.payload;
+        },
+
+        readNotificationMess: (state, action) => {
+            const noti: ChatNoti | any = state.listNotificationMess.find(
+                (noti) => noti._id === action.payload
+            );
+
+            if (noti && noti.isRead === false) {
+                noti.isRead = true;
+            }
+        },
     },
 });
 
@@ -49,6 +64,8 @@ export const {
     readNotification,
     startAddNoti,
     endAddNoti,
+    getListNotificationMess,
+    readNotificationMess,
 } = notiSlice.actions;
 
 export default notiSlice.reducer;

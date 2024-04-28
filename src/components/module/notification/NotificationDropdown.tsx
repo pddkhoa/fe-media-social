@@ -161,6 +161,32 @@ function NotificationsList({
                                                         </span>
                                                     </p>
                                                 )}
+                                                {item.type ===
+                                                    TYPE_NOTI.ACCEPT_BLOG && (
+                                                    <p className="w-11/12 line-clamp-2 pe-7 text-xs text-gray-500">
+                                                        approve your post in the
+                                                        group{" "}
+                                                        <span className="font-semibold">
+                                                            {
+                                                                item.category
+                                                                    ?.name
+                                                            }
+                                                        </span>
+                                                    </p>
+                                                )}
+                                                {item.type ===
+                                                    TYPE_NOTI.DECLINE_BLOG && (
+                                                    <p className="w-11/12 line-clamp-2 pe-7 text-xs text-gray-500">
+                                                        not approve your post in
+                                                        the group{" "}
+                                                        <span className="font-semibold">
+                                                            {
+                                                                item.category
+                                                                    ?.name
+                                                            }
+                                                        </span>
+                                                    </p>
+                                                )}
                                                 <span className="ms-auto whitespace-nowrap pe-8 text-xs text-gray-500">
                                                     {formatDistanceToNow(
                                                         new Date(

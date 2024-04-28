@@ -37,12 +37,27 @@ const ToastNotification: FC<ToastNotificationProps> = ({ type, user }) => {
                         )}
                         {type === TYPE_NOTI.INVITE && (
                             <p className="w-11/12 line-clamp-2 pe-7 text-xs text-gray-500">
-                                invite you to join the group{" "}
+                                Invite you to join the group{" "}
                             </p>
                         )}
                         {type === TYPE_NOTI.ACCEPT && (
                             <p className="w-11/12 line-clamp-2 pe-7 text-xs text-gray-500">
-                                accept you to join the group{" "}
+                                Accept you to join the group{" "}
+                            </p>
+                        )}
+                        {type === TYPE_NOTI.ACCEPT_BLOG && (
+                            <p className="w-11/12 line-clamp-2 pe-7 text-xs text-gray-500">
+                                Approve your post in the group{" "}
+                            </p>
+                        )}
+                        {type === TYPE_NOTI.DECLINE_BLOG && (
+                            <p className="w-11/12 line-clamp-2 pe-7 text-xs text-gray-500">
+                                Not approve your post in the group{" "}
+                            </p>
+                        )}
+                        {type === TYPE_NOTI.CHAT && (
+                            <p className="w-11/12 line-clamp-2 pe-7 text-xs text-gray-500">
+                                Just send message
                             </p>
                         )}
                     </div>

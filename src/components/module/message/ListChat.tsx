@@ -3,11 +3,13 @@ import ChatServices from "@/services/chat";
 import {
     getListChatRequestSuccess,
     getListChatSuccess,
+    readMessage,
 } from "@/store/chatSlice";
 import { RootState } from "@/store/store";
 import { ChatType } from "@/type/chat";
 import { FC, useCallback, useEffect, useRef, useState } from "react";
 import {
+    PiCheck,
     PiDotsThreeOutlineVertical,
     PiMagnifyingGlassBold,
     PiNotePencilFill,
@@ -28,13 +30,15 @@ import {
 import DropdownOption from "./DropdownOptionChat";
 import { useModal } from "@/hooks/useModal";
 import ModalCreateGroupChat from "./ModalCreateGroupChat";
+import { Socket } from "socket.io-client";
 
 type ListChatProps = {
     setChatId: React.Dispatch<React.SetStateAction<string | undefined>>;
     setDataChat: React.Dispatch<React.SetStateAction<ChatType | undefined>>;
+    socket: Socket | undefined;
 };
 
-const ListChat: FC<ListChatProps> = ({ setChatId, setDataChat }) => {
+const ListChat: FC<ListChatProps> = ({ setChatId, setDataChat, socket }) => {
     const listChat = useSelector((state: RootState) => state.chat.getListChat);
     const listChatRequest = useSelector(
         (state: RootState) => state.chat.getListChatRequest
@@ -80,12 +84,23 @@ const ListChat: FC<ListChatProps> = ({ setChatId, setDataChat }) => {
         setIsEvalute(false);
         fetchChat();
         fetchChatRequest();
-    }, [fetchChat, fetchChatRequest, isEvalute, isAddgroup]);
+    }, [fetchChat, fetchChatRequest, isEvalute, isAddgroup, socket]);
 
-    const handleUserClick = (userId: any) => {
-        setActiveUserId((prevUserId) =>
-            prevUserId === userId ? null : userId
+    useEffect(() => {
+        socket?.on("notificationMessage", () => {
+            fetchChat();
+        });
+    }, [socket, fetchChat]);
+
+    const handleUserClick = async (IdChat: string) => {
+        const { body } = await ChatServices.readChat(
+            { chatId: IdChat },
+            axiosJWT
         );
+        if (body?.success) {
+            dispatch(readMessage(IdChat));
+        }
+        setActiveUserId((prevId) => (prevId === IdChat ? null : IdChat));
     };
 
     let menuItemsFiltered = listChat;
@@ -276,7 +291,22 @@ const RowUserListChat: FC<RowUserListChatProps> = ({
                             </span>
                         </div>
                     </div>
-                    <div></div>
+                    <div>
+                        <div className="ms-auto flex-shrink-0">
+                            {!data.isRead ? (
+                                <Badge
+                                    renderAsDot
+                                    size="lg"
+                                    color="primary"
+                                    className="scale-90"
+                                />
+                            ) : (
+                                <span className="inline-block rounded-full bg-gray-100 p-0.5 dark:bg-gray-50">
+                                    <PiCheck className="h-auto w-[9px]" />
+                                </span>
+                            )}
+                        </div>
+                    </div>
                 </>
             ) : (
                 <>
@@ -301,6 +331,7 @@ const RowUserListChat: FC<RowUserListChatProps> = ({
                             </span>
                         </div>
                     </div>
+
                     <div>
                         {data?.isWait ? (
                             <Popover placement="bottom-start">
@@ -320,7 +351,18 @@ const RowUserListChat: FC<RowUserListChatProps> = ({
                                     />
                                 </Popover.Content>
                             </Popover>
-                        ) : null}
+                        ) : !data.isRead ? (
+                            <Badge
+                                renderAsDot
+                                size="lg"
+                                color="primary"
+                                className="scale-90"
+                            />
+                        ) : (
+                            <span className="inline-block rounded-full bg-gray-100 p-0.5 dark:bg-gray-50">
+                                <PiCheck className="h-auto w-[9px]" />
+                            </span>
+                        )}
                     </div>
                 </>
             )}

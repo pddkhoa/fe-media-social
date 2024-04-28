@@ -76,6 +76,22 @@ export default function MessageBody({ message }: MessageBodyProps) {
                                 </span>
                             </p>
                         )}
+                        {message.type === TYPE_NOTI.ACCEPT_BLOG && (
+                            <p className="w-11/12 line-clamp-2 pe-7 text-xs text-gray-500">
+                                approve your post in the group{" "}
+                                <span className="font-semibold">
+                                    {message.category?.name}
+                                </span>
+                            </p>
+                        )}
+                        {message.type === TYPE_NOTI.DECLINE_BLOG && (
+                            <p className="w-11/12 line-clamp-2 pe-7 text-xs text-gray-500">
+                                not approve your post in the group{" "}
+                                <span className="font-semibold">
+                                    {message.category?.name}
+                                </span>
+                            </p>
+                        )}
                     </div>
                 </>
             )}

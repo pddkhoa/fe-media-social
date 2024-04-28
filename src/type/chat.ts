@@ -12,6 +12,11 @@ export interface ChatType {
     createdAt: string;
     updatedAt: string;
     userReceived: User;
+    message?: {
+        content: string;
+        type: string;
+    };
+    isRead: boolean;
     isWait: boolean;
     __v: number;
 }
