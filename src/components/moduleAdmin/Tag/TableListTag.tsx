@@ -4,15 +4,12 @@ import useTable from "@/hooks/useTable";
 import { useMemo, useState } from "react";
 import { PiMagnifyingGlassBold } from "react-icons/pi";
 import { Input } from "rizzui";
-import { getColumnsTag } from "./ColumnTag";
-import { useSelector } from "react-redux";
-import { RootState } from "@/store/store";
 import toast from "react-hot-toast";
-import { useModal } from "@/hooks/useModal";
-import TagServices from "@/services/tag";
 import useAuth from "@/hooks/useAuth";
+import { getColumnsTagAdmin } from "./ColumnTags";
+import AdminServices from "@/services/admin";
 
-export default function TableListTag({
+export default function TableListTagAdmin({
     className,
     data = [],
     setIsDelete,
@@ -21,9 +18,6 @@ export default function TableListTag({
     data: any[];
     setIsDelete: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
-    const isAuth = useSelector(
-        (state: RootState) => state.auth.userToken.user._id
-    );
     const [pageSize, setPageSize] = useState<number>(5);
 
     const {
@@ -34,12 +28,11 @@ export default function TableListTag({
         changePage,
         totalPages,
     } = useTable(data, "", pageSize);
-    const { openModal, closeModal } = useModal();
     const { axiosJWT } = useAuth();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const handleDelete = async (tagId: string) => {
-        const { body } = await TagServices.deleteTags(tagId, axiosJWT);
+        const { body } = await AdminServices.deteleTag(tagId, axiosJWT);
         if (body?.success) {
             toast.success(body?.message);
             setIsDelete(true);
@@ -49,9 +42,9 @@ export default function TableListTag({
     };
 
     const columns = useMemo(
-        () => getColumnsTag({ isAuth, handleDelete, openModal, closeModal }),
+        () => getColumnsTagAdmin({ handleDelete }),
         // eslint-disable-next-line react-hooks/exhaustive-deps
-        [isAuth, handleDelete, openModal, closeModal]
+        [handleDelete]
     );
 
     const { visibleColumns } = useColumn(columns);

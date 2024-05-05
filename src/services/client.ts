@@ -29,7 +29,6 @@ class ClientServices {
         phone: string;
         second_name: string;
         gender: string;
-        email: string;
         Descriptions: string;
         address: string;
     }) {

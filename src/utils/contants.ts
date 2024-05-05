@@ -39,3 +39,9 @@ export const TYPE_SEARCH = {
 };
 
 export const SOCKET_URL = process.env.SOCKET_IO_URL;
+
+export const ROLES = {
+    Administrator: "Administrator",
+    Support: "Support",
+    Customer: "User",
+} as const;

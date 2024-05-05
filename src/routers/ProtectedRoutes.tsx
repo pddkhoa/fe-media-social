@@ -6,7 +6,7 @@ const ProtectedRoutes = () => {
     const isAdmin = true;
     return (
         <Routes>
-            {isAdmin ? (
+            {!isAdmin ? (
                 <Route path="*" element={<ClientRoutes />} />
             ) : (
                 <Route path="*" element={<AdminRoutes />} />

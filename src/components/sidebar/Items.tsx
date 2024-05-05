@@ -5,17 +5,84 @@ import {
     PiBookBookmark,
     PiBookmarkSimpleLight,
     PiBracketsAngleFill,
-    PiChartDonutFill,
+    PiCalendarBold,
     PiChatCenteredFill,
+    PiFolderUserFill,
+    PiHashFill,
     PiMessengerLogo,
     PiNewspaper,
+    PiProjectorScreenChartFill,
+    PiReadCvLogo,
 } from "react-icons/pi";
 
 export const menuItemsAdmin: any = [
+    // label start
     {
-        name: "Analytics",
+        name: "Overview",
+    },
+    // label end
+    {
+        name: "Dashboard",
         href: "/",
-        icon: <PiChartDonutFill />,
+        icon: <PiProjectorScreenChartFill />,
+    },
+    // label start
+    {
+        name: "Manage",
+    },
+    // label end
+    {
+        name: "Blogs",
+        href: "/admin/blog",
+        icon: <PiReadCvLogo />,
+    },
+    {
+        name: "Groups",
+        href: "/admin/group",
+        icon: <PiAsteriskSimpleFill />,
+    },
+    {
+        name: "Tags",
+        href: "/admin/tag",
+        icon: <PiHashFill />,
+    },
+    {
+        name: "Account",
+        href: "/admin/account",
+        icon: <PiFolderUserFill />,
+    },
+    // label start
+    {
+        name: "Support",
+    },
+    // label end
+    {
+        name: "Issue",
+        href: "#",
+        icon: <PiAsteriskSimpleFill />,
+        dropdownItems: [
+            {
+                name: "Blog",
+                href: "/group",
+            },
+            {
+                name: "Group",
+                href: "/group/my",
+            },
+            {
+                name: "Tag",
+                href: "/group/my-created",
+            },
+            {
+                name: "User",
+                href: "/group/my-created",
+            },
+        ],
+    },
+    {
+        name: "Calendar",
+        href: "/setting-calendar",
+        icon: <PiCalendarBold />,
     },
 ];
 
@@ -30,11 +97,7 @@ export const menuItems = [
         href: "/",
         icon: <PiNewspaper />,
     },
-    // {
-    //     name: "Connection",
-    //     href: "/connection",
-    //     icon: <PiGlobeHemisphereWestFill />,
-    // },
+
     {
         name: "Notification",
         href: "/notification",

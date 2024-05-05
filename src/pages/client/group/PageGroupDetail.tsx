@@ -3,7 +3,7 @@ import { FC } from "react";
 import { Socket } from "socket.io-client";
 
 type PageGroupDetailProps = {
-    socket: Socket | undefined;
+    socket?: Socket | undefined;
 };
 
 const PageGroupDetail: FC<PageGroupDetailProps> = ({ socket }) => {

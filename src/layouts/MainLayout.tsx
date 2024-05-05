@@ -5,7 +5,7 @@ import { Outlet } from "react-router-dom";
 import { Socket } from "socket.io-client";
 
 type MainLayoutProps = {
-    socket: Socket | undefined;
+    socket?: Socket | undefined;
 };
 
 const MainLayout: FC<MainLayoutProps> = ({ socket }) => {

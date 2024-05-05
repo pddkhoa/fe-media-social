@@ -9,7 +9,7 @@ import { useLocation } from "react-router-dom";
 import { Socket } from "socket.io-client";
 
 type PageDetailPostProps = {
-    socket: Socket | undefined;
+    socket?: Socket | undefined;
 };
 
 const PageDetailPost: FC<PageDetailPostProps> = ({ socket }) => {

@@ -1,30 +1,26 @@
 import ControlledTable from "@/components/table/ControlledTable";
 import { useColumn } from "@/hooks/useColumn";
 import useTable from "@/hooks/useTable";
-import { useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { PiMagnifyingGlassBold } from "react-icons/pi";
-import { Input } from "rizzui";
-import { getColumnsTag } from "./ColumnTag";
-import { useSelector } from "react-redux";
-import { RootState } from "@/store/store";
-import toast from "react-hot-toast";
+import { Button, Input } from "rizzui";
+import { getColumnsAccount } from "./ColumnAccount";
+import { User } from "@/type/user";
 import { useModal } from "@/hooks/useModal";
-import TagServices from "@/services/tag";
-import useAuth from "@/hooks/useAuth";
+import ModalCreateAccount from "./ModalCreateAccount";
 
-export default function TableListTag({
+export default function TableListAccount({
     className,
     data = [],
-    setIsDelete,
+    setIsChangeRole,
 }: {
     className?: string;
-    data: any[];
+    data: User[];
     setIsDelete: React.Dispatch<React.SetStateAction<boolean>>;
+    setIsChangeRole: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
-    const isAuth = useSelector(
-        (state: RootState) => state.auth.userToken.user._id
-    );
     const [pageSize, setPageSize] = useState<number>(5);
+    const { openModal } = useModal();
 
     const {
         dataTable,
@@ -34,31 +30,20 @@ export default function TableListTag({
         changePage,
         totalPages,
     } = useTable(data, "", pageSize);
-    const { openModal, closeModal } = useModal();
-    const { axiosJWT } = useAuth();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    const handleDelete = async (tagId: string) => {
-        const { body } = await TagServices.deleteTags(tagId, axiosJWT);
-        if (body?.success) {
-            toast.success(body?.message);
-            setIsDelete(true);
-        } else {
-            toast.error(body?.message || "Error");
-        }
-    };
 
     const columns = useMemo(
-        () => getColumnsTag({ isAuth, handleDelete, openModal, closeModal }),
+        () => getColumnsAccount({ setIsChangeRole }),
         // eslint-disable-next-line react-hooks/exhaustive-deps
-        [isAuth, handleDelete, openModal, closeModal]
+        [setIsChangeRole]
     );
 
     const { visibleColumns } = useColumn(columns);
 
     return (
-        <>
-            <div className="flex justify-start items-center">
+        <div>
+            <div className="flex justify-between items-center gap-5">
                 <Input
                     type="search"
                     placeholder={"Search in here..."}
@@ -66,9 +51,19 @@ export default function TableListTag({
                     onClear={() => setSearchTerm("")}
                     onChange={(event) => setSearchTerm(event.target.value)}
                     clearable
+                    size="md"
                     className="w-1/4 py-4"
                     prefix={<PiMagnifyingGlassBold className="h-4 w-4" />}
                 />
+                <Button
+                    onClick={() => {
+                        openModal({ view: <ModalCreateAccount /> });
+                    }}
+                    variant="solid"
+                    size="sm"
+                >
+                    Add New User
+                </Button>
             </div>
             <div className={className}>
                 <ControlledTable
@@ -89,6 +84,6 @@ export default function TableListTag({
                     }}
                 />
             </div>
-        </>
+        </div>
     );
 }

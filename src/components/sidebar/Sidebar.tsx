@@ -10,7 +10,7 @@ import "simplebar-react/dist/simplebar.min.css";
 export default function Sidebar({ className }: { className?: string }) {
     const location = useLocation();
     const isAdmin = true;
-    const sidebarItem = !isAdmin ? menuItemsAdmin : menuItems;
+    const sidebarItem = isAdmin ? menuItemsAdmin : menuItems;
 
     return (
         <aside

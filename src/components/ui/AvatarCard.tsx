@@ -30,7 +30,9 @@ export default function AvatarCard({
                     {name}
                 </p>
                 {description && (
-                    <p className="text-[13px] text-gray-500">{description}</p>
+                    <p className="text-[13px] text-gray-500 line-clamp-2">
+                        {description}
+                    </p>
                 )}
             </figcaption>
         </figure>

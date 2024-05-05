@@ -1,4 +1,5 @@
-import AccessService from "@/services/access";
+import useAuth from "@/hooks/useAuth";
+import AdminServices from "@/services/admin";
 import { registerPending } from "@/store/authSlice";
 import { RULES } from "@/utils/rules";
 import { useFormik } from "formik";
@@ -6,16 +7,8 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { PiArrowRightBold, PiCheckBold, PiXBold } from "react-icons/pi";
 import { useDispatch } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
-import {
-    Input,
-    Password,
-    Checkbox,
-    Button,
-    Select,
-    NumberInput,
-    Loader,
-} from "rizzui";
+import { useNavigate } from "react-router-dom";
+import { Input, Password, Button, Select, NumberInput, Loader } from "rizzui";
 import * as Yup from "yup";
 
 type optionsGender = {
@@ -23,17 +16,26 @@ type optionsGender = {
     value: string;
 };
 
-const FormSignUp = () => {
+const FormCreateAccount = () => {
     const options = [
         { label: "Male", value: "male" },
         { label: "Female", value: "female" },
     ];
+    const optionsRoles = [
+        { label: "Admin", value: "Admin" },
+        { label: "Support", value: "Editor" },
+        { label: "User", value: "Client" },
+    ];
     const [valueGender, setValueGender] = useState<optionsGender>(options[0]);
+    const [valueRoles, setValueRoles] = useState<optionsGender>(
+        optionsRoles[0]
+    );
+
     const [showCheckPwd, setShowCheckPwd] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-    const [isTerm, setIsTerm] = useState(false);
     const navigate = useNavigate();
     const dispatch = useDispatch();
+    const { axiosJWT } = useAuth();
 
     function removeWhitespace(str: string) {
         return str.replace(/\s+/g, "");
@@ -42,6 +44,10 @@ const FormSignUp = () => {
     useEffect(() => {
         formik.setFieldValue("gender", valueGender);
     }, [valueGender]);
+
+    useEffect(() => {
+        formik.setFieldValue("roles", valueRoles);
+    }, [valueRoles]);
 
     const [requirementsMet, setRequirementsMet] = useState<any>({
         length: false,
@@ -86,7 +92,7 @@ const FormSignUp = () => {
             username: "",
             password: "",
             confirm_password: "",
-            roles: "Client",
+            roles: "",
         },
         validationSchema: Yup.object().shape({
             username: Yup.string().required("Username is required."),
@@ -112,6 +118,16 @@ const FormSignUp = () => {
                     return true;
                 }
             ),
+            roles: Yup.object().test(
+                "roles",
+                "Roles is required",
+                (value: unknown) => {
+                    if (!value) {
+                        return false;
+                    }
+                    return true;
+                }
+            ),
         }),
 
         validateOnChange: true,
@@ -124,11 +140,11 @@ const FormSignUp = () => {
                 gender: valueGender?.value,
                 username: values.username,
                 password: values.password,
-                roles: "Client",
+                roles: valueRoles?.value,
             };
             setIsLoading(true);
             try {
-                const { body } = await AccessService.register(report);
+                const { body } = await AdminServices.addUser(report, axiosJWT);
                 if (body?.success) {
                     setIsLoading(false);
                     toast.success(body.message);
@@ -214,6 +230,17 @@ const FormSignUp = () => {
                     onBlur={formik.handleBlur}
                     value={formik.values.phone}
                 />
+                <Select
+                    id="roles"
+                    name="roles"
+                    label="Select"
+                    options={optionsRoles}
+                    value={valueRoles}
+                    onChange={setValueRoles}
+                    error={formik.errors.roles}
+                    className={"col-span-2"}
+                    optionClassName="hover:bg-gray-300/90"
+                />
                 <Input
                     id="username"
                     name="username"
@@ -283,30 +310,6 @@ const FormSignUp = () => {
                     </ul>
                 ) : null}
 
-                <div className="col-span-2 flex items-start ">
-                    <Checkbox
-                        onChange={() => setIsTerm(true)}
-                        className="[&>label>span]:font-medium [&>label]:items-start"
-                        label={
-                            <>
-                                By signing up you have agreed to our{" "}
-                                <Link
-                                    to="/"
-                                    className="font-medium text-blue transition-colors hover:underline"
-                                >
-                                    Terms
-                                </Link>{" "}
-                                &{" "}
-                                <Link
-                                    to="/"
-                                    className="font-medium text-blue transition-colors hover:underline"
-                                >
-                                    Privacy Policy
-                                </Link>
-                            </>
-                        }
-                    />
-                </div>
                 {isLoading ? (
                     <Button
                         size="lg"
@@ -318,14 +321,12 @@ const FormSignUp = () => {
                     </Button>
                 ) : (
                     <Button
-                        disabled={
-                            formik.isSubmitting || !formik.isValid || !isTerm
-                        }
+                        disabled={formik.isSubmitting || !formik.isValid}
                         size="lg"
                         type="submit"
                         className="col-span-2 mt-2"
                     >
-                        <span>Sign In</span>{" "}
+                        <span>Save</span>{" "}
                         <PiArrowRightBold className="ms-2 mt-0.5 h-5 w-5" />
                     </Button>
                 )}
@@ -334,4 +335,4 @@ const FormSignUp = () => {
     );
 };
 
-export default FormSignUp;
+export default FormCreateAccount;
