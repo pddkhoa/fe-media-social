@@ -32,7 +32,9 @@ function HeaderMenuRight(socket: HeaderProps) {
     );
     const [isRead, setIsRead] = useState(false);
 
-    const { axiosJWT } = useAuth();
+    const { axiosJWT, user } = useAuth();
+
+    const isAdmin = user.user.roles === "Admin" ? true : false;
 
     const fetchNoti = useCallback(async () => {
         try {
@@ -80,58 +82,62 @@ function HeaderMenuRight(socket: HeaderProps) {
 
     return (
         <div className="flex  ml-auto shrink-0  items-center gap-7  text-gray-700 ">
-            <Link to={"/create-post"}>
-                <Button
-                    variant="outline"
-                    className="relative col-span-1 shadow  md:h-9 flex gap-3"
-                    size="sm"
-                >
-                    New Post
-                    <PiPlusBold />
-                </Button>
-            </Link>
-            <MessagesDropdown
-                dataNotiMess={dataNotiMess}
-                isLoading={isLoading}
-                setIsRead={setIsRead}
-            >
-                <ActionIcon
-                    aria-label="Messages"
-                    variant="text"
-                    className="relative h-[34px] w-[34px] shadow backdrop-blur-md dark:bg-gray-100 md:h-9 md:w-9"
-                >
-                    <PiChatCircleDotsFill className="h-[18px] w-auto" />
-                    {hasUnreadNotificationMess && (
-                        <Badge
-                            renderAsDot
-                            color="success"
-                            enableOutlineRing
-                            className="absolute right-2.5 top-2.5 -translate-y-1/3 translate-x-1/2"
-                        />
-                    )}
-                </ActionIcon>
-            </MessagesDropdown>
-            <NotificationDropdown
-                dataNoti={dataNoti}
-                isLoading={isLoading}
-                setIsRead={setIsRead}
-            >
-                <ActionIcon
-                    aria-label="Notification"
-                    variant="text"
-                    className="relative h-[34px] w-[34px] shadow backdrop-blur-md dark:bg-gray-100 md:h-9 md:w-9"
-                >
-                    <PiBellSimpleRingingFill className="h-[18px] w-auto" />
-                    {hasUnreadNotification && (
-                        <Badge
-                            renderAsDot
-                            color="warning"
-                            enableOutlineRing
-                            className="absolute right-2.5 top-2.5 -translate-y-1/3 translate-x-1/2"
-                        />
-                    )}
-                </ActionIcon>
-            </NotificationDropdown>
+            {!isAdmin && (
+                <>
+                    <Link to={"/create-post"}>
+                        <Button
+                            variant="outline"
+                            className="relative col-span-1 shadow  md:h-9 flex gap-3"
+                            size="sm"
+                        >
+                            New Post
+                            <PiPlusBold />
+                        </Button>
+                    </Link>
+                    <MessagesDropdown
+                        dataNotiMess={dataNotiMess}
+                        isLoading={isLoading}
+                        setIsRead={setIsRead}
+                    >
+                        <ActionIcon
+                            aria-label="Messages"
+                            variant="text"
+                            className="relative h-[34px] w-[34px] shadow backdrop-blur-md dark:bg-gray-100 md:h-9 md:w-9"
+                        >
+                            <PiChatCircleDotsFill className="h-[18px] w-auto" />
+                            {hasUnreadNotificationMess && (
+                                <Badge
+                                    renderAsDot
+                                    color="success"
+                                    enableOutlineRing
+                                    className="absolute right-2.5 top-2.5 -translate-y-1/3 translate-x-1/2"
+                                />
+                            )}
+                        </ActionIcon>
+                    </MessagesDropdown>
+                    <NotificationDropdown
+                        dataNoti={dataNoti}
+                        isLoading={isLoading}
+                        setIsRead={setIsRead}
+                    >
+                        <ActionIcon
+                            aria-label="Notification"
+                            variant="text"
+                            className="relative h-[34px] w-[34px] shadow backdrop-blur-md dark:bg-gray-100 md:h-9 md:w-9"
+                        >
+                            <PiBellSimpleRingingFill className="h-[18px] w-auto" />
+                            {hasUnreadNotification && (
+                                <Badge
+                                    renderAsDot
+                                    color="warning"
+                                    enableOutlineRing
+                                    className="absolute right-2.5 top-2.5 -translate-y-1/3 translate-x-1/2"
+                                />
+                            )}
+                        </ActionIcon>
+                    </NotificationDropdown>
+                </>
+            )}
             <ProfileMenu />
         </div>
     );

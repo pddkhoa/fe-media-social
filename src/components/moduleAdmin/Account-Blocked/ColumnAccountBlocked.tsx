@@ -1,20 +1,16 @@
+import AvatarCard from "@/components/ui/AvatarCard";
 import { HeaderCell } from "@/components/ui/Table";
+import { User } from "@/type/user";
 import dayjs from "dayjs";
 import { PiDotsThreeOutlineVertical } from "react-icons/pi";
 import { Popover, ActionIcon, Badge } from "rizzui";
-import { User } from "@/type/user";
-import AvatarCard from "@/components/ui/AvatarCard";
-import DropdownOptionAccount from "./DropdownOptionAccount";
+import DropdownAccountBlocked from "./DropdownAccountBlocked";
 
 type Columns = {
-    setIsChangeRole: React.Dispatch<React.SetStateAction<boolean>>;
     setIsDelete: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-export const getColumnsAccount = ({
-    setIsChangeRole,
-    setIsDelete,
-}: Columns) => [
+export const getColumnsAccountBlocked = ({ setIsDelete }: Columns) => [
     {
         title: <HeaderCell title="User" />,
         dataIndex: "user",
@@ -98,9 +94,8 @@ export const getColumnsAccount = ({
                             </ActionIcon>
                         </Popover.Trigger>
                         <Popover.Content className="z-50 p-0 dark:bg-gray-50 [&>svg]:dark:fill-gray-50">
-                            <DropdownOptionAccount
+                            <DropdownAccountBlocked
                                 data={row}
-                                setIsChangeRole={setIsChangeRole}
                                 setIsDelete={setIsDelete}
                             />
                         </Popover.Content>
@@ -110,7 +105,6 @@ export const getColumnsAccount = ({
         ),
     },
 ];
-
 const getStatus = (status: string) => {
     switch (status) {
         case "completed":

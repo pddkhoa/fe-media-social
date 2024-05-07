@@ -3,25 +3,20 @@ import { useColumn } from "@/hooks/useColumn";
 import useTable from "@/hooks/useTable";
 import React, { useMemo, useState } from "react";
 import { PiMagnifyingGlassBold } from "react-icons/pi";
-import { Button, Input } from "rizzui";
-import { getColumnsAccount } from "./ColumnAccount";
+import { Input } from "rizzui";
 import { User } from "@/type/user";
-import { useModal } from "@/hooks/useModal";
-import ModalCreateAccount from "./ModalCreateAccount";
+import { getColumnsAccountBlocked } from "./ColumnAccountBlocked";
 
-export default function TableListAccount({
+export default function TableListAccountBlocked({
     className,
     data = [],
-    setIsChangeRole,
     setIsDelete,
 }: {
     className?: string;
     data: User[];
     setIsDelete: React.Dispatch<React.SetStateAction<boolean>>;
-    setIsChangeRole: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
     const [pageSize, setPageSize] = useState<number>(5);
-    const { openModal } = useModal();
 
     const {
         dataTable,
@@ -35,9 +30,9 @@ export default function TableListAccount({
     // eslint-disable-next-line react-hooks/exhaustive-deps
 
     const columns = useMemo(
-        () => getColumnsAccount({ setIsChangeRole, setIsDelete }),
+        () => getColumnsAccountBlocked({ setIsDelete }),
         // eslint-disable-next-line react-hooks/exhaustive-deps
-        [setIsChangeRole, setIsDelete]
+        [setIsDelete]
     );
 
     const { visibleColumns } = useColumn(columns);
@@ -56,15 +51,6 @@ export default function TableListAccount({
                     className="w-1/4 py-4"
                     prefix={<PiMagnifyingGlassBold className="h-4 w-4" />}
                 />
-                <Button
-                    onClick={() => {
-                        openModal({ view: <ModalCreateAccount /> });
-                    }}
-                    variant="solid"
-                    size="sm"
-                >
-                    Add New User
-                </Button>
             </div>
             <div className={className}>
                 <ControlledTable

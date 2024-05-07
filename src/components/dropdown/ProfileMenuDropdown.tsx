@@ -4,17 +4,6 @@ import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { Avatar, Button, Popover, Title } from "rizzui";
 
-const menuItems = [
-    {
-        name: "My Profile",
-        href: "/profile",
-    },
-    {
-        name: "Account Settings",
-        href: "/profile-setting",
-    },
-];
-
 function DropdownMenu() {
     const userData = useSelector(
         (state: RootState) => state.auth.userToken.user
@@ -23,6 +12,9 @@ function DropdownMenu() {
         localStorage.clear();
         window.location.reload();
     };
+
+    const isAdmin = userData.roles === "Admin" ? true : false;
+
     return (
         <div className="w-64 text-left rtl:text-right">
             <div className="flex items-center border-b border-gray-300 px-6 pb-5 pt-6">
@@ -35,15 +27,22 @@ function DropdownMenu() {
                 </div>
             </div>
             <div className="grid px-3.5 py-3.5 font-medium text-gray-700">
-                {menuItems.map((item) => (
+                {!isAdmin && (
                     <Link
-                        key={item.name}
-                        to={item.href}
+                        key={"My Profile"}
+                        to={"/profile"}
                         className="group my-0.5 flex items-center rounded-md px-2.5 py-2 hover:bg-gray-100 focus:outline-none hover:dark:bg-gray-50/50"
                     >
-                        {item.name}
+                        My Profile
                     </Link>
-                ))}
+                )}
+                <Link
+                    key={"Account Settings"}
+                    to={"/profile-setting"}
+                    className="group my-0.5 flex items-center rounded-md px-2.5 py-2 hover:bg-gray-100 focus:outline-none hover:dark:bg-gray-50/50"
+                >
+                    Account Settings
+                </Link>
             </div>
             <div className="border-t border-gray-300 px-6 pb-6 pt-5">
                 <Button

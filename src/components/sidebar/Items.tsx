@@ -48,9 +48,20 @@ export const menuItemsAdmin: any = [
     },
     {
         name: "Account",
-        href: "/admin/account",
+        href: "#",
         icon: <PiFolderUserFill />,
+        dropdownItems: [
+            {
+                name: "Account Active",
+                href: "/admin/account",
+            },
+            {
+                name: "Account Blocked",
+                href: "/admin/account-block",
+            },
+        ],
     },
+
     // label start
     {
         name: "Support",

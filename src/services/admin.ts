@@ -76,6 +76,17 @@ class AdminServices {
         };
         return await requestApiHelper<body>(axiosJWT.get("admin/allUser"));
     }
+    static async getUserBlocked(axiosJWT: any) {
+        type body = {
+            success: string;
+            statusCode: number;
+            message: string;
+            result: User[];
+        };
+        return await requestApiHelper<body>(
+            axiosJWT.get("admin/allUserBlocked")
+        );
+    }
     static async addUser(
         data: {
             username: string;
@@ -112,6 +123,28 @@ class AdminServices {
         };
         return await requestApiHelper<body>(
             axiosJWT.post("admin/decentralization", data)
+        );
+    }
+    static async blockUser(data: { userId: string }, axiosJWT: any) {
+        type body = {
+            success: string;
+            statusCode: number;
+            message: string;
+            result: any;
+        };
+        return await requestApiHelper<body>(
+            axiosJWT.post("admin/blockedUser", data)
+        );
+    }
+    static async openUser(data: { userId: string }, axiosJWT: any) {
+        type body = {
+            success: string;
+            statusCode: number;
+            message: string;
+            result: any;
+        };
+        return await requestApiHelper<body>(
+            axiosJWT.post("admin/openAccount", data)
         );
     }
 }

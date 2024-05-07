@@ -11,6 +11,9 @@ const AdminGroups = lazy(
 const AdminAccount = lazy(
     () => import("@/pages/admin/AdminAccounts/PageAdminAccount")
 );
+const AdminAccountBlock = lazy(
+    () => import("@/pages/admin/AdminAccountBlocks/PageAdminAccountBlock")
+);
 
 const SettingCalendar = lazy(
     () => import("@/pages/admin/event-calendar/PageCalendar")
@@ -21,8 +24,17 @@ const CreatePost = lazy(() => import("@/pages/client/post/PageCreatePost"));
 const EditPost = lazy(() => import("@/pages/client/post/PageEditPost"));
 const CreateGroup = lazy(() => import("@/pages/client/group/PageCreateGroup"));
 const DetailGroup = lazy(() => import("@/pages/client/group/PageGroupDetail"));
-const ProfileSetting = lazy(
+const ProfileSettingEdit = lazy(
     () => import("@/components/moduleAdmin/Account/EditAccount")
+);
+const ProfileSetting = lazy(
+    () => import("@/pages/client/profile/PageProfileSetting")
+);
+const SettingDetail = lazy(
+    () => import("@/pages/client/profile/PageTabDetail")
+);
+const SettingPassword = lazy(
+    () => import("@/pages/client/profile/PageTabPassword")
 );
 
 const AdminRoutes = () => {
@@ -43,6 +55,14 @@ const AdminRoutes = () => {
                         element={
                             <Suspense fallback={<div>Loading ...</div>}>
                                 <AdminAccount />
+                            </Suspense>
+                        }
+                    />{" "}
+                    <Route
+                        path="/admin/account-block"
+                        element={
+                            <Suspense fallback={<div>Loading ...</div>}>
+                                <AdminAccountBlock />
                             </Suspense>
                         }
                     />{" "}
@@ -114,7 +134,7 @@ const AdminRoutes = () => {
                         path="/admin/account/edit/:id"
                         element={
                             <Suspense fallback={<div>Loading ...</div>}>
-                                <ProfileSetting />
+                                <ProfileSettingEdit />
                             </Suspense>
                         }
                     />
@@ -126,6 +146,17 @@ const AdminRoutes = () => {
                             </Suspense>
                         }
                     />
+                    <Route
+                        path="/profile-setting"
+                        element={
+                            <Suspense fallback={<div>Loading ...</div>}>
+                                <ProfileSetting />
+                            </Suspense>
+                        }
+                    >
+                        <Route index element={<SettingDetail />} />
+                        <Route path="password" element={<SettingPassword />} />
+                    </Route>
                 </Route>
 
                 <Route
