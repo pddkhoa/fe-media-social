@@ -1,5 +1,11 @@
 import { CategoryDetail } from "@/type/category";
 import { Post } from "@/type/post";
+import {
+    ReportBlogType,
+    ReportCommentType,
+    ReportTagType,
+    ReportUserType,
+} from "@/type/report";
 import { Tag } from "@/type/tag";
 import { User } from "@/type/user";
 import { requestApiHelper } from "@/utils/apiRequest";
@@ -145,6 +151,65 @@ class AdminServices {
         };
         return await requestApiHelper<body>(
             axiosJWT.post("admin/openAccount", data)
+        );
+    }
+    static async getListReportBlog(axiosJWT: any) {
+        type body = {
+            success: string;
+            statusCode: number;
+            message: string;
+            result: ReportBlogType[];
+        };
+        return await requestApiHelper<body>(
+            axiosJWT.get("admin/Blog/listReport")
+        );
+    }
+    static async getListReportUser(axiosJWT: any) {
+        type body = {
+            success: string;
+            statusCode: number;
+            message: string;
+            result: ReportUserType[];
+        };
+        return await requestApiHelper<body>(
+            axiosJWT.get("admin/User/listReport")
+        );
+    }
+    static async getListReportTag(axiosJWT: any) {
+        type body = {
+            success: string;
+            statusCode: number;
+            message: string;
+            result: ReportTagType[];
+        };
+        return await requestApiHelper<body>(
+            axiosJWT.get("admin/Tag/listReport")
+        );
+    }
+    static async getListReportComment(axiosJWT: any) {
+        type body = {
+            success: string;
+            statusCode: number;
+            message: string;
+            result: ReportCommentType[];
+        };
+        return await requestApiHelper<body>(
+            axiosJWT.get("admin/Comment/listReport")
+        );
+    }
+
+    static async evulateReport(
+        data: { reportId: string; type: string; status: boolean },
+        axiosJWT: any
+    ) {
+        type body = {
+            success: string;
+            statusCode: number;
+            message: string;
+            result: any;
+        };
+        return await requestApiHelper<body>(
+            axiosJWT.post("admin/evaluateReport", data)
         );
     }
 }

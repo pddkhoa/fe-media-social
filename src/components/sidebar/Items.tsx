@@ -68,25 +68,25 @@ export const menuItemsAdmin: any = [
     },
     // label end
     {
-        name: "Issue",
+        name: "Report Issues",
         href: "#",
         icon: <PiAsteriskSimpleFill />,
         dropdownItems: [
             {
                 name: "Blog",
-                href: "/group",
+                href: "/admin/report/blog",
             },
             {
-                name: "Group",
-                href: "/group/my",
+                name: "Comment",
+                href: "/admin/report/comment",
             },
             {
                 name: "Tag",
-                href: "/group/my-created",
+                href: "/admin/report/tag",
             },
             {
                 name: "User",
-                href: "/group/my-created",
+                href: "/admin/report/user",
             },
         ],
     },

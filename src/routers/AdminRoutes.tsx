@@ -37,6 +37,19 @@ const SettingPassword = lazy(
     () => import("@/pages/client/profile/PageTabPassword")
 );
 
+const ReportBlogPage = lazy(
+    () => import("@/pages/admin/AdminSupport/ReportBlogPage")
+);
+const ReportUserPage = lazy(
+    () => import("@/pages/admin/AdminSupport/ReportUserPage")
+);
+const ReportTagPage = lazy(
+    () => import("@/pages/admin/AdminSupport/ReportTagPage")
+);
+const ReportCommentPage = lazy(
+    () => import("@/pages/admin/AdminSupport/ReportCommentPage")
+);
+
 const AdminRoutes = () => {
     return (
         <Suspense fallback={<div>Loading...</div>}>
@@ -135,6 +148,38 @@ const AdminRoutes = () => {
                         element={
                             <Suspense fallback={<div>Loading ...</div>}>
                                 <ProfileSettingEdit />
+                            </Suspense>
+                        }
+                    />
+                    <Route
+                        path="/admin/report/blog"
+                        element={
+                            <Suspense fallback={<div>Loading ...</div>}>
+                                <ReportBlogPage />
+                            </Suspense>
+                        }
+                    />
+                    <Route
+                        path="/admin/report/tag"
+                        element={
+                            <Suspense fallback={<div>Loading ...</div>}>
+                                <ReportTagPage />
+                            </Suspense>
+                        }
+                    />
+                    <Route
+                        path="/admin/report/comment"
+                        element={
+                            <Suspense fallback={<div>Loading ...</div>}>
+                                <ReportCommentPage />
+                            </Suspense>
+                        }
+                    />
+                    <Route
+                        path="/admin/report/user"
+                        element={
+                            <Suspense fallback={<div>Loading ...</div>}>
+                                <ReportUserPage />
                             </Suspense>
                         }
                     />

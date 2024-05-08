@@ -45,3 +45,10 @@ export const ROLES = {
     Support: "Support",
     Customer: "User",
 } as const;
+
+export const TYPE_REPORT = {
+    BLOG: "Blog",
+    COMMENT: "Comment",
+    TAG: "Tag",
+    USER: "User",
+};
