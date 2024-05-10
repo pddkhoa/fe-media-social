@@ -50,6 +50,10 @@ const ReportCommentPage = lazy(
     () => import("@/pages/admin/AdminSupport/ReportCommentPage")
 );
 
+const ReportPage = lazy(
+    () => import("@/pages/admin/AdminReports/AdminReportPage")
+);
+
 const AdminRoutes = () => {
     return (
         <Suspense fallback={<div>Loading...</div>}>
@@ -180,6 +184,14 @@ const AdminRoutes = () => {
                         element={
                             <Suspense fallback={<div>Loading ...</div>}>
                                 <ReportUserPage />
+                            </Suspense>
+                        }
+                    />
+                    <Route
+                        path="/admin/report"
+                        element={
+                            <Suspense fallback={<div>Loading ...</div>}>
+                                <ReportPage />
                             </Suspense>
                         }
                     />

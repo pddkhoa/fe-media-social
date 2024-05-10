@@ -17,6 +17,8 @@ export default function ActionDropdown({
     setAction,
 }: ActionDropdownProps) {
     const [isLoadingEvalute, setIsLoadingEvalute] = useState(false);
+    const [isLoadingRemove, setIsLoadingRemove] = useState(false);
+
     const [isLoadingBlockUser, setIsLoadingBlockUser] = useState(false);
     const { axiosJWT } = useAuth();
 
@@ -53,6 +55,22 @@ export default function ActionDropdown({
             setIsLoadingEvalute(false);
         }
     };
+    const handleRemove = async (id: string) => {
+        setIsLoadingRemove(true);
+        const { body } = await AdminServices.evulateReport(
+            { reportId: id, type: type, status: false },
+            axiosJWT
+        );
+
+        if (body?.success) {
+            setIsLoadingRemove(false);
+            setAction(true);
+            toast.success(body.message);
+        } else {
+            toast.error(body?.message || "Error");
+            setIsLoadingRemove(false);
+        }
+    };
 
     return (
         <div className="w-64 text-left rtl:text-right text-sm">
@@ -72,8 +90,11 @@ export default function ActionDropdown({
                 <Button
                     variant="text"
                     className="group my-0.5 flex justify-between items-center rounded-md px-2.5 py-2 hover:bg-slate-200 cursor-pointer"
-                    // onClick={action.actionHandler}
-                    disabled={isLoadingBlockUser}
+                    onClick={() => {
+                        handleRemove(data?._id);
+                    }}
+                    disabled={isLoadingRemove}
+                    isLoading={isLoadingRemove}
                 >
                     Move to trash
                     <PiTrashSimple className="h-4 w-4" />

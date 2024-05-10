@@ -100,12 +100,14 @@ export const ProfileHeader: FC<ProfileHeaderProps> = ({ userDetail }) => {
                 <div className="flex h-auto gap-4">
                     <div>
                         <div className="relative -top-1/3  aspect-square w-[110px] overflow-hidden rounded-full border-4 border-white bg-white ">
-                            <Avatar
-                                name={userDetail?.name}
-                                src={userDetail?.avatar?.url}
-                                customSize={100}
-                                className="aspect-auto h-full w-full object-cover"
-                            />
+                            {userDetail?.avatar?.url && (
+                                <Avatar
+                                    name={userDetail?.name}
+                                    src={userDetail?.avatar?.url || "No Name"}
+                                    customSize={100}
+                                    className="aspect-auto h-full w-full object-cover"
+                                />
+                            )}
                         </div>
                     </div>
                     <div className="pt-2.5">

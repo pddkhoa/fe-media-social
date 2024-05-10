@@ -1,5 +1,5 @@
 import { PiDotsThreeOutlineVertical } from "react-icons/pi";
-import { cn, Badge, Popover, ActionIcon } from "rizzui";
+import { cn, Badge, Popover, ActionIcon, Empty } from "rizzui";
 import SimpleBar from "simplebar-react";
 import ReportBody from "./ReportBody";
 import ActionDropdown from "./ActionDropdown";
@@ -15,6 +15,13 @@ export default function ReportDetails({
     type: string;
     setAction: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
+    if (!activeIndex) {
+        return (
+            <div className="col-span-7 border flex justify-center items-center">
+                <Empty />
+            </div>
+        );
+    }
     return (
         <div
             className={cn(

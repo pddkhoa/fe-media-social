@@ -25,6 +25,7 @@ const ReportUserPage = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [dataUser, setDataUser] = useState<ReportUserType[]>([]);
     const { axiosJWT } = useAuth();
+    const [action, setAction] = useState(false);
 
     const fetchReport = useCallback(async () => {
         try {
@@ -42,7 +43,7 @@ const ReportUserPage = () => {
 
     useEffect(() => {
         fetchReport();
-    }, [fetchReport]);
+    }, [fetchReport, action]);
     return (
         <>
             <PageHeader
@@ -53,7 +54,11 @@ const ReportUserPage = () => {
             {isLoading ? (
                 <Loader />
             ) : dataUser && dataUser.length > 0 ? (
-                <ReportInbox data={dataUser} type={TYPE_REPORT.USER} />
+                <ReportInbox
+                    data={dataUser}
+                    type={TYPE_REPORT.USER}
+                    setAction={setAction}
+                />
             ) : (
                 <Empty />
             )}

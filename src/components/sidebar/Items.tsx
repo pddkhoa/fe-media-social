@@ -13,6 +13,7 @@ import {
     PiNewspaper,
     PiProjectorScreenChartFill,
     PiReadCvLogo,
+    PiSealWarningLight,
 } from "react-icons/pi";
 
 export const menuItemsAdmin: any = [
@@ -60,6 +61,11 @@ export const menuItemsAdmin: any = [
                 href: "/admin/account-block",
             },
         ],
+    },
+    {
+        name: "Ticket Reports",
+        href: "/admin/report",
+        icon: <PiSealWarningLight />,
     },
 
     // label start

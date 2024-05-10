@@ -4,6 +4,7 @@ import {
     ReportBlogType,
     ReportCommentType,
     ReportTagType,
+    ReportType,
     ReportUserType,
 } from "@/type/report";
 import { Tag } from "@/type/tag";
@@ -210,6 +211,51 @@ class AdminServices {
         };
         return await requestApiHelper<body>(
             axiosJWT.post("admin/evaluateReport", data)
+        );
+    }
+    static async getListReport(axiosJWT: any) {
+        type body = {
+            success: string;
+            statusCode: number;
+            message: string;
+            result: ReportType[];
+        };
+        return await requestApiHelper<body>(axiosJWT.get("user/report"));
+    }
+    static async addReport(data: { value: string }, axiosJWT: any) {
+        type body = {
+            success: string;
+            statusCode: number;
+            message: string;
+            result: any;
+        };
+        return await requestApiHelper<body>(
+            axiosJWT.post("admin/addTypeReport", data)
+        );
+    }
+    static async editReport(
+        data: { reportId: string; value: string },
+        axiosJWT: any
+    ) {
+        type body = {
+            success: string;
+            statusCode: number;
+            message: string;
+            result: any;
+        };
+        return await requestApiHelper<body>(
+            axiosJWT.patch("admin/editTypeReport", data)
+        );
+    }
+    static async deleteReport(data: { reportId: string }, axiosJWT: any) {
+        type body = {
+            success: string;
+            statusCode: number;
+            message: string;
+            result: any;
+        };
+        return await requestApiHelper<body>(
+            axiosJWT.post("admin/deleteTypeReport", data)
         );
     }
 }
