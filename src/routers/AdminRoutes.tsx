@@ -2,7 +2,7 @@ import MainLayout from "@/layouts/MainLayout";
 import { Suspense, lazy } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { Loader } from "rizzui";
-const HomeAdmin = lazy(() => import("@/pages/admin/home-admin/PageHomeAdmin"));
+const HomeAdmin = lazy(() => import("@/pages/admin/Dashboard/PageHomeAdmin"));
 const AdminBlog = lazy(() => import("@/pages/admin/AdminBlogs/PageAdminBlog"));
 const AdminTag = lazy(() => import("@/pages/admin/AdminTags/PageAdminTags"));
 const AdminGroups = lazy(
@@ -196,7 +196,7 @@ const AdminRoutes = () => {
                         }
                     />
                     <Route
-                        path="/setting-calendar"
+                        path="/setting-auto"
                         element={
                             <Suspense fallback={<div>Loading ...</div>}>
                                 <SettingCalendar />

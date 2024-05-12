@@ -1,7 +1,13 @@
 import PageHeader from "@/components/breadcrumb/PageHeader";
+import EventForm from "@/components/moduleAdmin/Calendar/EventForm";
 import EventCalendarView from "@/components/moduleAdmin/Calendar/SettingCalendar";
-import { Button } from "rizzui";
+import useAuth from "@/hooks/useAuth";
+import { useModal } from "@/hooks/useModal";
+import AdminServices from "@/services/admin";
+import { SettingType } from "@/type/report";
+import { useCallback, useEffect, useState } from "react";
 import "react-big-calendar/lib/css/react-big-calendar.css";
+import { Button } from "rizzui";
 
 const pageHeader = {
     title: "Setting Calendar",
@@ -11,32 +17,53 @@ const pageHeader = {
             name: "Home",
         },
         {
-            href: "/setting-calendar",
-            name: "Setting Calendar",
+            href: "/setting-auto",
+            name: "Setting Automation",
         },
     ],
 };
 
 const PageCalendar = () => {
+    const { axiosJWT } = useAuth();
+    const [dataSetting, setDataSetting] = useState<SettingType[]>([]);
+    const { openModal } = useModal();
+    const [isAction, setAction] = useState(false);
+
+    const fetchData = useCallback(async () => {
+        try {
+            const { body } = await AdminServices.getListBlogSetting(axiosJWT);
+            if (body?.success) {
+                setDataSetting(body.result);
+            }
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    }, [setDataSetting]);
+
+    useEffect(() => {
+        setAction(false);
+        fetchData();
+    }, [fetchData, isAction]);
+
     return (
         <>
             <PageHeader
                 title={pageHeader.title}
                 breadcrumb={pageHeader.breadcrumb}
             >
-                <div className="mt-4 flex items-center gap-3 @lg:mt-0">
-                    {/* <ModalButton
-        label="Create Event"
-        view={<EventForm />}
-        customSize="900px"
-        className="mt-0 w-full hover:bg-gray-700 @lg:w-auto dark:bg-gray-100 dark:text-white dark:hover:bg-gray-200 dark:active:bg-gray-100"
-    /> */}
-                    <Button size="sm" variant="solid">
-                        Setting Calendar
-                    </Button>
-                </div>
+                <Button
+                    variant="solid"
+                    onClick={() => {
+                        openModal({
+                            view: <EventForm setAction={setAction} />,
+                        });
+                    }}
+                >
+                    Add New Setting
+                </Button>
             </PageHeader>
-            <EventCalendarView />
+
+            <EventCalendarView data={dataSetting} setAction={setAction} />
         </>
     );
 };

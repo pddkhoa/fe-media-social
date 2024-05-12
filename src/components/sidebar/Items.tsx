@@ -97,8 +97,8 @@ export const menuItemsAdmin: any = [
         ],
     },
     {
-        name: "Calendar",
-        href: "/setting-calendar",
+        name: "Setting Automation",
+        href: "/setting-auto",
         icon: <PiCalendarBold />,
     },
 ];

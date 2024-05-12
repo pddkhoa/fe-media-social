@@ -1,6 +1,6 @@
 import { useModal } from "@/hooks/useModal";
 import { User } from "@/type/user";
-import React, { FC, Fragment, useRef, useState } from "react";
+import { FC, Fragment, useRef, useState } from "react";
 import { PiMagnifyingGlassBold } from "react-icons/pi";
 import { Avatar, Button, Empty, Input, SearchNotFoundIcon } from "rizzui";
 

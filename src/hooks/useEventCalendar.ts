@@ -1,50 +1,26 @@
-import { atom, useAtom } from "jotai";
-import uniqueId from "lodash/uniqueId";
-export interface CalendarEvent {
-    id?: string;
-    start: Date;
-    end: Date;
-    allDay?: boolean;
-    title: string;
-    description?: string;
-    location?: string;
-}
+import { SettingType } from "@/type/report";
 
-const event = [
-    {
-        id: uniqueId(),
-        start: new Date(),
-        end: new Date(),
-        allDay: false,
-        title: "Meeting with Paige",
-        description: "About Planning",
-        location: `At Paige's place`,
-    },
-];
+import { useState } from "react";
 
-export const eventAtom = atom<CalendarEvent[]>(event);
-
-export default function useEventCalendar() {
-    const [events, setEvents] = useAtom(eventAtom);
-
-    function createEvent(event: CalendarEvent) {
+export default function useEventCalendar(initialData: SettingType[]) {
+    const [events, setEvents] = useState(initialData);
+    function createEvent(event: SettingType) {
         setEvents((prev) => [...prev, event]);
     }
 
-    function updateEvent(updatedEvent: CalendarEvent) {
-        // Use map to replace the object with the same id
+    function updateEvent(updatedEvent: SettingType) {
         const updatedEvents = events.map((event) => {
-            if (event.id === updatedEvent.id) {
-                return updatedEvent; // replace with the updated object
+            if (event._id === updatedEvent._id) {
+                return updatedEvent;
             }
-            return event; // keep the original object
+            return event;
         });
         setEvents(updatedEvents);
     }
 
     function deleteEvent(eventID: string) {
         // Use filter to create a new array without the event to be deleted
-        const updatedEvents = events.filter((event) => event.id !== eventID);
+        const updatedEvents = events.filter((event) => event._id !== eventID);
 
         // Update the state with the new array of events
         setEvents(updatedEvents);

@@ -10,6 +10,14 @@ export interface UserReport {
     _id: string;
     __v: number;
 }
+export interface SettingType {
+    _id: string;
+    value: string;
+    createdAt: string;
+    updatedAt: string;
+    dueDate: string;
+    __v: number;
+}
 export interface ReportType {
     _id: string;
     value: string;
