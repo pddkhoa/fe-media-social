@@ -5,7 +5,7 @@ import { getPostDetail } from "@/store/blogSlice";
 import { RootState } from "@/store/store";
 import { FC, useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useLocation } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { Socket } from "socket.io-client";
 
 type PageDetailPostProps = {
@@ -13,7 +13,7 @@ type PageDetailPostProps = {
 };
 
 const PageDetailPost: FC<PageDetailPostProps> = ({ socket }) => {
-    const location = useLocation();
+    const { id } = useParams();
     const dispatch = useDispatch();
     const dataBlog = useSelector((state: RootState) => state.post.postDetail);
     const [isLoading, setIsLoading] = useState(false);
@@ -23,7 +23,7 @@ const PageDetailPost: FC<PageDetailPostProps> = ({ socket }) => {
         try {
             setIsLoading(true);
             const { body } = await BlogServices.getBlogById(
-                location.state._id as string,
+                id as string,
                 axiosJWT
             );
 
@@ -38,7 +38,7 @@ const PageDetailPost: FC<PageDetailPostProps> = ({ socket }) => {
     }, [dispatch]);
     useEffect(() => {
         fetchBlogDetail();
-    }, [fetchBlogDetail, location.state._id]);
+    }, [fetchBlogDetail, id]);
 
     return (
         <div>

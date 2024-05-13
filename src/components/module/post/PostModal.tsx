@@ -293,8 +293,7 @@ function ModalCardText({
                     </>
                 )}
                 <Link
-                    to={`/post`}
-                    state={data}
+                    to={`/post/${data?._id}`}
                     className="font-medium flex gap-2 items-center text-black hover:underline hover:text-blue-600"
                 >
                     More Detail <PiArrowBendDoubleUpRight />

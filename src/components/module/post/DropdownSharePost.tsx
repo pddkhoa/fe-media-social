@@ -1,4 +1,5 @@
 import useAuth from "@/hooks/useAuth";
+import FacebookShareButton from "@/hooks/usePluginSocial";
 import UserServices from "@/services/user";
 import { Post } from "@/type/post";
 import { FC, useState } from "react";
@@ -37,7 +38,18 @@ const DropdownSharePost: FC<DropdownSharePostProps> = ({ data }) => {
                     handleShare(data._id);
                 }}
             >
-                <PiShareFat className="mr-2 h-5 w-5" /> Share in feed
+                Share in feed
+                <PiShareFat className="ml-2 h-5 w-5" />
+            </Button>
+            <Button
+                variant="text"
+                className="flex justify-start gap-2 hover:bg-gray-300 text-gray-700"
+            >
+                {/* <IconShare className="w-6 h-6 mr-2" /> */}
+                <span>Share with</span>
+                <FacebookShareButton
+                    url={`${process.env.URL_DOMAIN}/post/${data._id}`}
+                />
             </Button>
         </div>
     );

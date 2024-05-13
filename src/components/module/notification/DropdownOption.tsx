@@ -35,11 +35,11 @@ const DropdownOption: FC<DropdownOptionProps> = ({ data }) => {
         if (body?.success) {
             switch (noti.type) {
                 case TYPE_NOTI.LIKE:
-                    navigate("/post", { state: noti.blog });
+                    navigate(`/post/${noti?.blog?._id}`);
 
                     break;
                 case TYPE_NOTI.COMMENT:
-                    navigate("/post", { state: noti.blog });
+                    navigate(`/post/${noti?.blog?._id}`);
 
                     break;
                 case TYPE_NOTI.INVITE:

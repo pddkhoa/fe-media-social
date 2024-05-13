@@ -224,8 +224,7 @@ export default function SearchBox() {
                                         return (
                                             <Fragment key={item._id}>
                                                 <Link
-                                                    to={`/post`}
-                                                    state={item}
+                                                    to={`/post/${item._id}`}
                                                     className="relative my-0.5 flex items-center gap-3 rounded-lg px-3 py-2 text-sm hover:bg-gray-200 focus:outline-none focus-visible:bg-gray-100 "
                                                 >
                                                     {item.avatar ? (

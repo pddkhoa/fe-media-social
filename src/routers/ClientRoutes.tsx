@@ -108,7 +108,7 @@ const ClientRoutes = () => {
                         }
                     />
                     <Route
-                        path="/post"
+                        path="/post/:id"
                         element={
                             <Suspense fallback={<div>Loading ...</div>}>
                                 <DetailPost socket={socket} />
