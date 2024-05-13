@@ -6,10 +6,14 @@ import { PiCaretDownBold } from "react-icons/pi";
 import { Collapse, Title } from "rizzui";
 import SimpleBar from "simplebar-react";
 import "simplebar-react/dist/simplebar.min.css";
+import useAuth from "@/hooks/useAuth";
 
 export default function Sidebar({ className }: { className?: string }) {
     const location = useLocation();
-    const isAdmin = true;
+    const { user } = useAuth();
+
+    const isAdmin =
+        user?.user?.roles === "Admin" || user?.user?.roles === "Editor";
     const sidebarItem = isAdmin ? menuItemsAdmin : menuItems;
 
     return (

@@ -7,7 +7,7 @@ import AdminServices from "@/services/admin";
 import { SettingType } from "@/type/report";
 import { useCallback, useEffect, useState } from "react";
 import "react-big-calendar/lib/css/react-big-calendar.css";
-import { Button } from "rizzui";
+import { Button, Empty, Loader } from "rizzui";
 
 const pageHeader = {
     title: "Setting Calendar",
@@ -28,15 +28,19 @@ const PageCalendar = () => {
     const [dataSetting, setDataSetting] = useState<SettingType[]>([]);
     const { openModal } = useModal();
     const [isAction, setAction] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
     const fetchData = useCallback(async () => {
         try {
+            setIsLoading(true);
             const { body } = await AdminServices.getListBlogSetting(axiosJWT);
             if (body?.success) {
                 setDataSetting(body.result);
+                setIsLoading(false);
             }
         } catch (error) {
             console.error("Error fetching data:", error);
+            setIsLoading(false);
         }
     }, [setDataSetting]);
 
@@ -63,7 +67,13 @@ const PageCalendar = () => {
                 </Button>
             </PageHeader>
 
-            <EventCalendarView data={dataSetting} setAction={setAction} />
+            {isLoading ? (
+                <Loader />
+            ) : dataSetting && dataSetting.length > 0 ? (
+                <EventCalendarView data={dataSetting} setAction={setAction} />
+            ) : (
+                <Empty />
+            )}
         </>
     );
 };

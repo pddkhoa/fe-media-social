@@ -1,9 +1,13 @@
 import { Routes, Route } from "react-router-dom";
 import ClientRoutes from "./ClientRoutes";
 import AdminRoutes from "./AdminRoutes";
+import useAuth from "@/hooks/useAuth";
 
 const ProtectedRoutes = () => {
-    const isAdmin = true;
+    const { user } = useAuth();
+
+    const isAdmin =
+        user?.user?.roles === "Admin" || user?.user?.roles === "Editor";
     return (
         <Routes>
             {!isAdmin ? (
