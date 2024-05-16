@@ -54,7 +54,7 @@ const ModalBlogRequest: FC<ModalBlogRequestProps> = ({ data }) => {
                                 <div>
                                     <Button
                                         onClick={() => {
-                                            navigate("/post", { state: item });
+                                            navigate(`/post/${item._id}`);
                                             closeModal();
                                         }}
                                         size="sm"

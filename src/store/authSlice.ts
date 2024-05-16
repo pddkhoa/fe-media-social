@@ -47,6 +47,9 @@ const authSlice = createSlice({
         subBlog: (state) => {
             state.userToken.user.totalBlog = state.userToken.user.totalBlog - 1;
         },
+        updateLogin: (state) => {
+            state.userToken.user.isLogin = true;
+        },
     },
 });
 
@@ -60,6 +63,7 @@ export const {
     countBlog,
     subBlog,
     updateInfoSuccess,
+    updateLogin,
 } = authSlice.actions;
 
 export default authSlice.reducer;

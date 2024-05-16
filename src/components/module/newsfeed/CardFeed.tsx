@@ -1,0 +1,237 @@
+import { Post } from "@/type/post";
+import {
+    PiArrowBendDoubleUpRight,
+    PiBookmarkSimple,
+    PiBookmarkSimpleFill,
+    PiChatCentered,
+    PiDotsThreeOutlineFill,
+    PiFireFill,
+    PiFireLight,
+    PiShareNetwork,
+} from "react-icons/pi";
+import { ActionIcon, Avatar, Modal, Popover } from "rizzui";
+import { useState } from "react";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
+import ModalPrivate from "../../modal/ModalPrivate";
+import { formatDate } from "@/utils/format-date";
+import { Link, useNavigate } from "react-router-dom";
+import { Socket } from "socket.io-client";
+import DropdownAuthor from "../post/DropdownAuthor";
+import DropdownOther from "../post/DropdownOther";
+import ModalDraft from "../post/ModalDraft";
+import PostsModal from "../post/PostModal";
+
+type POST_TYPE = "image" | "gallery" | "video";
+
+type PostCard = {
+    type?: POST_TYPE;
+    onClick?: () => void;
+    data: Post;
+    setIsDelete?: React.Dispatch<React.SetStateAction<boolean>> | undefined;
+    actionDispatchLike?: {
+        payload: any;
+        type: any;
+    };
+    actionDispatchSave?: {
+        payload: any;
+        type: any;
+    };
+
+    handleCommentPost?: (
+        data: {
+            blogId: string;
+            replyToCommentId: string | null;
+            content: string;
+        },
+        userID: any
+    ) => Promise<void>;
+    socket?: Socket | undefined;
+};
+
+export default function CardFeed({
+    data,
+    setIsDelete,
+    actionDispatchLike,
+    actionDispatchSave,
+    handleCommentPost,
+    socket,
+}: PostCard) {
+    const navigate = useNavigate();
+    const [open, setOpen] = useState(false);
+    const isAuthor = useSelector(
+        (state: RootState) => state.auth.userToken.user._id
+    );
+
+    return (
+        <>
+            <div className="p-4 flex flex-col gap-5 w-[800px] border rounded w-5xl">
+                <div className="flex justify-between relative">
+                    {data.category ? (
+                        <>
+                            <div
+                                onClick={() => {
+                                    navigate(
+                                        `/group/detail/${data.category._id}`
+                                    );
+                                }}
+                                className=" inline-flex gap-3 justify-center  cursor-pointer group "
+                            >
+                                {data?.category?.avatar?.url ? (
+                                    <img
+                                        src={data?.category?.avatar?.url}
+                                        className="object-cover h-12 w-12 rounded-lg group-hover:brightness-95"
+                                    />
+                                ) : (
+                                    <div className="bg-gradient-to-r h-12 w-12 rounded-lg from-[#F8E1AF] to-[#F6CFCF] bg-opacity-30 group-hover:brightness-95" />
+                                )}
+                                <p className="font-semibold mt-1  group-hover:text-gray-800 truncate">
+                                    {data?.category?.name}
+                                </p>
+                            </div>
+                            <div className="absolute top-8 left-8 -translate-y-[25%]">
+                                <Link
+                                    className="flex gap-2 items-center"
+                                    to={`/profile/${data?.user?._id}`}
+                                >
+                                    <Avatar
+                                        name={data?.user?.name}
+                                        src={data?.user?.avatar?.url}
+                                        customSize={30}
+                                        className="object-cover w-12 h-12 rounded-full shadow"
+                                    />
+                                    <div className="flex flex-col mt-2">
+                                        <div className="text-xs font-semibold">
+                                            {data?.user?.name}
+                                        </div>
+                                        <span className="text-[10px] text-gray-400 pointer-events-none">
+                                            {formatDate(data?.createdAt as any)}
+                                        </span>
+                                    </div>
+                                </Link>
+                            </div>
+                        </>
+                    ) : (
+                        <div className="relative inline-flex gap-5 w-[80%]">
+                            <Link
+                                className="flex gap-2 items-center"
+                                to={`/profile/${data?.user?._id}`}
+                            >
+                                <Avatar
+                                    name={data?.user?.name}
+                                    src={data?.user?.avatar?.url}
+                                    size="md"
+                                    className="object-cover w-12 h-12 rounded-full shadow"
+                                />
+                                <div className="flex flex-col mt-2">
+                                    <div className="text-sm font-semibold">
+                                        {data?.user?.name}
+                                    </div>
+                                    <span className="text-[10px] text-gray-400 pointer-events-none">
+                                        {formatDate(data?.createdAt as any)}
+                                    </span>
+                                </div>
+                            </Link>
+                        </div>
+                    )}
+                    <div>
+                        <Popover placement="bottom-start">
+                            <Popover.Trigger>
+                                <ActionIcon variant="text">
+                                    <PiDotsThreeOutlineFill />
+                                </ActionIcon>
+                            </Popover.Trigger>
+                            <Popover.Content className="z-50 p-0 dark:bg-gray-50 [&>svg]:dark:fill-gray-50">
+                                {isAuthor === data?.user?._id && setIsDelete ? (
+                                    <DropdownAuthor
+                                        data={data}
+                                        setIsDelete={setIsDelete}
+                                    />
+                                ) : (
+                                    <DropdownOther data={data} />
+                                )}
+                            </Popover.Content>
+                        </Popover>
+                    </div>
+                </div>
+                <div
+                    onClick={() => {
+                        setOpen(true);
+                    }}
+                    className="group  relative aspect-square h-96  w-full cursor-pointer overflow-hidden bg-gray-100"
+                >
+                    {!data?.avatar ? (
+                        <div className=" h-full bg-gradient-to-r rounded-md from-[#F8E1AF] to-[#F6CFCF] "></div>
+                    ) : (
+                        <img
+                            alt={"Post"}
+                            src={data?.avatar}
+                            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
+                        />
+                    )}
+                </div>
+                <div className="line-clamp-2 font-semibold">{data?.title}</div>
+                <div className="line-clamp-3 font-normal">
+                    {data?.description}
+                </div>
+                <Link
+                    to={`/post/${data?._id}`}
+                    className="font-medium flex gap-2 items-center text-black hover:underline hover:text-blue-600"
+                >
+                    More Detail <PiArrowBendDoubleUpRight />
+                </Link>
+
+                <div className="flex flex-wrap justify-between">
+                    <div className="space-x-2 flex gap-2 items-center">
+                        <PiShareNetwork className="w-5 h-5" />
+                        {data?.isSave ? (
+                            <PiBookmarkSimpleFill className="w-5 h-5" />
+                        ) : (
+                            <PiBookmarkSimple className="w-5 h-5" />
+                        )}
+                    </div>
+                    <div className="flex space-x-2 text-sm ">
+                        <div className="flex items-center p-1 space-x-1.5">
+                            <PiChatCentered className="h-5 w-5" />
+                            <span>{data?.sumComment}</span>
+                        </div>
+                        <div className="flex items-center p-1 space-x-1.5">
+                            {data?.isLiked ? (
+                                <PiFireFill className="h-5 w-5" />
+                            ) : (
+                                <PiFireLight className="h-5 w-5" />
+                            )}
+                            <span>{data?.likes}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <Modal
+                isOpen={open}
+                onClose={() => setOpen(false)}
+                className="[&>div]:p-0 lg:[&>div]:p-4"
+                overlayClassName="dark:bg-opacity-40 dark:backdrop-blur-lg"
+                containerClassName="dark:bg-gray-100 max-w-7xl max-h-[650px] w-full h-full relative"
+            >
+                {data &&
+                    (data?.isPermission &&
+                    actionDispatchLike &&
+                    actionDispatchSave &&
+                    handleCommentPost ? (
+                        <PostsModal
+                            data={data}
+                            actionDispatchLike={actionDispatchLike}
+                            onClose={() => setOpen(false)}
+                            actionDispatchSave={actionDispatchSave}
+                            handleCommentPost={handleCommentPost}
+                            socket={socket}
+                        />
+                    ) : data.status === "Draft" ? (
+                        <ModalDraft onClose={() => setOpen(false)} />
+                    ) : (
+                        <ModalPrivate onClose={() => setOpen(false)} />
+                    ))}
+            </Modal>
+        </>
+    );
+}

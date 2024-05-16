@@ -25,6 +25,7 @@ export interface User {
     updateDate: string;
     createdAt: string;
     updatedAt: string;
+    isLogin: boolean;
     __v: number;
 }
 

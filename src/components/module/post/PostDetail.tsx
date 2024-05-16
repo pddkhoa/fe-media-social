@@ -242,6 +242,7 @@ const PostDetail: FC<PostDetailProps> = ({ dataBlog, socket, isLoading }) => {
                                         setActiveComment={setActiveComment}
                                         nestingLevel={0}
                                         idBlog={dataBlog._id}
+                                        dataBlog={dataBlog}
                                         handleCommentPost={handleCommentPost}
                                         handleDeleteComment={
                                             handleDeleteComment

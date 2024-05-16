@@ -127,6 +127,7 @@ export default function PostsModal({
                                             handleDeleteComment as any
                                         }
                                         isModal={true}
+                                        dataBlog={data}
                                     />
                                 ))
                             ) : (
@@ -281,7 +282,7 @@ function ModalCardText({
                     </div>
                 )}
             </div>
-            <p className="text-sm leading-6 text-gray-500 mt-6">
+            <p className="text-sm leading-6 line-clamp-4 text-gray-500 mt-6">
                 {data?.description ? (
                     data.description
                 ) : (
@@ -292,13 +293,13 @@ function ModalCardText({
                         aliquid pariatur eum at officia. Ipsam iste a obcaecati!
                     </>
                 )}
-                <Link
-                    to={`/post/${data?._id}`}
-                    className="font-medium flex gap-2 items-center text-black hover:underline hover:text-blue-600"
-                >
-                    More Detail <PiArrowBendDoubleUpRight />
-                </Link>
             </p>
+            <Link
+                to={`/post/${data?._id}`}
+                className="font-medium flex gap-2 items-center text-black hover:underline hover:text-blue-600"
+            >
+                More Detail <PiArrowBendDoubleUpRight />
+            </Link>
             <div className="flex items-center justify-between gap-4 border-b border-b-gray-100  dark:border-b-gray-400">
                 <div className="flex items-center gap-5">
                     <Button
@@ -379,6 +380,7 @@ type CommentPropsType = {
         commentId: string;
     }) => Promise<void>;
     isModal: boolean;
+    dataBlog: Post;
 };
 
 export function ModalCardComment({
@@ -391,6 +393,7 @@ export function ModalCardComment({
     handleCommentPost,
     handleDeleteComment,
     isModal,
+    dataBlog,
 }: CommentPropsType) {
     const isReplying =
         activeComment &&
@@ -402,6 +405,9 @@ export function ModalCardComment({
     const replies: Comment[] = childComment(commentData._id);
     const sumChildComment = replies.length;
     const { user } = useAuth();
+    const isAdmin = user.user.roles === "Admin" ? true : false;
+    const isAuthor = user.user._id === commentData.user._id ? true : false;
+    const isAuthorBlog = user.user._id === dataBlog.user._id ? true : false;
 
     return (
         <>
@@ -457,7 +463,7 @@ export function ModalCardComment({
                         ) : null}
                     </div>
                 </div>
-                {!isModal && user?.user?._id === commentData?.user?._id && (
+                {!isModal && (isAdmin || isAuthor || isAuthorBlog) && (
                     <div className="ml-auto flex items-center opacity-70">
                         <DropdownOption
                             parentId={commentData._id}
@@ -494,6 +500,7 @@ export function ModalCardComment({
                                   handleCommentPost={handleCommentPost}
                                   handleDeleteComment={handleDeleteComment}
                                   isModal={true}
+                                  dataBlog={dataBlog}
                               />
                           ))}
                       </div>

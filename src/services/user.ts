@@ -209,6 +209,27 @@ class UserServices {
             axiosJWT.post(`/user/search`, data)
         );
     }
+
+    static async getListUserMost(axiosJWT: any) {
+        type body = {
+            success: string;
+            statusCode: number;
+            message: string;
+            result: UserWall[];
+        };
+        return await requestApiHelper<body>(axiosJWT.get(`user/listFiveUser`));
+    }
+    static async updateStatusLogin(axiosJWT: any) {
+        type body = {
+            success: string;
+            statusCode: number;
+            message: string;
+            result: any;
+        };
+        return await requestApiHelper<body>(
+            axiosJWT.post(`user/updateStatusLogin`)
+        );
+    }
 }
 
 export default UserServices;

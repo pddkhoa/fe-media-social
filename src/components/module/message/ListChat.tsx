@@ -12,7 +12,6 @@ import {
     PiCheck,
     PiDotsThreeOutlineVertical,
     PiMagnifyingGlassBold,
-    PiNotePencilFill,
 } from "react-icons/pi";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
@@ -25,11 +24,8 @@ import {
     Popover,
     Tab,
     Title,
-    Tooltip,
 } from "rizzui";
 import DropdownOption from "./DropdownOptionChat";
-import { useModal } from "@/hooks/useModal";
-import ModalCreateGroupChat from "./ModalCreateGroupChat";
 import { Socket } from "socket.io-client";
 
 type ListChatProps = {
@@ -52,7 +48,7 @@ const ListChat: FC<ListChatProps> = ({ setChatId, setDataChat, socket }) => {
     const inputRef = useRef(null);
     const [searchText, setSearchText] = useState("");
 
-    const { openModal } = useModal();
+    // const { openModal } = useModal();
 
     const fetchChat = useCallback(async () => {
         try {
@@ -128,8 +124,8 @@ const ListChat: FC<ListChatProps> = ({ setChatId, setDataChat, socket }) => {
         <>
             <div className="absolute  h-[calc(100%-85px)] w-[20%] mx-2  border-r   overflow-auto flex flex-col gap-3 p-2">
                 <div className="flex justify-between items-center">
-                    <Title className="text-xl">Chat</Title>
-                    <Tooltip content={"Create Group Chat"}>
+                    <Title className="text-xl">Chat Inbox</Title>
+                    {/* <Tooltip content={"Create Group Chat"}>
                         <Button
                             onClick={() => {
                                 openModal({
@@ -145,7 +141,7 @@ const ListChat: FC<ListChatProps> = ({ setChatId, setDataChat, socket }) => {
                         >
                             <PiNotePencilFill className="h-6 w-6" />
                         </Button>
-                    </Tooltip>
+                    </Tooltip> */}
                 </div>
                 <Input
                     variant="flat"

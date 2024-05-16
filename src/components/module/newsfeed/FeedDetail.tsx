@@ -12,7 +12,6 @@ import { RootState } from "@/store/store";
 import { FC, useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Avatar, Button, Empty, Loader } from "rizzui";
-import PostCard from "../post/PostCard";
 import toast from "react-hot-toast";
 import { PiArrowsClockwiseFill, PiShareFat } from "react-icons/pi";
 import { Link } from "react-router-dom";
@@ -20,6 +19,7 @@ import useAuth from "@/hooks/useAuth";
 import { Socket } from "socket.io-client";
 
 import { TYPE_NOTI } from "@/utils/contants";
+import CardFeed from "./CardFeed";
 
 type FeedDetailProps = {
     socket: Socket | undefined;
@@ -112,19 +112,21 @@ const FeedDetail: FC<FeedDetailProps> = ({ socket }) => {
                     <Loader variant="spinner" />
                 </div>
             ) : (
-                <div className=" flex flex-col gap-12  -mt-10 mx-auto">
+                <div className="flex flex-col gap-12  -mt-10 mx-auto">
                     {listBlog && listBlog.length > 0 ? (
                         listBlog.map((item) => (
-                            <>
+                            <div key={item._id}>
                                 {item.shareBy ? (
-                                    <div className="flex flex-col max-w-xl p-5 space-y-2 overflow-hidden rounded-md bg-gray-100 border">
+                                    <div className="flex flex-col  space-y-2 overflow-hidden rounded-md bg-white ">
                                         <div className="border-b py-2 flex justify-between items-center">
                                             <Link
                                                 to={`/profile/${item.shareBy._id}`}
                                                 className="flex gap-2 items-center"
                                             >
                                                 <Avatar
-                                                    src={item.shareBy.name}
+                                                    src={
+                                                        item.shareBy.avatar.url
+                                                    }
                                                     name={item.shareBy.name}
                                                     size="sm"
                                                 />
@@ -139,7 +141,7 @@ const FeedDetail: FC<FeedDetailProps> = ({ socket }) => {
                                                 <PiShareFat />
                                             </div>
                                         </div>
-                                        <PostCard
+                                        <CardFeed
                                             data={item}
                                             key={item._id}
                                             actionDispatchLike={likePostFeedSuccess(
@@ -155,7 +157,7 @@ const FeedDetail: FC<FeedDetailProps> = ({ socket }) => {
                                         />
                                     </div>
                                 ) : (
-                                    <PostCard
+                                    <CardFeed
                                         data={item}
                                         key={item._id}
                                         actionDispatchLike={likePostFeedSuccess(
@@ -168,7 +170,7 @@ const FeedDetail: FC<FeedDetailProps> = ({ socket }) => {
                                         socket={socket}
                                     />
                                 )}
-                            </>
+                            </div>
                         ))
                     ) : (
                         <Empty />

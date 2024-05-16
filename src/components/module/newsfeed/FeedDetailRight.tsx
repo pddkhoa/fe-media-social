@@ -1,5 +1,4 @@
 import { Empty, EmptyProductBoxIcon, Title } from "rizzui";
-import ListMembers from "./ListMembers";
 
 const FeedDetailRight = () => {
     return (
@@ -8,7 +7,6 @@ const FeedDetailRight = () => {
                 <Title as="h6" className="font-medium">
                     Contact Members
                 </Title>
-                <ListMembers />
             </div>
             <div className="flex flex-col gap-2  pt-4">
                 <Title as="h6" className="font-medium">
