@@ -408,6 +408,7 @@ export function ModalCardComment({
     const isAdmin = user.user.roles === "Admin" ? true : false;
     const isAuthor = user.user._id === commentData.user._id ? true : false;
     const isAuthorBlog = user.user._id === dataBlog.user._id ? true : false;
+    const allowDelete = isAdmin || isAuthor || isAuthorBlog ? true : false;
 
     return (
         <>
@@ -463,12 +464,13 @@ export function ModalCardComment({
                         ) : null}
                     </div>
                 </div>
-                {!isModal && (isAdmin || isAuthor || isAuthorBlog) && (
+                {!isModal && (
                     <div className="ml-auto flex items-center opacity-70">
                         <DropdownOption
                             parentId={commentData._id}
                             idBlog={idBlog}
                             dataComment={commentData}
+                            allowDelete={allowDelete}
                             handleDeleteComment={handleDeleteComment}
                         />
                     </div>
@@ -582,6 +584,7 @@ type DropdownOptionProps = {
     parentId: string;
     idBlog: string;
     dataComment: Comment;
+    allowDelete: boolean;
 };
 
 function DropdownOption({
@@ -589,6 +592,7 @@ function DropdownOption({
     parentId,
     idBlog,
     dataComment,
+    allowDelete,
 }: DropdownOptionProps) {
     const { openModal } = useModal();
 
@@ -605,12 +609,14 @@ function DropdownOption({
                 <PiDotsThreeOutlineFill className="w-4 h-4 cursor-pointer" />
             </Dropdown.Trigger>
             <Dropdown.Menu>
-                <Dropdown.Item
-                    onClick={handleDelete}
-                    className="hover:bg-gray-300"
-                >
-                    Delete
-                </Dropdown.Item>
+                {allowDelete ? (
+                    <Dropdown.Item
+                        onClick={handleDelete}
+                        className="hover:bg-gray-300"
+                    >
+                        Delete
+                    </Dropdown.Item>
+                ) : null}
                 <Dropdown.Item
                     onClick={() => {
                         openModal({
