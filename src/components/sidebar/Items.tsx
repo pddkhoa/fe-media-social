@@ -189,3 +189,49 @@ export const menuItems = [
         icon: <PiBookBookmark />,
     },
 ];
+
+export const menuItemsEditor: any = [
+    // label start
+    {
+        name: "Overview",
+    },
+    // label end
+    {
+        name: "Dashboard",
+        href: "/",
+        icon: <PiProjectorScreenChartFill />,
+    },
+
+    {
+        name: "Support",
+    },
+    // label end
+    {
+        name: "Report Issues",
+        href: "#",
+        icon: <PiAsteriskSimpleFill />,
+        dropdownItems: [
+            {
+                name: "Blog",
+                href: "/admin/report/blog",
+            },
+            {
+                name: "Comment",
+                href: "/admin/report/comment",
+            },
+            {
+                name: "Tag",
+                href: "/admin/report/tag",
+            },
+            {
+                name: "User",
+                href: "/admin/report/user",
+            },
+        ],
+    },
+    {
+        name: "Setting Automation",
+        href: "/setting-auto",
+        icon: <PiCalendarBold />,
+    },
+];

@@ -55,8 +55,6 @@ const ClientRoutes = () => {
     const [socket, setSocket] = useState<Socket | undefined>();
     const { user } = useAuth();
 
-    console.log(user.user);
-
     const [noti, setNoti] = useState<any>([]);
     useEffect(() => {
         socket?.emit("addUser", { userId: user.user._id });

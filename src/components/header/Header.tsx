@@ -36,7 +36,10 @@ function HeaderMenuRight(socket: HeaderProps) {
 
     const { axiosJWT, user } = useAuth();
 
-    const isAdmin = user.user.roles === "Admin" ? true : false;
+    const isAdmin =
+        user.user.roles === "Admin" || user.user.roles === "Editor"
+            ? true
+            : false;
 
     const fetchNoti = useCallback(async () => {
         try {
@@ -152,7 +155,10 @@ type HeaderProps = {
 const Header: FC<HeaderProps> = ({ socket }) => {
     const { user } = useAuth();
 
-    const isAdmin = user.user.roles === "Admin" ? true : false;
+    const isAdmin =
+        user.user.roles === "Admin" || user.user.roles === "Editor"
+            ? true
+            : false;
     return (
         <header
             className={

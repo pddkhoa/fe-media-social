@@ -5,9 +5,9 @@ import useAuth from "@/hooks/useAuth";
 
 const ProtectedRoutes = () => {
     const { user } = useAuth();
-
     const isAdmin =
         user?.user?.roles === "Admin" || user?.user?.roles === "Editor";
+
     return (
         <Routes>
             {!isAdmin ? (

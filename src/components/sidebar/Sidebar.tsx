@@ -1,6 +1,6 @@
 import { Fragment } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { menuItems, menuItemsAdmin } from "./Items";
+import { menuItems, menuItemsAdmin, menuItemsEditor } from "./Items";
 import { cn } from "@/utils/class-name";
 import { PiCaretDownBold } from "react-icons/pi";
 import { Collapse, Title } from "rizzui";
@@ -12,9 +12,15 @@ export default function Sidebar({ className }: { className?: string }) {
     const location = useLocation();
     const { user } = useAuth();
 
-    const isAdmin =
-        user?.user?.roles === "Admin" || user?.user?.roles === "Editor";
-    const sidebarItem = isAdmin ? menuItemsAdmin : menuItems;
+    const isAdmin = user?.user?.roles === "Admin";
+
+    const isEditor = user?.user?.roles === "Editor";
+
+    const sidebarItem = isAdmin
+        ? menuItemsAdmin
+        : isEditor
+        ? menuItemsEditor
+        : menuItems;
 
     return (
         <aside
