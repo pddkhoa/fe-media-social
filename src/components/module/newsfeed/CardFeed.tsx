@@ -65,7 +65,7 @@ export default function CardFeed({
 
     return (
         <>
-            <div className="p-4 flex flex-col gap-5 w-[800px] border rounded w-5xl">
+            <div className="p-4 flex flex-col gap-5 xl:w-[800px] w-[500px] border rounded w-5xl">
                 <div className="flex justify-between relative">
                     {data.category ? (
                         <>

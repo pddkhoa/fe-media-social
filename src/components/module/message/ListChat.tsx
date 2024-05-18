@@ -122,7 +122,7 @@ const ListChat: FC<ListChatProps> = ({ setChatId, setDataChat, socket }) => {
 
     return (
         <>
-            <div className="absolute  h-[calc(100%-85px)] w-[20%] mx-2  border-r   overflow-auto flex flex-col gap-3 p-2">
+            <div className="absolute  h-[calc(100%-85px)] xl:w-[20%] w-[35%]  mx-2  border-r   overflow-auto flex flex-col gap-3 p-2">
                 <div className="flex justify-between items-center">
                     <Title className="text-xl">Chat Inbox</Title>
                     {/* <Tooltip content={"Create Group Chat"}>
@@ -180,7 +180,7 @@ const ListChat: FC<ListChatProps> = ({ setChatId, setDataChat, socket }) => {
                         <Tab.ListItem
                             className={"text-sm flex gap-2 items-center"}
                         >
-                            Message Request
+                            Request
                             <Badge size="sm">{listChatRequest?.length}</Badge>
                         </Tab.ListItem>
                     </Tab.List>

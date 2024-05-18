@@ -15,14 +15,14 @@ const PageMessage: FC<PageMessageProps> = ({ socket }) => {
     return (
         <>
             <div className=" w-full grid grid-cols-12 border-t -mx-6 -mt-2 ">
-                <div className="col-span-3">
+                <div className="xl:col-span-3 col-span-5">
                     <ListChat
                         setChatId={setChatId}
                         setDataChat={setDataChat}
                         socket={socket}
                     />
                 </div>
-                <div className=" col-span-9 p-2">
+                <div className="xl:col-span-9 col-span-7 p-2">
                     <ScreenChat
                         chatId={chatId}
                         dataChat={dataChat}

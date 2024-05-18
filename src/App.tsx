@@ -7,6 +7,7 @@ import { store, persistor } from "./store/store";
 import { Provider } from "react-redux";
 import { Flip, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import GlobalDrawer from "./components/ui/GlobalDrawer";
 
 function App() {
     return (
@@ -30,6 +31,7 @@ function App() {
                         transition={Flip}
                     />
                     {/* <NotificationRealtime socket={socket} /> */}
+                    <GlobalDrawer />
                 </BrowserRouter>
             </PersistGate>
         </Provider>

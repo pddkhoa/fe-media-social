@@ -200,7 +200,7 @@ export default function PostCard({
                 onClose={() => setOpen(false)}
                 className="[&>div]:p-0 lg:[&>div]:p-4"
                 overlayClassName="dark:bg-opacity-40 dark:backdrop-blur-lg"
-                containerClassName="dark:bg-gray-100 max-w-7xl max-h-[650px] w-full h-full relative"
+                containerClassName="dark:bg-gray-100 max-w-[460px] max-w-[1200px] lg:max-w-4xl xl:max-w-6xl 2xl:max-w-[1200px] relative "
             >
                 {data &&
                     (data?.isPermission &&

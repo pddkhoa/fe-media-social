@@ -36,7 +36,7 @@ const ListPostDiscuss: FC<ListPostDiscussProps> = ({
 }) => {
     return (
         <div className="px-2 mt-10  w-full  @2xl:mt-7 @6xl:mt-0">
-            <div className="grid grid-cols-3 gap-5">
+            <div className="grid grid-cols-2 xl:grid-cols-3 gap-5">
                 {data && data.length > 0 ? (
                     data.map((item) => (
                         <PostCard

@@ -120,7 +120,7 @@ const EditorPost: FC<EditorPostProps> = ({
     return (
         <>
             <div id="editor" />
-            <div className="flex justify-between">
+            <div className="flex justify-between items-center">
                 <p className="text-sm text-gray-500">
                     Use{" "}
                     <kbd className="rounded-md border bg-muted px-1 text-xs uppercase">

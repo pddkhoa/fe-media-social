@@ -164,7 +164,7 @@ export default function ProfileDetails({
                         </button>
                     ))}
                 </div>
-                <div className="grid grid-cols-3 gap-3 p-4">
+                <div className="grid grid-cols-2 xl:grid-cols-3 gap-3 p-4">
                     {isLoading ? (
                         <div className="col-span-3 mx-auto mt-5">
                             <Loader />

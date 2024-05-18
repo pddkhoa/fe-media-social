@@ -75,7 +75,7 @@ const GroupList: FC<GroupListProps> = ({
             ) : (
                 <>
                     {searchText ? (
-                        <div className="grid grid-cols-3 gap-5 ">
+                        <div className="grid grid-cols-2 xl:grid-cols-3 gap-5">
                             {loader ? (
                                 <>
                                     <SkeletonCate />
@@ -102,7 +102,7 @@ const GroupList: FC<GroupListProps> = ({
                         </div>
                     ) : (
                         <>
-                            <div className="grid grid-cols-3 gap-5 ">
+                            <div className="grid grid-cols-2 xl:grid-cols-3 gap-5 ">
                                 {listCate && listCate?.length > 0 ? (
                                     listCate?.map((item) => (
                                         <div

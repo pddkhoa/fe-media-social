@@ -118,13 +118,13 @@ const PostDetail: FC<PostDetailProps> = ({ dataBlog, socket, isLoading }) => {
                 </div>
             ) : (
                 <div className="max-w-5xl py-8 mx-auto space-y-12">
-                    <article className="space-y-8">
+                    <article className="">
                         <div className="space-y-6">
                             <h1 className="text-4xl font-semibold md:tracki md:text-4xl">
                                 {dataBlog?.title}
                             </h1>
                             <div className="flex flex-col items-start justify-between w-full md:flex-row md:items-center ">
-                                <div className="flex items-center md:space-x-2">
+                                <div className="flex items-center space-x-5">
                                     {dataBlog?.user?.avatar ? (
                                         <Avatar
                                             // initials={dataBlog?.user?.name}

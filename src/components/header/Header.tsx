@@ -20,6 +20,8 @@ import {
 } from "@/store/notiSlice";
 import { Socket } from "socket.io-client";
 import { TYPE_NOTI } from "@/utils/contants";
+import Sidebar from "../sidebar/Sidebar";
+import HamburgerButton from "./HamburgerButton";
 
 function HeaderMenuRight(socket: HeaderProps) {
     const [isLoading, setIsLoading] = useState(false);
@@ -157,6 +159,9 @@ const Header: FC<HeaderProps> = ({ socket }) => {
                 "sticky top-0 z-50 flex items-center bg-gray-0/80 px-4 py-4 backdrop-blur-xl dark:bg-white md:px-5 lg:px-6 xl:pl-4 2xl:py-5 2xl:pl-6 3xl:px-8 3xl:pl-6 4xl:px-10 4xl:pl-9"
             }
         >
+            <HamburgerButton
+                view={<Sidebar className="static w-full 2xl:w-full" />}
+            />
             {!isAdmin && (
                 <div className="flex w-full max-w-2xl items-center">
                     <SearchWidget className="[&_.search-command]:lg:bg-gray-900 [&_.search-command]:lg:text-gray-0" />

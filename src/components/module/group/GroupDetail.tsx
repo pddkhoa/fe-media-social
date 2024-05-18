@@ -307,13 +307,13 @@ const GroupDetail: FC<GroupDetailProps> = ({ socket }) => {
                                                 className="object-cover h-full w-full"
                                             />
                                         ) : (
-                                            <div className="bg-gradient-to-r h-full w-full rounded-lg from-[#F8E1AF] to-[#F6CFCF] bg-opacity-30" />
+                                            <div className="bg-gradient-to-r h-24 w-24 rounded-lg from-[#F8E1AF] to-[#F6CFCF] bg-opacity-30" />
                                         )}
                                     </div>
                                     <div>
                                         <Title
                                             as="h1"
-                                            className="text-lg flex gap-2 font-bold capitalize leading-normal text-gray-900 @3xl:!text-xl 3xl:text-2xl"
+                                            className="text-sm flex gap-2 font-bold capitalize leading-normal  text-gray-900 @3xl:!text-xl 3xl:text-2xl"
                                         >
                                             {dataCate?.name}
                                             {getBadgeStatus(dataCate?.status)}
@@ -352,7 +352,7 @@ const GroupDetail: FC<GroupDetailProps> = ({ socket }) => {
                             <div className="pt-2.5 w-1/2 flex justify-end">
                                 <p className="text-xs text-gray-500 @3xl:text-sm 3xl:text-base mt-2">
                                     <div className="flex items-center justify-between gap-2">
-                                        <div className="flex-grow">
+                                        <div className="flex-wrap">
                                             <div className="flex gap-3 justify-end items-center">
                                                 {dataCate?.isAdmin?._id !==
                                                 user?.user?._id ? (
@@ -539,7 +539,7 @@ const GroupDetail: FC<GroupDetailProps> = ({ socket }) => {
                         </div>
                     </div>
                     <div className="px-2 mt-10  w-full  @2xl:mt-7 @6xl:mt-0">
-                        <div className="grid grid-cols-3 gap-5">
+                        <div className="grid grid-cols-2 xl:grid-cols-3 gap-5">
                             {listBlog && listBlog.length > 0 ? (
                                 listBlog.map((item) => (
                                     <PostCard

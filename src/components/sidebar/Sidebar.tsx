@@ -32,7 +32,7 @@ export default function Sidebar({ className }: { className?: string }) {
                 </Link>
             </div>
 
-            <SimpleBar className="h-[calc(100%-80px)] overflow-auto">
+            <SimpleBar className="h-[calc(100%-100px)] overflow-auto">
                 <div className="mt-4 pb-3 3xl:mt-6">
                     {sidebarItem.map((item: any, index: any) => {
                         const isActive =

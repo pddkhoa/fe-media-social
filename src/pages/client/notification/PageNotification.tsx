@@ -59,14 +59,17 @@ const PageNotification = () => {
                     setValueTab={setValueTab}
                     dataTotal={dataNoti?.length}
                 />
-                <div className=" container  mt-5 items-start grid grid-cols-12 gap-7">
+                <div className=" mt-5 items-start grid grid-cols-12 gap-7">
                     <NotificationList
                         setMessage={setMessage}
                         dataNoti={dataNoti}
                         isLoading={isLoading}
-                        className="col-span-4 overflow-auto"
+                        className="xl:col-span-4 col-span-6 overflow-auto"
                     />
-                    <InboxTabs message={message} className="col-span-8" />
+                    <InboxTabs
+                        message={message}
+                        className="xl:col-span-8 col-span-6"
+                    />
                 </div>
             </div>
         </>

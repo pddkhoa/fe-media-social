@@ -179,7 +179,7 @@ export const ScreenChat: FC<ScreenChatProps> = ({
 
     return dataChat ? (
         dataChat?.isGroup ? (
-            <div className="pl-8 ">
+            <div className="pl-8 w-full">
                 <div className="flex justify-between items-center mb-2 p-1">
                     <div className="flex gap-3 ">
                         <div className="relative inline-flex">
