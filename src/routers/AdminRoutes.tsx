@@ -171,7 +171,7 @@ const AdminRoutes = () => {
                                 }
                             />{" "}
                             <Route
-                                path="/admin/blog/detail"
+                                path="/admin/blog/detail/:id"
                                 element={
                                     <Suspense fallback={<div>Loading ...</div>}>
                                         <DetailPost />

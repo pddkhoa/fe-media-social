@@ -30,9 +30,7 @@ const DropdownOptionBlog: FC<DropdownOptionBlogProps> = ({
             <div className="grid px-2 py-2 font-medium text-gray-700">
                 <Button
                     variant="text"
-                    onClick={() =>
-                        navigate("/admin/blog/detail", { state: data })
-                    }
+                    onClick={() => navigate(`/admin/blog/detail/${data?._id}`)}
                     className="group my-0.5 flex justify-start items-center rounded-md px-2.5 py-2 hover:bg-slate-200 cursor-pointer"
                 >
                     View Detail
