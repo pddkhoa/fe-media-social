@@ -295,6 +295,23 @@ class BlogServices {
             axiosJWT.get(`/blog/getBlogById/${blogId}`)
         );
     }
+
+    static async sendChatAI(
+        data: {
+            prompt: string;
+        },
+        axiosJWT: any
+    ) {
+        type body = {
+            success: string;
+            statusCode: number;
+            message: string;
+            result: string;
+        };
+        return await requestApiHelper<body>(
+            axiosJWT.post("chatAI/chatMessage", data)
+        );
+    }
 }
 
 export default BlogServices;
