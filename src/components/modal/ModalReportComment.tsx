@@ -112,7 +112,7 @@ const ModalReportComment: FC<ModalReportCommentProps> = ({ data }) => {
             {isLoading ? (
                 <Loader />
             ) : (
-                <>
+                <div>
                     <RadioGroup
                         value={value}
                         setValue={setValue}
@@ -133,7 +133,7 @@ const ModalReportComment: FC<ModalReportCommentProps> = ({ data }) => {
                               ))
                             : null}
                     </RadioGroup>
-                </>
+                </div>
             )}
             <Textarea
                 name="message"

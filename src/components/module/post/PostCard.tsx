@@ -94,7 +94,7 @@ export default function PostCard({
                                     to={`/profile/${data?.user?._id}`}
                                 >
                                     <Avatar
-                                        name={data?.user?.name}
+                                        name={data?.user?.name || "default"}
                                         src={data?.user?.avatar?.url}
                                         customSize={30}
                                         className="object-cover w-12 h-12 rounded-full shadow"

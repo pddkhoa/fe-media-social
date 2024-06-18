@@ -325,7 +325,7 @@ const FormSignUp = () => {
                         type="submit"
                         className="col-span-2 mt-2"
                     >
-                        <span>Sign In</span>{" "}
+                        <span>Sign Up</span>{" "}
                         <PiArrowRightBold className="ms-2 mt-0.5 h-5 w-5" />
                     </Button>
                 )}

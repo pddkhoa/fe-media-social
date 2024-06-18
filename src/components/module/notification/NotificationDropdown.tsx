@@ -98,8 +98,10 @@ function NotificationsList({
                                 >
                                     <div className={cn("relative")}>
                                         <Avatar
-                                            src={item.sender.avatar.url}
-                                            name={item.sender.name}
+                                            src={item?.sender?.avatar?.url}
+                                            name={
+                                                item?.sender?.name || "default"
+                                            }
                                         />
                                     </div>
                                     <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center">
@@ -108,7 +110,7 @@ function NotificationsList({
                                                 as="h6"
                                                 className="mb-0.5 text-sm font-semibold"
                                             >
-                                                {item.sender.name}
+                                                {item?.sender?.name}
                                             </Title>
                                             <div className="flex">
                                                 {item.type ===

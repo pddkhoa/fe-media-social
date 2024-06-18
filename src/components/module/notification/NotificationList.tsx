@@ -20,9 +20,9 @@ export function NotificationItem({ data, onClick }: NotiItemProps) {
             className={`grid cursor-pointer grid-cols-12 items-start  border-t  hover:border-primary  hover:shadow-md border-gray-200 p-5 `}
         >
             <Avatar
-                name={data.sender.name}
+                name={data?.sender?.name || "default"}
                 className="col-span-2"
-                src={data.sender.avatar.url}
+                src={data?.sender?.avatar?.url}
                 size="md"
             />
 
@@ -33,7 +33,7 @@ export function NotificationItem({ data, onClick }: NotiItemProps) {
                             {data?.sender?.name}
                         </span>
 
-                        {!data.isRead ? (
+                        {!data?.isRead ? (
                             <Badge
                                 renderAsDot
                                 size="lg"

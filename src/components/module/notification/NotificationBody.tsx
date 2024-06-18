@@ -15,19 +15,19 @@ export default function MessageBody({ message }: MessageBodyProps) {
                 <>
                     <div className="grid grid-cols-[32px_1fr] items-start gap-3 lg:gap-4 xl:grid-cols-[48px_1fr]">
                         <Avatar
-                            name={message?.sender.name}
-                            src={message?.sender.avatar.url}
+                            name={message?.sender?.name || "default"}
+                            src={message?.sender?.avatar?.url}
                             className="!h-8 !w-8 bg-[#70C5E0] font-medium p-white xl:!h-11 xl:!w-11"
                         />
                         <div className="-mt-1.5 lg:mt-0">
                             <div className="flex items-center justify-between">
                                 <Title as="h3" className="p-sm font-medium">
-                                    {message?.sender.name}
+                                    {message?.sender?.name}
                                 </Title>
                             </div>
                             <div className="mt-1.5 items-center gap-2 p-xs p-gray-500 lg:flex">
                                 <span className="flex items-center lowercase">
-                                    {message?.sender.email}{" "}
+                                    {message?.sender?.email}{" "}
                                     <FiExternalLink className="ml-1 h-2.5 w-2.5" />
                                 </span>
                                 <DotSeparator className="hidden lg:block" />
