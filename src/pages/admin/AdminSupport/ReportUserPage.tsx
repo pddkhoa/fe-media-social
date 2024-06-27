@@ -8,7 +8,7 @@ import { useState, useCallback, useEffect } from "react";
 import { Empty, Loader } from "rizzui";
 
 const pageHeader = {
-    title: "Blogs",
+    title: "User Issues",
     breadcrumb: [
         {
             href: "/",

@@ -3,7 +3,7 @@ import { FC } from "react";
 import { PiArrowsClockwiseFill } from "react-icons/pi";
 import { Empty, Button } from "rizzui";
 import PostCard from "../post/PostCard";
-import { likePostDiscuss, savePostDiscuss } from "@/store/discoverSlice";
+import { likePostPopular, savePostPopular } from "@/store/discoverSlice";
 import { Socket } from "socket.io-client";
 
 type ListPostPopularProps = {
@@ -43,8 +43,8 @@ const ListPostPopular: FC<ListPostPopularProps> = ({
                             key={item._id}
                             data={item}
                             setIsDelete={setIsDelete}
-                            actionDispatchLike={likePostDiscuss(item._id)}
-                            actionDispatchSave={savePostDiscuss(item._id)}
+                            actionDispatchLike={likePostPopular(item._id)}
+                            actionDispatchSave={savePostPopular(item._id)}
                             handleCommentPost={handleCommentPost}
                             socket={socket}
                         />

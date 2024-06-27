@@ -6,14 +6,11 @@ import { FC, useEffect, useState } from "react";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { RULES } from "@/utils/rules";
-import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import ClientServices from "@/services/client";
 import toast from "react-hot-toast";
 import { updateInfoSuccess } from "@/store/authSlice";
-
-const URL_PROVINCE_API = "https://vapi.vnappmob.com/api";
 
 type valueType = {
     label: string;
@@ -42,69 +39,10 @@ const FormSettingProfile: FC<FormSettingProfileProps> = ({ setIsUpdate }) => {
     const [valueGender, setValueGender] = useState<valueType>(
         getObjectGender(userData?.gender || (options[0] as any))
     );
-    const [valueProvince, setValueProvince] = useState<valueType>();
-    const [optionsProvince, setOptionsProvince] = useState<any>();
-    const [valueDistrict, setValueDistrict] = useState<valueType>();
-    const [optionsDistrict, setOptionsDistrict] = useState<any>();
-
-    useEffect(() => {
-        if (valueProvince && valueDistrict) {
-            formik.setFieldValue(
-                "address",
-                `${valueProvince.label} - ${valueDistrict.label}`
-            );
-        }
-    }, [valueProvince, valueDistrict]);
 
     useEffect(() => {
         formik.setFieldValue("gender", valueGender.value);
     }, [valueGender]);
-
-    useEffect(() => {
-        const fetchProvince = async () => {
-            try {
-                const response = await axios.get(
-                    `${URL_PROVINCE_API}/province`
-                );
-                if (response.status === 200) {
-                    const provinces = response.data.results.map(
-                        (province: any) => ({
-                            label: province.province_name,
-                            value: province.province_id,
-                        })
-                    );
-                    setOptionsProvince(provinces);
-                }
-            } catch (error) {
-                console.error("Error fetching data:", error);
-            }
-        };
-        fetchProvince();
-    }, []);
-
-    useEffect(() => {
-        if (valueProvince) {
-            const fetchDistrict = async () => {
-                try {
-                    const response = await axios.get(
-                        `${URL_PROVINCE_API}/province/district/${valueProvince?.value}`
-                    );
-                    if (response.status === 200) {
-                        const district = response.data.results.map(
-                            (district: any) => ({
-                                label: district.district_name,
-                                value: district.district_id,
-                            })
-                        );
-                        setOptionsDistrict(district);
-                    }
-                } catch (error) {
-                    console.error("Error fetching data:", error);
-                }
-            };
-            fetchDistrict();
-        }
-    }, [valueProvince]);
 
     const formik = useFormik({
         initialValues: {
@@ -115,7 +53,6 @@ const FormSettingProfile: FC<FormSettingProfileProps> = ({ setIsUpdate }) => {
             gender: "" || userData?.gender,
             username: "" || userData?.username,
             Descriptions: "",
-            address: "" || userData?.address,
         },
         validationSchema: Yup.object().shape({
             username: Yup.string().required("Username is required."),
@@ -131,7 +68,6 @@ const FormSettingProfile: FC<FormSettingProfileProps> = ({ setIsUpdate }) => {
         onSubmit: async (values) => {
             const report = {
                 ...values,
-                address: values?.address,
                 gender: valueGender?.value,
             };
             setIsLoading(true);
@@ -249,34 +185,6 @@ const FormSettingProfile: FC<FormSettingProfileProps> = ({ setIsUpdate }) => {
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
                             value={formik.values.phone}
-                        />
-                    </div>
-                </div>
-
-                <div className={cn("grid gap-5 grid-cols-12 pt-7 ")}>
-                    <div className="col-span-4">
-                        <h4 className="text-base font-medium">Address</h4>
-                    </div>
-
-                    <div className="grid grid-cols-2 col-span-8 gap-8 ">
-                        <Select
-                            options={optionsProvince}
-                            value={valueProvince}
-                            onChange={setValueProvince}
-                        />
-                        <Select
-                            options={optionsDistrict}
-                            value={valueDistrict}
-                            disabled={!optionsDistrict}
-                            onChange={setValueDistrict}
-                        />
-                        <Input
-                            id="address"
-                            name="address"
-                            className="col-span-2"
-                            value={formik.values.address as any}
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
                         />
                     </div>
                 </div>
