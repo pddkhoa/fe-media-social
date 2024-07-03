@@ -1,6 +1,7 @@
 import PageHeader from "@/components/breadcrumb/PageHeader";
 import ListPostDiscuss from "@/components/module/discover/ListPostDiscuss";
 import GroupHeader from "@/components/module/group/GroupHeader";
+import { SkeletonPost } from "@/components/ui/SkeletonLoader";
 import useAuth from "@/hooks/useAuth";
 import BlogServices from "@/services/blog";
 import { doneCommentSuccess, pendingCommentSuccess } from "@/store/blogSlice";
@@ -40,15 +41,19 @@ const PageListPostDis: FC<PageListPostDisProps> = ({ socket }) => {
     const [isDelete, setIsDelete] = useState(false);
     const { axiosJWT, user } = useAuth();
     const [searchText, setSearchText] = useState("");
+    const [isFetchingMore, setIsFetchingMore] = useState(false); // New state for load more
 
     const listBlog = useSelector(
         (state: RootState) => state.discover.listPostBestDis
     );
-
     const fetchData = useCallback(
         async (page: number) => {
             try {
-                setIsLoading(true);
+                if (page === 1) {
+                    setIsLoading(true);
+                } else {
+                    setIsFetchingMore(true); // Show skeleton loader on load more
+                }
                 const { body } = await BlogServices.getBlogDiscuss(
                     page.toString(),
                     axiosJWT
@@ -59,12 +64,13 @@ const PageListPostDis: FC<PageListPostDisProps> = ({ socket }) => {
                     } else {
                         dispatch(getMoreBlogDis(body?.result?.posts));
                     }
-                    setIsLoading(false);
                     setTotalPage(body?.result?.size);
                 }
             } catch (error) {
                 console.error("Error fetching data:", error);
+            } finally {
                 setIsLoading(false);
+                setIsFetchingMore(false); // Hide skeleton loader after load more
             }
         },
         [dispatch]
@@ -148,10 +154,18 @@ const PageListPostDis: FC<PageListPostDisProps> = ({ socket }) => {
                     handleCommentPost={handleCommentPost}
                     setIsDelete={setIsDelete}
                     socket={socket}
+                    isFetchingMore={isFetchingMore}
                 />
             ) : (
                 <div className="flex justify-center items-center mt-10">
                     <Empty />
+                </div>
+            )}
+            {isFetchingMore && (
+                <div className="grid grid-cols-3 mt-4">
+                    <SkeletonPost />
+                    <SkeletonPost />
+                    <SkeletonPost />
                 </div>
             )}
         </>

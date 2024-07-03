@@ -3,6 +3,7 @@ import MainLayout from "@/layouts/MainLayout";
 import { Suspense, lazy } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { Loader } from "rizzui";
+
 const HomeAdmin = lazy(() => import("@/pages/admin/Dashboard/PageHomeAdmin"));
 const AdminBlog = lazy(() => import("@/pages/admin/AdminBlogs/PageAdminBlog"));
 const AdminTag = lazy(() => import("@/pages/admin/AdminTags/PageAdminTags"));
@@ -15,11 +16,9 @@ const AdminAccount = lazy(
 const AdminAccountBlock = lazy(
     () => import("@/pages/admin/AdminAccountBlocks/PageAdminAccountBlock")
 );
-
 const SettingCalendar = lazy(
     () => import("@/pages/admin/event-calendar/PageCalendar")
 );
-
 const DetailPost = lazy(() => import("@/pages/client/post/PageDetailPost"));
 const CreatePost = lazy(() => import("@/pages/client/post/PageCreatePost"));
 const EditPost = lazy(() => import("@/pages/client/post/PageEditPost"));
@@ -37,7 +36,6 @@ const SettingDetail = lazy(
 const SettingPassword = lazy(
     () => import("@/pages/client/profile/PageTabPassword")
 );
-
 const ReportBlogPage = lazy(
     () => import("@/pages/admin/AdminSupport/ReportBlogPage")
 );
@@ -50,262 +48,87 @@ const ReportTagPage = lazy(
 const ReportCommentPage = lazy(
     () => import("@/pages/admin/AdminSupport/ReportCommentPage")
 );
-
 const ReportPage = lazy(
     () => import("@/pages/admin/AdminReports/AdminReportPage")
 );
 
+const routesConfig = [
+    { path: "/", element: <HomeAdmin />, role: "both" },
+    { path: "/setting-auto", element: <SettingCalendar />, role: "Editor" },
+    {
+        path: "/profile-setting",
+        element: <ProfileSetting />,
+        role: "Editor",
+        nested: [
+            { index: true, element: <SettingDetail /> },
+            { path: "password", element: <SettingPassword /> },
+        ],
+    },
+    { path: "/admin/report/blog", element: <ReportBlogPage />, role: "Editor" },
+    { path: "/admin/report/tag", element: <ReportTagPage />, role: "Editor" },
+    {
+        path: "/admin/report/comment",
+        element: <ReportCommentPage />,
+        role: "Editor",
+    },
+    { path: "/admin/report/user", element: <ReportUserPage />, role: "Editor" },
+    { path: "/admin/report", element: <ReportPage />, role: "Editor" },
+    { path: "/admin/account", element: <AdminAccount />, role: "Admin" },
+    {
+        path: "/admin/account-block",
+        element: <AdminAccountBlock />,
+        role: "Admin",
+    },
+    { path: "/admin/blog", element: <AdminBlog />, role: "Admin" },
+    { path: "/admin/blog/detail/:id", element: <DetailPost />, role: "Admin" },
+    { path: "/admin/blog/create", element: <CreatePost />, role: "Admin" },
+    { path: "/admin/blog/edit", element: <EditPost />, role: "Admin" },
+    { path: "/admin/group", element: <AdminGroups />, role: "Admin" },
+    { path: "admin/group/create", element: <CreateGroup />, role: "Admin" },
+    { path: "admin/group/detail/:id", element: <DetailGroup />, role: "Admin" },
+    { path: "/admin/tag", element: <AdminTag />, role: "Admin" },
+    {
+        path: "/admin/account/edit/:id",
+        element: <ProfileSettingEdit />,
+        role: "Admin",
+    },
+];
+
 const AdminRoutes = () => {
     const { user } = useAuth();
-    const roleEditor = user?.user?.roles === "Editor" ? true : false;
+    const isEditor = user?.user?.roles === "Editor";
 
     return (
-        <Suspense fallback={<div>Loading...</div>}>
-            <Routes>
-                <Route element={<MainLayout />}>
-                    {roleEditor ? (
-                        <>
+        <Routes>
+            <Route element={<MainLayout />}>
+                {routesConfig.map((route) => {
+                    if (
+                        route.role === "both" ||
+                        (isEditor && route.role === "Editor") ||
+                        (!isEditor && route.role === "Admin")
+                    ) {
+                        return (
                             <Route
-                                path="/"
-                                element={
-                                    <Suspense fallback={<div>Loading ...</div>}>
-                                        <HomeAdmin />
-                                    </Suspense>
-                                }
-                            />
-                            <Route
-                                path="/setting-auto"
-                                element={
-                                    <Suspense fallback={<div>Loading ...</div>}>
-                                        <SettingCalendar />
-                                    </Suspense>
-                                }
-                            />
-                            <Route
-                                path="/profile-setting"
-                                element={
-                                    <Suspense fallback={<div>Loading ...</div>}>
-                                        <ProfileSetting />
-                                    </Suspense>
-                                }
-                            >
-                                <Route index element={<SettingDetail />} />
-                                <Route
-                                    path="password"
-                                    element={<SettingPassword />}
-                                />
-                            </Route>
-                            <Route
-                                path="/admin/report/blog"
-                                element={
-                                    <Suspense fallback={<div>Loading ...</div>}>
-                                        <ReportBlogPage />
-                                    </Suspense>
-                                }
-                            />
-                            <Route
-                                path="/admin/report/tag"
-                                element={
-                                    <Suspense fallback={<div>Loading ...</div>}>
-                                        <ReportTagPage />
-                                    </Suspense>
-                                }
-                            />
-                            <Route
-                                path="/admin/report/comment"
-                                element={
-                                    <Suspense fallback={<div>Loading ...</div>}>
-                                        <ReportCommentPage />
-                                    </Suspense>
-                                }
-                            />
-                            <Route
-                                path="/admin/report/user"
-                                element={
-                                    <Suspense fallback={<div>Loading ...</div>}>
-                                        <ReportUserPage />
-                                    </Suspense>
-                                }
-                            />
-                            <Route
-                                path="/admin/report"
-                                element={
-                                    <Suspense fallback={<div>Loading ...</div>}>
-                                        <ReportPage />
-                                    </Suspense>
-                                }
-                            />
-                        </>
-                    ) : (
-                        <>
-                            <Route
-                                path="/"
-                                element={
-                                    <Suspense fallback={<div>Loading ...</div>}>
-                                        <HomeAdmin />
-                                    </Suspense>
-                                }
-                            />
-                            <Route
-                                path="/admin/account"
-                                element={
-                                    <Suspense fallback={<div>Loading ...</div>}>
-                                        <AdminAccount />
-                                    </Suspense>
-                                }
-                            />{" "}
-                            <Route
-                                path="/admin/account-block"
-                                element={
-                                    <Suspense fallback={<div>Loading ...</div>}>
-                                        <AdminAccountBlock />
-                                    </Suspense>
-                                }
-                            />{" "}
-                            <Route
-                                path="/admin/blog"
-                                element={
-                                    <Suspense fallback={<div>Loading ...</div>}>
-                                        <AdminBlog />
-                                    </Suspense>
-                                }
-                            />{" "}
-                            <Route
-                                path="/admin/blog/detail/:id"
-                                element={
-                                    <Suspense fallback={<div>Loading ...</div>}>
-                                        <DetailPost />
-                                    </Suspense>
-                                }
-                            />{" "}
-                            <Route
-                                path="/admin/blog/create"
-                                element={
-                                    <Suspense fallback={<div>Loading ...</div>}>
-                                        <CreatePost />
-                                    </Suspense>
-                                }
-                            />{" "}
-                            <Route
-                                path="/admin/blog/edit"
-                                element={
-                                    <Suspense fallback={<div>Loading ...</div>}>
-                                        <EditPost />
-                                    </Suspense>
-                                }
-                            />
-                            <Route
-                                path="/admin/group"
-                                element={
-                                    <Suspense fallback={<div>Loading ...</div>}>
-                                        <AdminGroups />
-                                    </Suspense>
-                                }
-                            />
-                            <Route
-                                path="admin/group/create"
-                                element={
-                                    <Suspense fallback={<div>Loading ...</div>}>
-                                        <CreateGroup />
-                                    </Suspense>
-                                }
-                            />
-                            <Route
-                                path="admin/group/detail/:id"
+                                key={route.path}
+                                path={route.path}
                                 element={
                                     <Suspense fallback={<Loader />}>
-                                        <DetailGroup />
-                                    </Suspense>
-                                }
-                            />
-                            <Route
-                                path="/admin/tag"
-                                element={
-                                    <Suspense fallback={<div>Loading ...</div>}>
-                                        <AdminTag />
-                                    </Suspense>
-                                }
-                            />
-                            <Route
-                                path="/admin/account/edit/:id"
-                                element={
-                                    <Suspense fallback={<div>Loading ...</div>}>
-                                        <ProfileSettingEdit />
-                                    </Suspense>
-                                }
-                            />
-                            <Route
-                                path="/admin/report/blog"
-                                element={
-                                    <Suspense fallback={<div>Loading ...</div>}>
-                                        <ReportBlogPage />
-                                    </Suspense>
-                                }
-                            />
-                            <Route
-                                path="/admin/report/tag"
-                                element={
-                                    <Suspense fallback={<div>Loading ...</div>}>
-                                        <ReportTagPage />
-                                    </Suspense>
-                                }
-                            />
-                            <Route
-                                path="/admin/report/comment"
-                                element={
-                                    <Suspense fallback={<div>Loading ...</div>}>
-                                        <ReportCommentPage />
-                                    </Suspense>
-                                }
-                            />
-                            <Route
-                                path="/admin/report/user"
-                                element={
-                                    <Suspense fallback={<div>Loading ...</div>}>
-                                        <ReportUserPage />
-                                    </Suspense>
-                                }
-                            />
-                            <Route
-                                path="/admin/report"
-                                element={
-                                    <Suspense fallback={<div>Loading ...</div>}>
-                                        <ReportPage />
-                                    </Suspense>
-                                }
-                            />
-                            <Route
-                                path="/setting-auto"
-                                element={
-                                    <Suspense fallback={<div>Loading ...</div>}>
-                                        <SettingCalendar />
-                                    </Suspense>
-                                }
-                            />
-                            <Route
-                                path="/profile-setting"
-                                element={
-                                    <Suspense fallback={<div>Loading ...</div>}>
-                                        <ProfileSetting />
+                                        {route.element}
                                     </Suspense>
                                 }
                             >
-                                <Route index element={<SettingDetail />} />
-                                <Route
-                                    path="password"
-                                    element={<SettingPassword />}
-                                />
+                                {route.nested &&
+                                    route.nested.map((nestedRoute, index) => (
+                                        <Route key={index} {...nestedRoute} />
+                                    ))}
                             </Route>
-                        </>
-                    )}
-                </Route>
-
-                <Route
-                    path="*"
-                    element={<Navigate to={"/"} replace={true} />}
-                />
-            </Routes>
-        </Suspense>
+                        );
+                    }
+                    return null;
+                })}
+            </Route>
+            <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
     );
 };
 

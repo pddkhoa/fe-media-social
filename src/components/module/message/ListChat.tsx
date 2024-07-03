@@ -12,6 +12,7 @@ import {
     PiCheck,
     PiDotsThreeOutlineVertical,
     PiMagnifyingGlassBold,
+    PiNotePencilFill,
 } from "react-icons/pi";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
@@ -21,12 +22,16 @@ import {
     Button,
     Empty,
     Input,
+    Loader,
     Popover,
     Tab,
     Title,
+    Tooltip,
 } from "rizzui";
 import DropdownOption from "./DropdownOptionChat";
 import { Socket } from "socket.io-client";
+import ModalCreateGroupChat from "./ModalCreateGroupChat";
+import { useModal } from "@/hooks/useModal";
 
 type ListChatProps = {
     setChatId: React.Dispatch<React.SetStateAction<string | undefined>>;
@@ -47,8 +52,8 @@ const ListChat: FC<ListChatProps> = ({ setChatId, setDataChat, socket }) => {
     const [isAddgroup, setIsAddGroup] = useState(false);
     const inputRef = useRef(null);
     const [searchText, setSearchText] = useState("");
-
-    // const { openModal } = useModal();
+    const { openModal } = useModal();
+    const [loadingChatRequest, setLoadingChatRequest] = useState(false);
 
     const fetchChat = useCallback(async () => {
         try {
@@ -64,14 +69,18 @@ const ListChat: FC<ListChatProps> = ({ setChatId, setDataChat, socket }) => {
     }, [dispatch]);
     const fetchChatRequest = useCallback(async () => {
         try {
+            setLoadingChatRequest(true);
             const { body } = await ChatServices.getListChatRequest(axiosJWT);
             if (body?.success) {
                 dispatch(getListChatRequestSuccess(body.result));
+                setLoadingChatRequest(false);
             } else {
                 toast.error(body?.message);
+                setLoadingChatRequest(false);
             }
         } catch (error) {
             console.error("Error fetching data:", error);
+            setLoadingChatRequest(false);
         }
     }, [dispatch]);
 
@@ -125,7 +134,7 @@ const ListChat: FC<ListChatProps> = ({ setChatId, setDataChat, socket }) => {
             <div className="absolute  h-[calc(100%-85px)] xl:w-[20%] w-[35%]  mx-2  border-r   overflow-auto flex flex-col gap-3 p-2">
                 <div className="flex justify-between items-center">
                     <Title className="text-xl">Chat Inbox</Title>
-                    {/* <Tooltip content={"Create Group Chat"}>
+                    <Tooltip content={"Create Group Chat"}>
                         <Button
                             onClick={() => {
                                 openModal({
@@ -141,7 +150,7 @@ const ListChat: FC<ListChatProps> = ({ setChatId, setDataChat, socket }) => {
                         >
                             <PiNotePencilFill className="h-6 w-6" />
                         </Button>
-                    </Tooltip> */}
+                    </Tooltip>
                 </div>
                 <Input
                     variant="flat"
@@ -208,8 +217,12 @@ const ListChat: FC<ListChatProps> = ({ setChatId, setDataChat, socket }) => {
                             )}
                         </Tab.Panel>
                         <Tab.Panel>
-                            {" "}
-                            {listChatRequest && listChatRequest.length > 0 ? (
+                            {loadingChatRequest ? (
+                                <div className="flex justify-center items-center">
+                                    <Loader />
+                                </div>
+                            ) : listChatRequest &&
+                              listChatRequest.length > 0 ? (
                                 listChatRequest.map((item) => (
                                     <RowUserListChat
                                         key={item._id}

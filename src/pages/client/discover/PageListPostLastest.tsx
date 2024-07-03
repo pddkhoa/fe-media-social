@@ -1,6 +1,7 @@
 import PageHeader from "@/components/breadcrumb/PageHeader";
 import ListPostLastest from "@/components/module/discover/ListPostLastest";
 import GroupHeader from "@/components/module/group/GroupHeader";
+import { SkeletonPost } from "@/components/ui/SkeletonLoader";
 import useAuth from "@/hooks/useAuth";
 import BlogServices from "@/services/blog";
 import { pendingCommentSuccess, doneCommentSuccess } from "@/store/blogSlice";
@@ -34,6 +35,7 @@ type PageListPostLastestProps = {
 
 const PageListPostLastest: FC<PageListPostLastestProps> = ({ socket }) => {
     const [isLoading, setIsLoading] = useState(false);
+    const [isFetchingMore, setIsFetchingMore] = useState(false); // New state for load more
     const dispatch = useDispatch();
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPage, setTotalPage] = useState<number>();
@@ -47,7 +49,11 @@ const PageListPostLastest: FC<PageListPostLastestProps> = ({ socket }) => {
     const fetchData = useCallback(
         async (page: number) => {
             try {
-                setIsLoading(true);
+                if (page === 1) {
+                    setIsLoading(true);
+                } else {
+                    setIsFetchingMore(true); // Show skeleton loader on load more
+                }
                 const { body } = await BlogServices.getBlogLastest(
                     page.toString(),
                     axiosJWT
@@ -58,12 +64,13 @@ const PageListPostLastest: FC<PageListPostLastestProps> = ({ socket }) => {
                     } else {
                         dispatch(getMoreBlogLastest(body?.result?.posts));
                     }
-                    setIsLoading(false);
                     setTotalPage(body?.result?.size);
                 }
             } catch (error) {
                 console.error("Error fetching data:", error);
+            } finally {
                 setIsLoading(false);
+                setIsFetchingMore(false); // Hide skeleton loader after load more
             }
         },
         [dispatch]
@@ -130,7 +137,7 @@ const PageListPostLastest: FC<PageListPostLastestProps> = ({ socket }) => {
                 title={pageHeader.title}
             ></PageHeader>
             <GroupHeader title="Lastest" setSearchText={setSearchText} />
-            {isLoading ? (
+            {isLoading && currentPage === 1 ? (
                 <div className="flex justify-center items-center mt-10">
                     <Loader />
                 </div>
@@ -145,10 +152,18 @@ const PageListPostLastest: FC<PageListPostLastestProps> = ({ socket }) => {
                     handleCommentPost={handleCommentPost}
                     setIsDelete={setIsDelete}
                     socket={socket}
+                    isFetchingMore={isFetchingMore}
                 />
             ) : (
                 <div className="flex justify-center items-center mt-10">
                     <Empty />
+                </div>
+            )}
+            {isFetchingMore && (
+                <div className="grid grid-cols-3 mt-4">
+                    <SkeletonPost />
+                    <SkeletonPost />
+                    <SkeletonPost />
                 </div>
             )}
         </>

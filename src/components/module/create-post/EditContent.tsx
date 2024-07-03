@@ -53,7 +53,11 @@ const EditContent: FC<EditContentProps> = ({
                 maxLength={MAXLENGTH}
                 onChange={handleChangeTitle}
                 onBlur={formik.handleBlur}
-                suffix={state?.length + `/${MAXLENGTH}`}
+                suffix={
+                    state?.length
+                        ? state.length + `/${MAXLENGTH}`
+                        : 0 + `/${MAXLENGTH}`
+                }
                 suffixClassName="opacity-70"
                 error={formik.errors.title}
             />

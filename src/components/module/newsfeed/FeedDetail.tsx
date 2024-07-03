@@ -20,6 +20,7 @@ import { Socket } from "socket.io-client";
 
 import { TYPE_NOTI } from "@/utils/contants";
 import CardFeed from "./CardFeed";
+import { SkeletonPost } from "@/components/ui/SkeletonLoader";
 
 type FeedDetailProps = {
     socket: Socket | undefined;
@@ -32,11 +33,16 @@ const FeedDetail: FC<FeedDetailProps> = ({ socket }) => {
     const [currentPage, setCurrentPage] = useState<number>(1);
     const listBlog = useSelector((state: RootState) => state.post.listPostFeed);
     const { axiosJWT, user } = useAuth();
+    const [isFetchingMore, setIsFetchingMore] = useState(false);
 
     const fetchBlog = useCallback(
         async (page: number) => {
             try {
-                setIsLoading(true);
+                if (page === 1) {
+                    setIsLoading(true);
+                } else {
+                    setIsFetchingMore(true); // Show skeleton loader on load more
+                }
                 const { body } = await BlogServices.getBlogInFeed(
                     page.toString(),
                     axiosJWT
@@ -48,16 +54,16 @@ const FeedDetail: FC<FeedDetailProps> = ({ socket }) => {
                         dispatch(getLoadmorePostFeed(body?.result?.posts));
                     }
                     setTotalPage(body?.result?.size);
-                    setIsLoading(false);
                 }
             } catch (error) {
                 console.error("Error fetching data:", error);
+            } finally {
                 setIsLoading(false);
+                setIsFetchingMore(false); // Hide skeleton loader after load more
             }
         },
         [dispatch]
     );
-
     useEffect(() => {
         fetchBlog(currentPage);
     }, [fetchBlog, currentPage]);
@@ -95,29 +101,27 @@ const FeedDetail: FC<FeedDetailProps> = ({ socket }) => {
                 });
             } else {
                 dispatch(doneCommentSuccess());
-
                 toast.error(body?.message || "Error");
             }
         } catch (error) {
             dispatch(doneCommentSuccess());
-
             console.log(error);
         }
     };
 
     return (
         <>
-            {isLoading ? (
+            {isLoading && currentPage === 1 ? (
                 <div className="flex justify-center items-center">
-                    <Loader variant="spinner" />
+                    <Loader />
                 </div>
             ) : (
-                <div className="flex flex-col gap-12  -mt-10 mx-auto">
+                <div className="flex flex-col gap-12 -mt-10 mx-auto">
                     {listBlog && listBlog.length > 0 ? (
                         listBlog.map((item) => (
                             <div key={item._id}>
                                 {item.shareBy ? (
-                                    <div className="flex flex-col  space-y-2 overflow-hidden rounded-md bg-white ">
+                                    <div className="flex flex-col space-y-2 overflow-hidden rounded-md bg-white">
                                         <div className="border-b py-2 flex justify-between items-center">
                                             <Link
                                                 to={`/profile/${item.shareBy._id}`}
@@ -175,17 +179,23 @@ const FeedDetail: FC<FeedDetailProps> = ({ socket }) => {
                     ) : (
                         <Empty />
                     )}
-                    {currentPage < totalPage && (
-                        <div className="mt-8 flex justify-center">
-                            <Button
-                                variant="text"
-                                size="lg"
-                                className="flex items-center"
-                                onClick={() => handleLoadMore()}
-                            >
-                                <PiArrowsClockwiseFill className="text-xl" />
-                                <span className="ms-2">Load More</span>
-                            </Button>
+                    {currentPage < totalPage &&
+                        (!isFetchingMore ? (
+                            <div className="mt-8 flex justify-center">
+                                <Button
+                                    variant="text"
+                                    size="lg"
+                                    className="flex items-center"
+                                    onClick={() => handleLoadMore()}
+                                >
+                                    <PiArrowsClockwiseFill className="text-xl" />
+                                    <span className="ms-2">Load More</span>
+                                </Button>
+                            </div>
+                        ) : null)}
+                    {isFetchingMore && (
+                        <div className="mx-auto w-full">
+                            <SkeletonPost />
                         </div>
                     )}
                 </div>

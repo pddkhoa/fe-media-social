@@ -78,28 +78,31 @@ export const ScreenChat: FC<ScreenChatProps> = ({
         }
     }, [socket, dispatch, messages]);
 
+    const fetchChat = async () => {
+        try {
+            if (chatId) {
+                const { body } = await ChatServices.getMessage(
+                    chatId?.toString(),
+                    axiosJWT
+                );
+                if (body?.success) {
+                    dispatch(getListChatMessagesSuccess(body.result));
+                } else {
+                    toast.error(body?.message || "Error");
+                }
+            }
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    };
+
     useEffect(() => {
         setIsDelete(false);
         setIsSend(false);
-        const fetchChat = async () => {
-            try {
-                if (chatId) {
-                    const { body } = await ChatServices.getMessage(
-                        chatId?.toString(),
-                        axiosJWT
-                    );
-                    if (body?.success) {
-                        dispatch(getListChatMessagesSuccess(body.result));
-                    } else {
-                        toast.error(body?.message || "Error");
-                    }
-                }
-            } catch (error) {
-                console.error("Error fetching data:", error);
-            }
-        };
         fetchChat();
     }, [isDelete, dispatch, chatId, setMessages, isSend]);
+
+    console.log(dataChat);
 
     const handleSendMessage = async () => {
         if (chatId) {
@@ -114,15 +117,15 @@ export const ScreenChat: FC<ScreenChatProps> = ({
             if (body?.success) {
                 socket?.emit("sendMessage", {
                     fromUser: user.user._id,
-                    toUser: dataChat?.userReceived?._id,
+                    chatId: dataChat?._id,
                     text: body?.result,
                 });
 
                 socket?.emit("interactionMessage", {
                     fromUser: user.user._id,
-                    toUser: dataChat?.userReceived?._id,
+                    chatId: dataChat?._id,
                     type: TYPE_NOTI.CHAT,
-                    data: user,
+                    data: dataChat?.listUser,
                 });
                 setContentMessage("");
                 setImageUrl("");
@@ -239,6 +242,7 @@ export const ScreenChat: FC<ScreenChatProps> = ({
                             )}
                         </div>
                     </SimpleBar>
+
                     <div className="flex flex-row items-center h-16 rounded-xl bg-white w-full px-4 ">
                         <div>
                             <Button
@@ -431,6 +435,7 @@ export const ScreenChat: FC<ScreenChatProps> = ({
                             )}
                         </div>
                     </SimpleBar>
+
                     <div className="flex flex-row items-center h-16 rounded-xl bg-white w-full px-4 ">
                         <div>
                             <Button

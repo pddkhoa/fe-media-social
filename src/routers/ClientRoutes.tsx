@@ -84,215 +84,213 @@ const ClientRoutes = () => {
     }, [noti]);
 
     return (
-        <Suspense fallback={<div>Loading...</div>}>
-            <Routes>
-                {user?.user?.isLogin ? (
-                    <>
-                        <Route element={<MainLayout socket={socket} />}>
-                            <Route
-                                path="/"
-                                element={
-                                    <Suspense fallback={<div>Loading ...</div>}>
-                                        <NewsFeed socket={socket} />
-                                    </Suspense>
-                                }
-                            />
-                            <Route
-                                path="/profile/:id"
-                                element={
-                                    <Suspense fallback={<Loader />}>
-                                        <Profile socket={socket} />
-                                    </Suspense>
-                                }
-                            />
-                            <Route
-                                path="/profile"
-                                element={
-                                    <Suspense fallback={<Loader />}>
-                                        <Profile socket={socket} />
-                                    </Suspense>
-                                }
-                            />
-                            <Route
-                                path="/post/:id"
-                                element={
-                                    <Suspense fallback={<div>Loading ...</div>}>
-                                        <DetailPost socket={socket} />
-                                    </Suspense>
-                                }
-                            />
-                            <Route
-                                path="/create-post"
-                                element={
-                                    <Suspense fallback={<div>Loading ...</div>}>
-                                        <CreatePost />
-                                    </Suspense>
-                                }
-                            />
-
-                            <Route
-                                path="/edit-post"
-                                element={
-                                    <Suspense fallback={<div>Loading ...</div>}>
-                                        <EditPost />
-                                    </Suspense>
-                                }
-                            />
-
-                            <Route
-                                path="/notification"
-                                element={
-                                    <Suspense fallback={<div>Loading ...</div>}>
-                                        <Notification />
-                                    </Suspense>
-                                }
-                            />
-                            <Route
-                                path="/group"
-                                element={
-                                    <Suspense fallback={<div>Loading ...</div>}>
-                                        <GroupMain />
-                                    </Suspense>
-                                }
-                            />
-                            <Route
-                                path="/group/my"
-                                element={
-                                    <Suspense fallback={<div>Loading ...</div>}>
-                                        <PageMyGroup />
-                                    </Suspense>
-                                }
-                            />
-                            <Route
-                                path="/group/my-created"
-                                element={
-                                    <Suspense fallback={<div>Loading ...</div>}>
-                                        <PageMyGroupCreate />
-                                    </Suspense>
-                                }
-                            />
-                            <Route
-                                path="/group/create"
-                                element={
-                                    <Suspense fallback={<div>Loading ...</div>}>
-                                        <CreateGroup />
-                                    </Suspense>
-                                }
-                            />
-                            <Route
-                                path="/group/detail/:id"
-                                element={
-                                    <Suspense fallback={<Loader />}>
-                                        <DetailGroup socket={socket} />
-                                    </Suspense>
-                                }
-                            />
-                            <Route
-                                path="/tags"
-                                element={
-                                    <Suspense fallback={<div>Loading ...</div>}>
-                                        <TagMain />
-                                    </Suspense>
-                                }
-                            />
-                            <Route
-                                path="/messenger"
-                                element={
-                                    <Suspense fallback={<Loader />}>
-                                        <Message socket={socket} />
-                                    </Suspense>
-                                }
-                            />
-                            <Route
-                                path="/contacts"
-                                element={
-                                    <Suspense fallback={<div>Loading ...</div>}>
-                                        <Contacts />
-                                    </Suspense>
-                                }
-                            />
-
-                            <Route
-                                path="/bookmark"
-                                element={
-                                    <Suspense fallback={<div>Loading ...</div>}>
-                                        <PageBookmark socket={socket} />
-                                    </Suspense>
-                                }
-                            />
-                            <Route
-                                path="/draft"
-                                element={
-                                    <Suspense fallback={<div>Loading ...</div>}>
-                                        <PageDraft />
-                                    </Suspense>
-                                }
-                            />
-                            <Route
-                                path="/lastest"
-                                element={
-                                    <Suspense fallback={<Loader />}>
-                                        <PageLastest socket={socket} />
-                                    </Suspense>
-                                }
-                            />
-                            <Route
-                                path="/discusstion"
-                                element={
-                                    <Suspense fallback={<Loader />}>
-                                        <PageDiscusstion socket={socket} />
-                                    </Suspense>
-                                }
-                            />
-                            <Route
-                                path="/popular"
-                                element={
-                                    <Suspense fallback={<div>Loading ...</div>}>
-                                        <PagePopular socket={socket} />
-                                    </Suspense>
-                                }
-                            />
-
-                            <Route
-                                path="/profile-setting"
-                                element={
-                                    <Suspense fallback={<div>Loading ...</div>}>
-                                        <ProfileSetting />
-                                    </Suspense>
-                                }
-                            >
-                                <Route index element={<SettingDetail />} />
-                                <Route
-                                    path="password"
-                                    element={<SettingPassword />}
-                                />
-                            </Route>
-                        </Route>
+        <Routes>
+            {user?.user?.isLogin ? (
+                <>
+                    <Route element={<MainLayout socket={socket} />}>
                         <Route
-                            path="*"
-                            element={<Navigate to={"/"} replace={true} />}
-                        />
-                    </>
-                ) : (
-                    <>
-                        <Route
-                            path="/introduction"
+                            path="/"
                             element={
-                                <Suspense fallback={<div>Loading ...</div>}>
-                                    <Introduction />
+                                <Suspense fallback={<Loader />}>
+                                    <NewsFeed socket={socket} />
                                 </Suspense>
                             }
                         />
                         <Route
-                            path="*"
+                            path="/profile/:id"
                             element={
-                                <Navigate to={"/introduction"} replace={true} />
+                                <Suspense fallback={<Loader />}>
+                                    <Profile socket={socket} />
+                                </Suspense>
                             }
                         />
-                    </>
-                )}
-            </Routes>
-        </Suspense>
+                        <Route
+                            path="/profile"
+                            element={
+                                <Suspense fallback={<Loader />}>
+                                    <Profile socket={socket} />
+                                </Suspense>
+                            }
+                        />
+                        <Route
+                            path="/post/:id"
+                            element={
+                                <Suspense fallback={<Loader />}>
+                                    <DetailPost socket={socket} />
+                                </Suspense>
+                            }
+                        />
+                        <Route
+                            path="/create-post"
+                            element={
+                                <Suspense fallback={<Loader />}>
+                                    <CreatePost />
+                                </Suspense>
+                            }
+                        />
+
+                        <Route
+                            path="/edit-post"
+                            element={
+                                <Suspense fallback={<Loader />}>
+                                    <EditPost />
+                                </Suspense>
+                            }
+                        />
+
+                        <Route
+                            path="/notification"
+                            element={
+                                <Suspense fallback={<Loader />}>
+                                    <Notification />
+                                </Suspense>
+                            }
+                        />
+                        <Route
+                            path="/group"
+                            element={
+                                <Suspense fallback={<Loader />}>
+                                    <GroupMain />
+                                </Suspense>
+                            }
+                        />
+                        <Route
+                            path="/group/my"
+                            element={
+                                <Suspense fallback={<Loader />}>
+                                    <PageMyGroup />
+                                </Suspense>
+                            }
+                        />
+                        <Route
+                            path="/group/my-created"
+                            element={
+                                <Suspense fallback={<Loader />}>
+                                    <PageMyGroupCreate />
+                                </Suspense>
+                            }
+                        />
+                        <Route
+                            path="/group/create"
+                            element={
+                                <Suspense fallback={<Loader />}>
+                                    <CreateGroup />
+                                </Suspense>
+                            }
+                        />
+                        <Route
+                            path="/group/detail/:id"
+                            element={
+                                <Suspense fallback={<Loader />}>
+                                    <DetailGroup socket={socket} />
+                                </Suspense>
+                            }
+                        />
+                        <Route
+                            path="/tags"
+                            element={
+                                <Suspense fallback={<Loader />}>
+                                    <TagMain />
+                                </Suspense>
+                            }
+                        />
+                        <Route
+                            path="/messenger"
+                            element={
+                                <Suspense fallback={<Loader />}>
+                                    <Message socket={socket} />
+                                </Suspense>
+                            }
+                        />
+                        <Route
+                            path="/contacts"
+                            element={
+                                <Suspense fallback={<Loader />}>
+                                    <Contacts />
+                                </Suspense>
+                            }
+                        />
+
+                        <Route
+                            path="/bookmark"
+                            element={
+                                <Suspense fallback={<Loader />}>
+                                    <PageBookmark socket={socket} />
+                                </Suspense>
+                            }
+                        />
+                        <Route
+                            path="/draft"
+                            element={
+                                <Suspense fallback={<Loader />}>
+                                    <PageDraft />
+                                </Suspense>
+                            }
+                        />
+                        <Route
+                            path="/lastest"
+                            element={
+                                <Suspense fallback={<Loader />}>
+                                    <PageLastest socket={socket} />
+                                </Suspense>
+                            }
+                        />
+                        <Route
+                            path="/discusstion"
+                            element={
+                                <Suspense fallback={<Loader />}>
+                                    <PageDiscusstion socket={socket} />
+                                </Suspense>
+                            }
+                        />
+                        <Route
+                            path="/popular"
+                            element={
+                                <Suspense fallback={<Loader />}>
+                                    <PagePopular socket={socket} />
+                                </Suspense>
+                            }
+                        />
+
+                        <Route
+                            path="/profile-setting"
+                            element={
+                                <Suspense fallback={<Loader />}>
+                                    <ProfileSetting />
+                                </Suspense>
+                            }
+                        >
+                            <Route index element={<SettingDetail />} />
+                            <Route
+                                path="password"
+                                element={<SettingPassword />}
+                            />
+                        </Route>
+                    </Route>
+                    <Route
+                        path="*"
+                        element={<Navigate to={"/"} replace={true} />}
+                    />
+                </>
+            ) : (
+                <>
+                    <Route
+                        path="/introduction"
+                        element={
+                            <Suspense fallback={<Loader />}>
+                                <Introduction />
+                            </Suspense>
+                        }
+                    />
+                    <Route
+                        path="*"
+                        element={
+                            <Navigate to={"/introduction"} replace={true} />
+                        }
+                    />
+                </>
+            )}
+        </Routes>
     );
 };
 

@@ -23,6 +23,7 @@ type ListPostPopularProps = {
     ) => Promise<void>;
     setIsDelete: React.Dispatch<React.SetStateAction<boolean>>;
     socket: Socket | undefined;
+    isFetchingMore: boolean;
 };
 
 const ListPostPopular: FC<ListPostPopularProps> = ({
@@ -33,6 +34,7 @@ const ListPostPopular: FC<ListPostPopularProps> = ({
     handleCommentPost,
     setIsDelete,
     socket,
+    isFetchingMore,
 }) => {
     return (
         <div className="px-2 mt-10  w-full  @2xl:mt-7 @6xl:mt-0">
@@ -55,19 +57,20 @@ const ListPostPopular: FC<ListPostPopularProps> = ({
                     </div>
                 )}
             </div>
-            {currentPage < totalPage && (
-                <div className="mt-8 flex justify-center">
-                    <Button
-                        variant="text"
-                        size="lg"
-                        className="flex items-center"
-                        onClick={() => handleLoadMore()}
-                    >
-                        <PiArrowsClockwiseFill className="text-xl" />
-                        <span className="ms-2">Load More</span>
-                    </Button>
-                </div>
-            )}
+            {currentPage < totalPage &&
+                (!isFetchingMore ? (
+                    <div className="mt-8 flex justify-center">
+                        <Button
+                            variant="text"
+                            size="lg"
+                            className="flex items-center"
+                            onClick={() => handleLoadMore()}
+                        >
+                            <PiArrowsClockwiseFill className="text-xl" />
+                            <span className="ms-2">Load More</span>
+                        </Button>
+                    </div>
+                ) : null)}
         </div>
     );
 };

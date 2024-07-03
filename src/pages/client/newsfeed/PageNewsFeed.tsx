@@ -29,9 +29,6 @@ const PageNewsFeed: FC<PageNewsFeedProps> = ({ socket }) => {
                 <div className="col-span-12 p-4 flex flex-col">
                     <FeedDetail socket={socket} />
                 </div>
-                {/* <div className="col-span-4 ">
-          <FeedDetailRight />
-        </div> */}
             </div>
         </>
     );

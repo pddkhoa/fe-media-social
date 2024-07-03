@@ -20,10 +20,12 @@ function DropdownMenu() {
             <div className="flex items-center border-b border-gray-300 px-6 pb-5 pt-6">
                 <Avatar src={userData?.avatar?.url} name={userData.name} />
                 <div className="ms-3">
-                    <Title as="h6" className="font-semibold w-full truncate">
+                    <Title as="h6" className="font-semibold max-w-32 truncate">
                         {userData?.name}
                     </Title>
-                    <p className="text-gray-600 ">@{userData?.second_name}</p>
+                    <p className="text-gray-600  max-w-32 truncate ">
+                        @{userData?.second_name}
+                    </p>
                 </div>
             </div>
             <div className="grid px-3.5 py-3.5 font-medium text-gray-700">
