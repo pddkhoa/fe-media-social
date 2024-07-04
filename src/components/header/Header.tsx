@@ -107,9 +107,9 @@ function HeaderMenuRight(socket: HeaderProps) {
                         <ActionIcon
                             aria-label="Messages"
                             variant="text"
-                            className="relative h-[34px] w-[34px] shadow backdrop-blur-md dark:bg-gray-100 md:h-9 md:w-9"
+                            className="relative h-[2rem] w-[2rem] shadow backdrop-blur-md dark:bg-gray-100 md:h-9 md:w-9"
                         >
-                            <PiChatCircleDotsFill className="h-[18px] w-auto" />
+                            <PiChatCircleDotsFill className="h-[1rem] w-auto" />
                             {hasUnreadNotificationMess && (
                                 <Badge
                                     renderAsDot
@@ -128,9 +128,9 @@ function HeaderMenuRight(socket: HeaderProps) {
                         <ActionIcon
                             aria-label="Notification"
                             variant="text"
-                            className="relative h-[34px] w-[34px] shadow backdrop-blur-md dark:bg-gray-100 md:h-9 md:w-9"
+                            className="relative h-[2rem] w-[2rem] shadow backdrop-blur-md dark:bg-gray-100 md:h-9 md:w-9"
                         >
-                            <PiBellSimpleRingingFill className="h-[18px] w-auto" />
+                            <PiBellSimpleRingingFill className="h-[1rem] w-auto" />
                             {hasUnreadNotification && (
                                 <Badge
                                     renderAsDot

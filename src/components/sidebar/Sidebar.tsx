@@ -25,7 +25,7 @@ export default function Sidebar({ className }: { className?: string }) {
     return (
         <aside
             className={cn(
-                "fixed bottom-0 start-0 text-sm z-50 h-full w-[270px] border-e-2 border-gray-100 bg-white dark:bg-gray-100/50 2xl:w-72",
+                "fixed bottom-0 start-0 text-sm z-50 h-full w-[16.875rem] border-e-2 border-gray-100 bg-white dark:bg-gray-100/50 2xl:w-72",
                 className
             )}
         >
@@ -38,7 +38,7 @@ export default function Sidebar({ className }: { className?: string }) {
                 </Link>
             </div>
 
-            <SimpleBar className="h-[calc(100%-100px)] overflow-auto">
+            <SimpleBar className="h-[calc(100%-6.25rem)] overflow-auto">
                 <div className="mt-4 pb-3 3xl:mt-6">
                     {sidebarItem.map((item: any, index: any) => {
                         const isActive =

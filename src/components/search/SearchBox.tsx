@@ -75,9 +75,9 @@ export default function SearchBox() {
     };
 
     return (
-        <>
-            <>
-                <div className="flex items-center  px-5 py-4">
+        <div className="">
+            <div className="">
+                <div className="flex items-center   w-full px-5 py-4">
                     <Input
                         variant="flat"
                         value={searchText}
@@ -114,8 +114,8 @@ export default function SearchBox() {
                         <PiMagnifyingGlassBold className="h-5 w-5" />
                     </Button>
                 </div>
-            </>
-            <div className="custom-scrollbar max-h-[60vh] overflow-y-auto border-t border-gray-300 px-2 py-4">
+            </div>
+            <div className="custom-scrollbar max-h-[70vh]  overflow-y-auto border-t border-gray-300 px-2 py-4">
                 <>
                     <Tab>
                         <Tab.List>
@@ -301,6 +301,6 @@ export default function SearchBox() {
                     </Tab>
                 </>
             </div>
-        </>
+        </div>
     );
 }

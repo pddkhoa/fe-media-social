@@ -16,7 +16,7 @@ import { User } from "@/type/user";
 import { STATUS_USER_GROUP } from "@/utils/contants";
 import { FC, useState } from "react";
 import toast from "react-hot-toast";
-import { PiDotsThreeOutline, PiHandTap, PiSignIn } from "react-icons/pi";
+import { PiDotsThreeOutline, PiHandTap, PiSignIn, PiX } from "react-icons/pi";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "rizzui";
@@ -24,9 +24,10 @@ import { Button } from "rizzui";
 type GroupCardProps = {
     data: Category;
     setIsActive?: React.Dispatch<React.SetStateAction<boolean>> | undefined;
+    isCreate?: boolean | undefined;
 };
 
-const GroupCard: FC<GroupCardProps> = ({ data, setIsActive }) => {
+const GroupCard: FC<GroupCardProps> = ({ data, setIsActive, isCreate }) => {
     const { openModal } = useModal();
     const [loadingJoin, setLoadingJoin] = useState(false);
     const isAdmin = useSelector(
@@ -35,6 +36,7 @@ const GroupCard: FC<GroupCardProps> = ({ data, setIsActive }) => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const { axiosJWT } = useAuth();
+    const [isDelete, setIsDelete] = useState(false);
 
     const handleJoinCate = async (id: string) => {
         try {
@@ -83,6 +85,27 @@ const GroupCard: FC<GroupCardProps> = ({ data, setIsActive }) => {
         }
     };
 
+    const handleDeleteGroup = async (id: string) => {
+        try {
+            setIsDelete(true);
+            const { body } = await CategoriesServices.deleteCategories(
+                id,
+                axiosJWT
+            );
+            if (body?.success) {
+                setIsDelete(false);
+                toast.success(body.message);
+                if (setIsActive) setIsActive(true);
+            } else {
+                setIsDelete(false);
+                toast.error(body?.message || "Error");
+            }
+        } catch (error) {
+            setIsDelete(false);
+            console.log(error);
+        }
+    };
+
     return (
         <div className="max-w-lg max-h-[30rem] p-2 rounded-md shadow-md bg-gray-100">
             <div className="space-y-2">
@@ -123,56 +146,77 @@ const GroupCard: FC<GroupCardProps> = ({ data, setIsActive }) => {
                     </div>
                 </Link>
                 <div className="flex justify-center mx-5 my-2">
-                    {data?.statusUser === STATUS_USER_GROUP.UNJOIN && (
-                        <Button
-                            size="sm"
-                            className="w-full flex gap-3"
-                            variant="outline"
-                            isLoading={loadingJoin}
-                            onClick={() => handleJoinCate(data?._id)}
-                        >
-                            Join Group <PiHandTap className="h-4 w-4" />
-                        </Button>
-                    )}
-                    {data?.statusUser === STATUS_USER_GROUP.JOINED &&
-                        (isAdmin !== data?.isAdmin ? (
-                            <Button
-                                size="sm"
-                                className="w-full flex gap-3"
-                                variant="outline"
-                                color="danger"
-                                isLoading={loadingJoin}
-                                onClick={() => handleLeaveCate(data?._id)}
-                            >
-                                Leave Group <PiSignIn className="h-4 w-4" />
-                            </Button>
-                        ) : (
-                            <Button
-                                size="sm"
-                                className="w-full flex gap-3"
-                                variant="outline"
-                                isLoading={loadingJoin}
-                                onClick={() =>
-                                    navigate(`/group/detail/${data?._id}`)
-                                }
-                            >
-                                View Detail <PiSignIn className="h-4 w-4" />
-                            </Button>
-                        ))}
-                    {data?.statusUser === STATUS_USER_GROUP.PENDING && (
+                    {isCreate ? (
                         <Button
                             size="sm"
                             className="w-full flex gap-3"
                             variant="flat"
                             color="danger"
-                            isLoading={loadingJoin}
-                            onClick={() => {
-                                handleLeaveCate(data?._id);
-                            }}
+                            isLoading={isDelete}
+                            onClick={() => handleDeleteGroup(data?._id)}
                         >
-                            Resquesting{" "}
-                            <PiDotsThreeOutline className="h-4 w-4" />
+                            Delete Group <PiX className="h-4 w-4" />
                         </Button>
+                    ) : (
+                        <>
+                            {data?.statusUser === STATUS_USER_GROUP.UNJOIN && (
+                                <Button
+                                    size="sm"
+                                    className="w-full flex gap-3"
+                                    variant="outline"
+                                    isLoading={loadingJoin}
+                                    onClick={() => handleJoinCate(data?._id)}
+                                >
+                                    Join Group <PiHandTap className="h-4 w-4" />
+                                </Button>
+                            )}
+                            {data?.statusUser === STATUS_USER_GROUP.JOINED &&
+                                (isAdmin !== data?.isAdmin ? (
+                                    <Button
+                                        size="sm"
+                                        className="w-full flex gap-3"
+                                        variant="outline"
+                                        color="danger"
+                                        isLoading={loadingJoin}
+                                        onClick={() =>
+                                            handleLeaveCate(data?._id)
+                                        }
+                                    >
+                                        Leave Group{" "}
+                                        <PiSignIn className="h-4 w-4" />
+                                    </Button>
+                                ) : (
+                                    <Button
+                                        size="sm"
+                                        className="w-full flex gap-3"
+                                        variant="outline"
+                                        isLoading={loadingJoin}
+                                        onClick={() =>
+                                            navigate(
+                                                `/group/detail/${data?._id}`
+                                            )
+                                        }
+                                    >
+                                        View Detail{" "}
+                                        <PiSignIn className="h-4 w-4" />
+                                    </Button>
+                                ))}
+                            {data?.statusUser === STATUS_USER_GROUP.PENDING && (
+                                <Button
+                                    size="sm"
+                                    className="w-full flex gap-3"
+                                    variant="flat"
+                                    color="danger"
+                                    isLoading={loadingJoin}
+                                    onClick={() => {
+                                        handleLeaveCate(data?._id);
+                                    }}
+                                >
+                                    Resquesting{" "}
+                                    <PiDotsThreeOutline className="h-4 w-4" />
+                                </Button>
+                            )}
+                        </>
                     )}
                 </div>
             </div>

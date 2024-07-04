@@ -146,7 +146,7 @@ const ModalCreateGroupChat: FC<ModalCreateGroupChatProps> = ({
                     placeholder="Search here"
                     className="w-full"
                     prefix={
-                        <PiMagnifyingGlassBold className="h-[18px] w-[18px] text-gray-600" />
+                        <PiMagnifyingGlassBold className="h-4 w-4 text-gray-600" />
                     }
                     suffix={
                         searchText && (

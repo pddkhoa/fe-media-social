@@ -7,6 +7,5 @@
         font-family: "Lexend Deca", sans-serif;
         font-optical-sizing: auto;
         font-style: normal;
-        font-size: clamp(0.4rem, 1vw, 1.5rem);
     }
 }

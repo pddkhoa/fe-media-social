@@ -92,24 +92,6 @@ const OutputPost: FC<OutputPostProps> = ({ content, formDataCreate }) => {
                     )}
                 </div>
             </div>
-            <div className="pt-8 border-t border-dashed dark:border-gray-400">
-                <div className="flex flex-col space-y-4 md:space-y-0 md:space-x-6 md:flex-row">
-                    <img
-                        src={auth?.avatar?.url}
-                        alt=""
-                        className="self-center flex-shrink-0 w-24 h-24 border rounded-full md:justify-self-start dark:bg-gray-500 dark:border-gray-700"
-                    />
-                    <div className="flex flex-col pt-2">
-                        <h4 className="text-md font-semibold">{auth?.name}</h4>
-                        <p className="dark:text-gray-600">
-                            Sed non nibh iaculis, posuere diam vitae,
-                            consectetur neque. Integer velit ligula, semper sed
-                            nisl in, cursus commodo elit. Pellentesque sit amet
-                            mi luctus ligula euismod lobortis ultricies et nibh.
-                        </p>
-                    </div>
-                </div>
-            </div>
         </div>
     );
 };

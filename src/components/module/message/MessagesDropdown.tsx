@@ -22,7 +22,7 @@ function MessagesList({
     setIsRead,
 }: {
     setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
-    dataNotiMess: ChatNoti[];
+    dataNotiMess: ChatNoti[] | any;
     isLoading: boolean;
     setIsRead: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
@@ -44,8 +44,10 @@ function MessagesList({
         }
     };
 
+    console.log(dataNotiMess[0].message?.chat);
+
     return (
-        <div className="w-[320px] text-left rtl:text-right sm:w-[360px] 2xl:w-[420px]">
+        <div className="w-[22.5rem] text-left rtl:text-right sm:w-[22.5rem] 2xl:w-[26.25rem]">
             <div className="mb-2 flex items-center justify-between ps-6">
                 <Title as="h5">Messages</Title>
                 <Link
@@ -61,9 +63,9 @@ function MessagesList({
                     <Loader />
                 </div>
             ) : (
-                <SimpleBar className="max-h-[450px]">
+                <SimpleBar className="max-h-[28rem]">
                     <div className="grid grid-cols-1 ps-4 p-2">
-                        {dataNotiMess?.map((item) => (
+                        {dataNotiMess?.map((item: any) => (
                             <div
                                 key={item._id}
                                 onClick={() => {
@@ -78,21 +80,16 @@ function MessagesList({
                                             "me-1"
                                     )}
                                 >
-                                    <Avatar
-                                        src={item.sender.avatar.url}
-                                        name={item.sender.name}
-                                        // className={cn(
-                                        //     item.sender.avatar. > 1 &&
-                                        //         "relative -end-1 -top-0.5 !h-9 !w-9"
-                                        // )}
-                                    />
-                                    {/* {item.avatar.length > 1 && (
-                                    <Avatar
-                                        src={item.avatar[1]}
-                                        name={item.name}
-                                        className="absolute -bottom-1 end-1.5 !h-9 !w-9 border-2 border-gray-0 dark:border-gray-100"
-                                    />
-                                )} */}
+                                    {item?.message?.chat?.isGroup ? (
+                                        <Avatar
+                                            name={item?.message?.chat?.chatName}
+                                        />
+                                    ) : (
+                                        <Avatar
+                                            src={item?.sender?.avatar?.url}
+                                            name={item?.sender?.name}
+                                        />
+                                    )}
                                 </div>
                                 <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center">
                                     <div className="w-full">
@@ -100,21 +97,45 @@ function MessagesList({
                                             as="h6"
                                             className="mb-0.5 text-sm font-semibold"
                                         >
-                                            {item.sender.name}
+                                            {item?.message?.chat?.isGroup
+                                                ? item?.message?.chat?.chatName
+                                                : item.sender.name}
                                         </Title>
                                         <div className="flex">
-                                            <p className="w-10/12 truncate pe-7 text-xs text-gray-500">
-                                                {
-                                                    item?.message?.message
-                                                        ?.content
-                                                }
-                                            </p>
-                                            <span className="ms-auto whitespace-nowrap pe-8 text-xs text-gray-500">
-                                                {formatDistanceToNow(
-                                                    new Date(item.createdAt),
-                                                    { addSuffix: true }
-                                                )}
-                                            </span>
+                                            {item?.message?.message?.type ===
+                                            "Text" ? (
+                                                <>
+                                                    <p className="w-10/12 truncate pe-7 text-xs text-gray-500">
+                                                        {
+                                                            item?.message
+                                                                ?.message
+                                                                ?.content
+                                                        }
+                                                    </p>
+                                                    <span className="ms-auto whitespace-nowrap pe-8 text-xs text-gray-500">
+                                                        {formatDistanceToNow(
+                                                            new Date(
+                                                                item.createdAt
+                                                            ),
+                                                            { addSuffix: true }
+                                                        )}
+                                                    </span>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <p className="w-10/12 truncate pe-7 text-xs text-gray-500">
+                                                        Image
+                                                    </p>
+                                                    <span className="ms-auto whitespace-nowrap pe-8 text-xs text-gray-500">
+                                                        {formatDistanceToNow(
+                                                            new Date(
+                                                                item.createdAt
+                                                            ),
+                                                            { addSuffix: true }
+                                                        )}
+                                                    </span>
+                                                </>
+                                            )}
                                         </div>
                                     </div>
                                     <div className="ms-auto flex-shrink-0">

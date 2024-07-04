@@ -169,11 +169,11 @@ export default function PostCard({
                         />
                     )}
                 </div>
-                <div className="flex flex-col justify-between">
-                    <div className="flex-1 h-24 line-clamp-2 font-semibold">
+                <div className="flex flex-col h-[7rem] justify-between">
+                    <div className="flex-1 h- line-clamp-2 font-semibold">
                         {data?.title}
                     </div>
-                    <div className="flex flex-wrap justify-between">
+                    <div className="flex-1 flex flex-wrap justify-between">
                         <div className="space-x-2 flex gap-2 items-center">
                             <PiShareNetwork className="w-5 h-5" />
                             {data?.isSave ? (

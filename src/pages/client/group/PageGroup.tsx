@@ -21,7 +21,6 @@ const pageHeader = {
 
 const PageGroup = () => {
     const { axiosJWT } = useAuth();
-    const [layout, setLayout] = useState<string>("grid");
     const [isLoading, setIsLoading] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPage, setTotalPage] = useState<number>();
@@ -84,13 +83,10 @@ const PageGroup = () => {
             ></PageHeader>
             <GroupHeader
                 title="All Groups"
-                layout={layout}
-                setLayout={setLayout}
                 setSearchText={setSearchText}
                 searchText={searchText}
             />
             <GroupDetails
-                layout={layout}
                 listCate={menuItemsFiltered}
                 totalPage={totalPage}
                 currentPage={currentPage}

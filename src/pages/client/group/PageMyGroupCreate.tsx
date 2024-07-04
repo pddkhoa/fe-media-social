@@ -31,7 +31,6 @@ const pageHeader = {
 
 const PageMyGroupCreate = () => {
     const { axiosJWT } = useAuth();
-    const [layout, setLayout] = useState<string>("grid");
     const [isLoading, setIsLoading] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPage, setTotalPage] = useState<number>();
@@ -105,20 +104,15 @@ const PageMyGroupCreate = () => {
                     </Button>
                 </Link>
             </PageHeader>
-            <GroupHeader
-                title="Groups Created"
-                layout={layout}
-                setLayout={setLayout}
-                setSearchText={setSearchText}
-            />
+            <GroupHeader title="Groups Created" setSearchText={setSearchText} />
             <GroupList
-                layout={layout}
                 listCate={menuItemsFiltered}
                 loader={isLoading}
                 totalPage={totalPage}
                 currentPage={currentPage}
                 handleLoadMore={handleLoadMore}
                 setIsActive={setIsActive}
+                isCreate={true}
             />
         </>
     );

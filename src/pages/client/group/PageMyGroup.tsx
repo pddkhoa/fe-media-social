@@ -27,7 +27,6 @@ const pageHeader = {
 };
 const PageMyGroup = () => {
     const { axiosJWT } = useAuth();
-    const [layout, setLayout] = useState<string>("grid");
     const [isLoading, setIsLoading] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPage, setTotalPage] = useState<number>();
@@ -94,14 +93,8 @@ const PageMyGroup = () => {
                 breadcrumb={pageHeader.breadcrumb}
                 title={pageHeader.title}
             ></PageHeader>
-            <GroupHeader
-                title="My Groups"
-                layout={layout}
-                setLayout={setLayout}
-                setSearchText={setSearchText}
-            />
+            <GroupHeader title="My Groups" setSearchText={setSearchText} />
             <GroupList
-                layout={layout}
                 listCate={menuItemsFiltered}
                 loader={isLoading}
                 totalPage={totalPage}
