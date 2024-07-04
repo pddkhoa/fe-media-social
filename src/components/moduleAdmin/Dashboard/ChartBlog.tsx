@@ -92,8 +92,6 @@ const ChartBlog = () => {
             Profit,
         }));
 
-    console.log(data);
-
     return (
         <div className={cn("h-[420px] w-full pt-9 flex flex-col")}>
             <ButtonGroupAction

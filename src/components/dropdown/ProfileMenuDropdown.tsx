@@ -61,7 +61,6 @@ function DropdownMenu() {
 
 export default function ProfileMenu({
     buttonClassName,
-    avatarClassName,
 }: {
     buttonClassName?: string;
     avatarClassName?: string;
@@ -82,10 +81,7 @@ export default function ProfileMenu({
                     <Avatar
                         src={userData?.avatar?.url}
                         name={userData?.name}
-                        className={cn(
-                            "!h-9 w-9 sm:!h-10 sm:w-10",
-                            avatarClassName
-                        )}
+                        size="lg"
                     />
                 </button>
             </Popover.Trigger>

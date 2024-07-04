@@ -29,7 +29,6 @@ const useLoadingLazy = <T>(pageNum = 1, fetchDataFunction: any) => {
                         setHasNextPage(false);
                     }
                 } else {
-                    console.log(body?.message);
                     setIsLoading(false);
                 }
             }, 1000);

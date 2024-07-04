@@ -44,8 +44,6 @@ function MessagesList({
         }
     };
 
-    console.log(dataNotiMess[0].message?.chat);
-
     return (
         <div className="w-[22.5rem] text-left rtl:text-right sm:w-[22.5rem] 2xl:w-[26.25rem]">
             <div className="mb-2 flex items-center justify-between ps-6">

@@ -6,7 +6,6 @@ export default function useEventCalendar(initialData: SettingType[]) {
         initialData && initialData.length > 0 ? initialData : []
     );
 
-    console.log(events);
     function createEvent(event: SettingType) {
         setEvents((prev) => [...prev, event]);
     }

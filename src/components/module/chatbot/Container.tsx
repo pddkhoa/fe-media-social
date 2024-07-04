@@ -11,7 +11,6 @@ const ContainerChatBot = () => {
     const [messages, setMessages] = useState<any>([]);
 
     const handleSendChat = async (e: any) => {
-        console.log(123);
         e.preventDefault();
 
         if (input.trim() === "") return;
@@ -94,7 +93,7 @@ const ContainerChatBot = () => {
                         boxShadow:
                             "0 0 #0000, 0 0 #0000, 0 1px 2px 0 rgb(0 0 0 / 0.05)",
                     }}
-                    className="fixed z-50 bottom-[calc(4rem+1.5rem)] right-0 mr-4 bg-white p-6 rounded-lg border border-[#e5e7eb] w-[440px] h-[634px]"
+                    className="fixed z-50 bottom-[calc(3rem+2.5rem)] right-0 mr-4 bg-white p-6 rounded-lg border border-[#e5e7eb] w-[30rem] h-[40rem]"
                 >
                     <div className="flex flex-col space-y-1.5 pb-6">
                         <h2 className="font-semibold text-lg tracking-tight">
@@ -104,7 +103,7 @@ const ContainerChatBot = () => {
                             Supports users to create content
                         </p>
                     </div>
-                    <div className="pr-4 h-[474px] overflow-auto">
+                    <div className="pr-2 h-[30rem] overflow-x-hidden">
                         {messages.map((message: any, index: any) => (
                             <div
                                 key={index}
@@ -177,7 +176,7 @@ const ContainerChatBot = () => {
                             </div>
                         )}
                     </div>
-                    <div className="flex items-center pt-0">
+                    <div className="flex items-center mt-2">
                         <form
                             className="flex items-center justify-center w-full space-x-2"
                             onSubmit={handleSendChat}
