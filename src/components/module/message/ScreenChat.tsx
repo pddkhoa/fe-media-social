@@ -406,7 +406,7 @@ export const ScreenChat: FC<ScreenChatProps> = ({
                 <div className="flex flex-col justify-between ">
                     <SimpleBar
                         scrollableNodeProps={{ ref: messagesContainerRef }}
-                        className="flex flex-col h-[30.5rem] rounded bg-gray-200 overflow-y-auto"
+                        className="flex flex-col h-[40rem] rounded bg-gray-200 overflow-y-auto"
                     >
                         <div className="grid grid-cols-12 gap-y-2 w-full h-fit rounded-md">
                             {messages && messages?.length > 0 ? (

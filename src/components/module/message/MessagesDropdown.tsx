@@ -74,7 +74,7 @@ function MessagesList({
                                 <div
                                     className={cn(
                                         "relative",
-                                        item.sender.avatar.url.length > 1 &&
+                                        item?.sender?.avatar?.url?.length > 1 &&
                                             "me-1"
                                     )}
                                 >
