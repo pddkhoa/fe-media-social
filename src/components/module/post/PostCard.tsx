@@ -169,28 +169,32 @@ export default function PostCard({
                         />
                     )}
                 </div>
-                <div className="line-clamp-2 font-semibold">{data?.title}</div>
-                <div className="flex flex-wrap justify-between">
-                    <div className="space-x-2 flex gap-2 items-center">
-                        <PiShareNetwork className="w-5 h-5" />
-                        {data?.isSave ? (
-                            <PiBookmarkSimpleFill className="w-5 h-5" />
-                        ) : (
-                            <PiBookmarkSimple className="w-5 h-5" />
-                        )}
+                <div className="flex flex-col justify-between">
+                    <div className="flex-1 h-24 line-clamp-2 font-semibold">
+                        {data?.title}
                     </div>
-                    <div className="flex space-x-2 text-sm ">
-                        <div className="flex items-center p-1 space-x-1.5">
-                            <PiChatCentered className="h-5 w-5" />
-                            <span>{data?.sumComment}</span>
-                        </div>
-                        <div className="flex items-center p-1 space-x-1.5">
-                            {data?.isLiked ? (
-                                <PiFireFill className="h-5 w-5" />
+                    <div className="flex flex-wrap justify-between">
+                        <div className="space-x-2 flex gap-2 items-center">
+                            <PiShareNetwork className="w-5 h-5" />
+                            {data?.isSave ? (
+                                <PiBookmarkSimpleFill className="w-5 h-5" />
                             ) : (
-                                <PiFireLight className="h-5 w-5" />
+                                <PiBookmarkSimple className="w-5 h-5" />
                             )}
-                            <span>{data?.likes}</span>
+                        </div>
+                        <div className="flex space-x-2 text-sm ">
+                            <div className="flex items-center p-1 space-x-1.5">
+                                <PiChatCentered className="h-5 w-5" />
+                                <span>{data?.sumComment}</span>
+                            </div>
+                            <div className="flex items-center p-1 space-x-1.5">
+                                {data?.isLiked ? (
+                                    <PiFireFill className="h-5 w-5" />
+                                ) : (
+                                    <PiFireLight className="h-5 w-5" />
+                                )}
+                                <span>{data?.likes}</span>
+                            </div>
                         </div>
                     </div>
                 </div>

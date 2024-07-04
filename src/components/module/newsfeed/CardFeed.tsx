@@ -65,7 +65,7 @@ export default function CardFeed({
 
     return (
         <>
-            <div className="p-4 flex flex-col gap-5 xl:w-[800px] w-[500px] border rounded w-5xl">
+            <div className="p-4 flex flex-col  gap-5 xl:w-[800px] w-[500px] border rounded w-5xl">
                 <div className="flex justify-between relative">
                     {data.category ? (
                         <>
@@ -174,6 +174,7 @@ export default function CardFeed({
                 <div className="line-clamp-3 font-normal">
                     {data?.description}
                 </div>
+
                 <Link
                     to={`/post/${data?._id}`}
                     className="font-medium flex gap-2 items-center text-black hover:underline hover:text-blue-600"

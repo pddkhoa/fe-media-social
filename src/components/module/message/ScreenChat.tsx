@@ -70,7 +70,8 @@ export const ScreenChat: FC<ScreenChatProps> = ({
     useEffect(() => {
         if (socket) {
             socket.on("getMessage", (message) => {
-                dispatch(sendMessagesSuccess(message.text));
+                if (message.chatId === dataChat?._id)
+                    dispatch(sendMessagesSuccess(message.text));
             });
             return () => {
                 socket.off("getMessage");
@@ -102,8 +103,6 @@ export const ScreenChat: FC<ScreenChatProps> = ({
         fetchChat();
     }, [isDelete, dispatch, chatId, setMessages, isSend]);
 
-    console.log(dataChat);
-
     const handleSendMessage = async () => {
         if (chatId) {
             const { body } = await ChatServices.sendMessage(
@@ -118,12 +117,14 @@ export const ScreenChat: FC<ScreenChatProps> = ({
                 socket?.emit("sendMessage", {
                     fromUser: user.user._id,
                     chatId: dataChat?._id,
+                    toUser: dataChat?.userReceived?._id,
                     text: body?.result,
                 });
 
                 socket?.emit("interactionMessage", {
                     fromUser: user.user._id,
                     chatId: dataChat?._id,
+                    toUser: dataChat?.userReceived?._id,
                     type: TYPE_NOTI.CHAT,
                     data: dataChat?.listUser,
                 });
