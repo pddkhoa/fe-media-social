@@ -2,6 +2,7 @@ import { useState } from "react";
 import BlogServices from "@/services/blog";
 import useAuth from "@/hooks/useAuth";
 import { Button, Loader } from "rizzui";
+import Markdown from "react-markdown";
 
 const ContainerChatBot = () => {
     const [openChat, setOpenChat] = useState(false);
@@ -155,18 +156,8 @@ const ContainerChatBot = () => {
                                             ? "You"
                                             : "AI"}{" "}
                                     </span>
-                                    {message?.text?.includes("\n") ? (
-                                        message?.text
-                                            ?.split("\n")
-                                            ?.map((text: any, idx: any) => (
-                                                <span key={idx}>
-                                                    {text}
-                                                    <br />
-                                                </span>
-                                            ))
-                                    ) : (
-                                        <span>{message.text}</span>
-                                    )}
+
+                                    <Markdown>{message.text}</Markdown>
                                 </p>
                             </div>
                         ))}
