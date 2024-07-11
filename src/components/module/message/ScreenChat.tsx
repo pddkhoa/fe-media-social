@@ -124,7 +124,6 @@ export const ScreenChat: FC<ScreenChatProps> = ({
                 socket?.emit("interactionMessage", {
                     fromUser: user.user._id,
                     chatId: dataChat?._id,
-                    toUser: dataChat?.userReceived?._id,
                     type: TYPE_NOTI.CHAT,
                     data: dataChat?.listUser,
                 });
