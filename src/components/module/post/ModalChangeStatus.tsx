@@ -35,13 +35,8 @@ const ModalChangeStatus: FC<ModalChangeStatusProps> = ({
                 <div className="w-full max-w-[640px]">
                     <div className="mb-8 text-center @2xl:mb-12">
                         <h2 className="mb-2 text-xl @2xl:mb-3 @2xl:text-2xl">
-                            This is group private!!!
+                            Change Status Post
                         </h2>
-                        <p className="mt-3 text-sm leading-loose text-gray-500 lg:mt-6 lg:text-base lg:leading-loose">
-                            You do not have permission to access to post.
-                            <br className=" xs:inline-block" />
-                            Please join your group to access resoure of group.
-                        </p>
                     </div>
                     <div className="flex justify-around ">
                         <Button
