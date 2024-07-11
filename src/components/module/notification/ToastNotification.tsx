@@ -11,7 +11,7 @@ const ToastNotification: FC<ToastNotificationProps> = ({ type, user }) => {
     return (
         <div className="group grid cursor-pointer grid-cols-[auto_minmax(0,1fr)] gap-3 rounded-md px-2 py-2.5 pe-3 transition-colors ">
             <div className={"relative"}>
-                <Avatar src={user?.user?.avatar?.url} name={user?.user?.name} />
+                <Avatar src={user[0]?.avatar?.url} name={user[0]?.name} />
             </div>
             <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center">
                 <div className="w-full">

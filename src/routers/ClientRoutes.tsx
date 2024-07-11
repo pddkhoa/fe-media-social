@@ -64,6 +64,9 @@ const ClientRoutes = () => {
         socket?.on("notification", (data: any) => {
             setNoti((prev: any) => [...prev, data]);
         });
+        socket?.on("notificationMessage", (data: any) => {
+            setNoti((prev: any) => [...prev, data]);
+        });
     }, [socket]);
 
     useEffect(() => {

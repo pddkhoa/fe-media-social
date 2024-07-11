@@ -9,6 +9,7 @@ type MessageBodyProps = {
 };
 
 export default function MessageBody({ message }: MessageBodyProps) {
+    console.log(message);
     return (
         <div>
             {message && (
@@ -90,6 +91,11 @@ export default function MessageBody({ message }: MessageBodyProps) {
                                 <span className="font-semibold">
                                     {message.category?.name}
                                 </span>
+                            </p>
+                        )}
+                        {message.type === TYPE_NOTI.CHAT && (
+                            <p className="w-11/12 line-clamp-2 pe-7 text-xs text-gray-500">
+                                Chat with you
                             </p>
                         )}
                     </div>
