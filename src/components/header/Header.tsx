@@ -53,7 +53,7 @@ function HeaderMenuRight(socket: HeaderProps) {
             console.error("Error fetching data:", error);
             setIsLoading(false);
         }
-    }, [dispatch]);
+    }, [dispatch, socket]);
 
     const fetchNotiMess = useCallback(async () => {
         try {
@@ -70,7 +70,7 @@ function HeaderMenuRight(socket: HeaderProps) {
             console.error("Error fetching data:", error);
             setIsLoading(false);
         }
-    }, [dispatch]);
+    }, [dispatch, socket]);
 
     useEffect(() => {
         setIsRead(false);
