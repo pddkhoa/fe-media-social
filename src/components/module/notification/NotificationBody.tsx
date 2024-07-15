@@ -9,7 +9,6 @@ type MessageBodyProps = {
 };
 
 export default function MessageBody({ message }: MessageBodyProps) {
-    console.log(message);
     return (
         <div>
             {message && (
