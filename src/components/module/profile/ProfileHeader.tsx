@@ -37,6 +37,7 @@ export default function ProfileHeader({
         (state: RootState) => state.auth.userToken.user._id
     );
     const [loading, setLoading] = useState(false);
+    const [isChat, setIsChat] = useState(false);
     const { axiosJWT, user } = useAuth();
 
     const handleFollow = async (id: string | undefined) => {
@@ -63,6 +64,7 @@ export default function ProfileHeader({
     };
 
     const handleSingleChat = async (userId: string) => {
+        setIsChat(true);
         const { body } = await ChatServices.singleChat(
             { userId: userId },
             axiosJWT
@@ -70,8 +72,10 @@ export default function ProfileHeader({
         if (body?.success) {
             dispatch(startChatMessagesSuccess(body.result));
             navigate("/messenger");
+            setIsChat(false);
         } else {
             toast.error(body?.message || "Error");
+            setIsChat(false);
         }
     };
 
@@ -150,6 +154,8 @@ export default function ProfileHeader({
                                     <Button
                                         variant="outline"
                                         size="sm"
+                                        isLoading={isChat}
+                                        disabled={isChat}
                                         onClick={() => {
                                             handleSingleChat(userDetail?._id);
                                         }}
